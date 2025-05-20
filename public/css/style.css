@@ -1,0 +1,743 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Lato", sans-serif;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+}
+
+/* Hader */
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+}
+
+nav {
+  padding: 5px 150px; /* Padding tetap untuk ruang internal */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+}
+
+.logo {
+  color: #fff;
+}
+
+nav ul {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+}
+
+nav ul li {
+  list-style-type: none;
+}
+
+nav ul .login-btn {
+  border: 1px solid #004274;
+  border-radius: 0.3rem;
+  background-color: #004274;
+  padding: 15px 25px;
+  text-decoration: none;
+  color: #fff;
+}
+
+nav ul .sign-up.btn {
+  border: 2px solid #004274;
+  border-radius: 0.3rem;
+  background-color: #fff;
+  padding: 15px 25px;
+  text-decoration: none;
+  transition: 0.3s;
+  color: #000;
+}
+
+nav ul .sign-up.btn:hover {
+  background-color: #004274;
+  color: #fff;
+}
+
+.menu-icon {
+  display: none;
+}
+
+.menu-icon i {
+  color: #000;
+  font-size: 30px;
+}
+
+/* Header End */
+/* jumbotron Section */
+.jumbotron-section {
+  /* Menggunakan gambar sebagai background */
+  background: url('/assets/img/imgJumbotron.jpg') no-repeat center center;
+  background-size: cover; /* Membuat gambar memenuhi seluruh section */
+  height: 91vh; /* Membuat tinggi penuh layar */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff; /* Agar teks terlihat di atas gambar */
+  text-align: center; /* Memusatkan teks */
+  padding: 20px; /* Memberi sedikit ruang pada konten */
+}
+
+.jumbotron-section::after {
+  content: ''; /* Pseudo-element sebagai overlay */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4); /* Warna hitam dengan transparansi */
+  z-index: 1; /* Pastikan overlay berada di atas gambar latar */
+}
+
+.jumbotron-section .content {
+  position: relative; /* Konten tetap di atas overlay */
+  z-index: 2; /* Pastikan konten di atas overlay */
+}
+
+.jumbotron-section .content h1 {
+  font-size: 2.5rem; /* Ukuran font heading */
+  margin: 20px 0;
+}
+
+.jumbotron-section .content p {
+  font-size: 1.2rem;
+  max-width: 800px; /* Membatasi lebar teks */
+  margin: 0 auto; /* Memusatkan teks */
+}
+
+.jumbotron-section h1 {
+  text-align: center;
+  font-size: 3rem;
+}
+
+.jumbotron-section .content button {
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.3); /* Warna putih dengan transparansi 30% */
+  color: #fff;
+  cursor: pointer;
+  margin-top: 3rem;
+  padding: 15px 10px;
+  border: 1px solid #fff;
+  transition: 0.5s all;
+}
+
+.jumbotron-section .content button:hover {
+  opacity: 0.5;
+}
+
+/* .jumbotron-section h1 span {
+  color: #004274;
+} */
+
+.jumbotron-section p {
+  font-size: 1.2rem;
+  text-align: center;
+}
+
+/* .search-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center; 
+  width: 100%; 
+  max-width: 500px; 
+}
+
+#search {
+  width: 70%; 
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #e3f2fd;
+  border-radius: 0 0.5rem 0.5rem 0;
+}
+
+.btn-list {
+  width: 30%; 
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #e3f2fd;
+  border-radius: 0.5rem 0 0 0.5rem;
+} */
+
+/* jumbotron section end */
+
+@media (max-width: 600px) {
+  nav {
+    padding: 5px 30px;
+  }
+  nav ul {
+    height: 5rem;
+    position: absolute;
+    top: 83px;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    text-align: center;
+    background: #fff;
+    gap: 0;
+    overflow: hidden;
+  }
+  nav ul li {
+    padding-top: 10px;
+  }
+  /* Button Nav */
+  nav ul .login-btn {
+    padding: 0 10px;
+    width: 100%;
+    border-radius: 0px;
+    background-color: #fff;
+    border: none;
+  }
+
+  nav ul .login-btn a,
+  nav ul .sign-up.btn a {
+    color: #000;
+    list-style: none;
+    text-decoration: none;
+  }
+
+  nav ul .sign-up.btn {
+    border: none;
+    width: 100%;
+    border-radius: 0px;
+    padding: 0 10px;
+  }
+  /* Button Nav */
+  .menu-icon {
+    display: block;
+  }
+  #menuList {
+    transition: all 0.5s;
+  }
+}
+
+/* Search Section */
+.search-content {
+  background-color: #e3f2fd;
+  height: 80vh; /* Tinggi penuh layar */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%; /* Lebar penuh container */
+  max-width: 500px; /* Batas lebar maksimal */
+}
+
+#search {
+  width: 70%; /* Lebar input */
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #e3f2fd;
+  border-radius: 0 0.5rem 0.5rem 0;
+}
+
+.btn-list {
+  width: 30%; /* Lebar tombol */
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #e3f2fd;
+  border-radius: 0.5rem 0 0 0.5rem;
+}
+
+.search-content p {
+  margin-top: 1rem;
+}
+
+.search-content span {
+  color: red;
+}
+
+/* How About Section */
+
+/* How About Section */
+.main-content {
+  padding: 5rem 1rem;
+}
+
+.main-content .main {
+  margin-bottom: 2rem;
+}
+
+.main-content .main h3 {
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.main-content .main span {
+  color: #124076;
+}
+
+.main-content .main p {
+  font-size: 1.1rem;
+  text-align: center;
+  color: #555;
+}
+
+/* Kontainer untuk Item */
+.main-content .container {
+  margin-top: 4rem;
+  display: flex;
+  flex-wrap: wrap; /* Membuat item turun ke baris berikutnya jika tidak cukup ruang */
+  justify-content: center; /* Agar semua item di tengah */
+  gap: 2rem; /* Jarak antar item */
+}
+
+/* Item */
+.main-content .container .item {
+  flex: 1 1 280px;
+  max-width: 300px; /* Maksimal lebar 300px */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1rem;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Efek Hover */
+.main-content .container .item:hover {
+  transform: translateY(-10px);
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 8px 10px;
+}
+
+/* Ikon */
+.main-content .container .box {
+  width: 80px;
+  height: 80px;
+  background-color: #f0f7ff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  margin-bottom: 1rem;
+}
+
+.main-content .container .box i {
+  font-size: 2.5rem;
+  color: #124076;
+}
+
+.main-content .container .item p {
+  font-size: 1rem;
+  color: #555;
+}
+/* How About Section */
+
+/* Advice Section */
+.advice-main {
+  margin-top: 4rem;
+  margin-bottom: 4rem;
+  height: 30vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.advice-container {
+  text-align: center;
+  border: 3px solid #e3f2fd;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  width: 90%;
+  max-width: 1200px;
+  padding: 30px 0;
+}
+
+.advice-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.img {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.advice-content h3 {
+  margin: 0;
+}
+
+.advice-content p {
+  margin: 5px 0 0;
+  text-align: left;
+}
+
+.advice-content span {
+  color: #124076;
+}
+
+/* Advice Section */
+
+/* Feedback Rating Section */
+.feedback-section {
+  padding: 40px 20px;
+  text-align: center;
+  background-color: #F5F7FA;
+}
+
+.feedback-main h3 {
+  font-size: 1.8rem;
+}
+
+.feedback-main span {
+  color: #0056b3;
+  font-weight: bold;
+}
+
+.feedback-main p {
+  margin: 10px 0 20px;
+  color: #555;
+  font-size: 1rem;
+}
+
+.container {
+  margin-top: 5rem;
+  margin-bottom: 3rem;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 50px;
+}
+
+.feedback-card {
+  cursor: pointer;
+  background: white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 20px;
+  width: 300px;
+  text-align: left;
+}
+
+.feedback-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 15px;
+}
+
+.user-info h4 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.user-info p {
+  margin: 5px 0 0;
+  font-size: 1rem;
+  color: #ff9800; /* Warna untuk bintang rating */
+}
+
+.feedback-text {
+  font-size: 0.95rem;
+  color: #555;
+  line-height: 1.5;
+}
+
+/* FAQ SECTION */
+/* FAQ Section */
+.faq-section {
+  padding: 40px 20px;
+  background-color: #fff;
+}
+
+.faq-main h3 {
+  font-size: 2rem;
+  text-align: center;
+  color: #000;
+}
+
+.faq-main p {
+  text-align: center;
+  margin: 10px 0 20px;
+  color: #555;
+  font-size: 1rem;
+}
+
+.faq-container {
+  max-width: 800px;
+  margin: 5rem auto;
+}
+
+.faq-item {
+  margin-bottom: 15px;
+  border-bottom: 2px solid #004274;
+  overflow: hidden;
+}
+
+.faq-question {
+  background-color: #FFF;
+  color: #000;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.faq-question h4 {
+  color: #000;
+  margin: 0;
+  font-size: 1rem;
+}
+
+.toggle-icon {
+  font-size: 1.2rem;
+  transition: transform 0.3s ease;
+}
+
+.faq-answer {
+  display: none; /* Tersembunyi secara default */
+  padding: 15px 20px;
+  background-color: #fff;
+  color: #333;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.faq-item.open .faq-answer {
+  display: block; /* Tampilkan jawaban jika aktif */
+  background-color: #f0f7ff;
+}
+
+.faq-item.open .toggle-icon {
+  transform: rotate(45deg); /* Ikon berubah saat aktif */
+}
+
+/* FAQ SECTION */
+/* Feedback Rating Section */
+
+/* Dummy Metrics */
+.metrics {
+  display: flex;
+  flex-wrap: wrap; /* Membungkus item jika tidak muat dalam satu baris */
+  justify-content: center;
+  padding: 30px 10px; /* Kurangi padding */
+  background-color: #F5F7FA;
+  gap: 10px; /* Tambahkan jarak antar elemen */
+  margin-bottom: 3rem;
+}
+
+.metric-item {
+  text-align: center;
+  font-family: Arial, sans-serif;
+  margin: 35px; /* Kurangi jarak margin antar item */
+}
+
+.metric-item h3 {
+  font-size: 2rem; /* Sesuaikan ukuran font */
+  color: #004274;
+  margin: 0;
+}
+
+.metric-item p {
+  font-size: 0.9rem; /* Sesuaikan ukuran font */
+  color: #555;
+  margin: 3px 0 0; /* Kurangi jarak margin antar teks */
+}
+
+/* Dummy Metrics */
+
+/* Report Section */
+.report-main {
+  background-color: #91b0d3;
+  height: 30vh;
+  /* border: 1px solid red; */
+}
+
+.report-main .report .report-content {
+  padding-top: 3rem;
+}
+
+.report-main .report h2 {
+  text-align: center;
+  color: #fff;
+}
+
+.report-main .report .report-section {
+  display: flex;
+  justify-content: center;
+  gap: 5rem;
+}
+
+.report-main .report .report-section .report-btn {
+  margin-top: 3rem;
+}
+
+.report-main .report .report-section .report-btn button {
+  padding: 1rem 2rem 1rem 2rem;
+  border: 1px solid #e3f2fd;
+  background-color: #e3f2fd;
+  border-radius: 0.8rem;
+  transition: ease-in-out 0.3s;
+  cursor: pointer;
+}
+
+.report-main .report .report-section .report-btn button:hover {
+  opacity: 0.8;
+  border: 1px solid #124076;
+  background-color: #124076;
+  color: #fff;
+}
+
+/* Report Section */
+
+/* Footer Section */
+.footer {
+  display: flex;
+  flex-wrap: wrap; /* Agar elemen turun jika tidak cukup ruang */
+  justify-content: space-between; /* Jarak antar elemen */
+  align-items: flex-start; /* Pastikan elemen berbaris di atas */
+  padding: 40px 20px; /* Padding lebih besar */
+  background-color: #124076; /* Warna tetap */
+  gap: 2rem; /* Jarak antar elemen lebih moderat */
+}
+
+.footer-main {
+  flex: 1 1 10px; /* Lebar fleksibel */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.footer-section {
+  display: flex;
+  flex: 1 1 300px; /* Lebar fleksibel lebih besar */
+  justify-content: space-around; /* Jarak antar kolom */
+  flex-wrap: wrap; /* Kolom turun di layar kecil */
+  gap: 1rem; /* Jarak antar kolom */
+}
+
+.footer.content {
+  text-decoration: none;
+  list-style: none;
+}
+
+.footer-content h3 {
+  font-size: 1.2rem; /* Ukuran teks untuk desktop */
+  color: #ffffff;
+  margin-bottom: 10px;
+}
+
+.footer-content a {
+  text-decoration: none;
+  list-style: none;
+}
+
+.footer-content ul {
+  padding: 0;
+  text-decoration: none;
+  list-style: none;
+}
+
+.footer-content li {
+  text-decoration: none;
+  list-style: none;
+  color: #cccccc;
+  font-size: 1rem;
+  margin-bottom: 5px;
+  cursor: pointer;
+  text-decoration: none;
+  list-style: none;
+}
+
+/* Footer Section */
+
+/* Responsif untuk layar kecil */
+@media (max-width: 768px) {
+  html {
+    font-size: 80%;
+  }
+
+  .search-bar {
+    flex-direction: column; /* Ubah menjadi kolom */
+    align-items: stretch; /* Buat elemen stretch agar penuh */
+    gap: 10px; /* Jarak antar elemen */
+  }
+
+  #search,
+  .btn-list {
+    width: 100%; /* Lebar penuh */
+    border-radius: 0.5rem; /* Sesuaikan agar lebih estetis */
+  }
+
+  .footer {
+    flex-direction: column; /* Atur ulang menjadi kolom */
+    align-items: center;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .footer-section {
+    flex-direction: column; /* Atur kolom secara vertikal */
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .footer-content {
+    align-items: center;
+  }
+
+  .footer-content h3 {
+    font-size: 1rem; /* Ukuran teks lebih kecil */
+  }
+
+  .footer-content li {
+    font-size: 0.9rem; /* Ukuran lebih kecil */
+  }
+}
+
+/* Responsif untuk layar sangat kecil */
+@media (max-width: 480px) {
+  html {
+    font-size: 75%;
+  }
+
+  #search {
+    font-size: 14px; /* Ukuran font lebih kecil */
+    padding: 8px; /* Padding lebih kecil */
+  }
+
+  .report-main .report .report-section {
+    flex-direction: column; /* Susun tombol secara vertikal */
+    align-items: center; /* Posisikan tombol di tengah */
+    gap: 1rem; /* Jarak antar tombol */
+  }
+
+  .report-main .report .report-section .report-btn {
+    width: 100%; /* Buat tombol memiliki lebar penuh */
+    text-align: center; /* Pusatkan teks dalam tombol */
+  }
+}
