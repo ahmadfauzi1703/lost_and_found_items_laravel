@@ -112,6 +112,7 @@ Route::resource('items', ItemController::class)->only([
     'destroy'
 ])->middleware('auth');
 
+Route::get('/about-us', [App\Http\Controllers\UserController::class, 'aboutUs'])->name('about-us');
 
 
 
@@ -121,9 +122,11 @@ Route::resource('items', ItemController::class)->only([
 
 
 
+    
 
 
 
+        
 
 
 

@@ -97,41 +97,42 @@
         @endif
         <section class="max-w-5xl mx-auto bg-white rounded-md shadow-md p-8">
             <h2 class="text-3xl font-semibold mb-6">Aktivitas Saya</h2>
+  <!-- Filter Section -->
+<div class="mb-6">
+    <form method="GET" action="{{ route('activity') }}" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Dropdown Kategori -->
+        <div>
+            <label for="category" class="block mb-2">Kategori:</label>
+            <select id="category" name="category" class="w-full border rounded p-2">
+                <option value="">Semua</option>
+                <option value="Perhiasan Khusus" {{ request('category') == 'Perhiasan Khusus' ? 'selected' : '' }}>Perhiasan Khusus</option>
+                <option value="Elektronik" {{ request('category') == 'Elektronik' ? 'selected' : '' }}>Elektronik</option>
+                <option value="Buku & Dokumen" {{ request('category') == 'Buku & Dokumen' ? 'selected' : '' }}>Buku & Dokumen</option>
+                <option value="Aksesoris Pribadi" {{ request('category') == 'Aksesoris Pribadi' ? 'selected' : '' }}>Aksesoris Pribadi</option>
+                <option value="Kendaraan" {{ request('category') == 'Kendaraan' ? 'selected' : '' }}>Kendaraan</option>
+                <option value="Perangkat Medis" {{ request('category') == 'Perangkat Medis' ? 'selected' : '' }}>Perangkat Medis</option>
+            </select>
+        </div>
 
-            <!-- Filter Section -->
-            <div class="mb-6">
-                <form method="GET" action="activity.php" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Dropdown Kategori -->
-                    <div>
-                        <label for="category" class="block mb-2">Kategori:</label>
-                        <select id="category" name="category" class="w-full border rounded p-2">
-                            <option value="">Semua</option>
-                            <option value="Perhiasan Khusus">Perhiasan Khusus</option>
-                            <option value="Elektronik">Elektronik</option>
-                            <option value="Buku & Dokumen">Buku & Dokumen</option>
-                            <option value="Aksesoris Pribadi">Aksesoris Pribadi</option>
-                            <option value="Kendaraan">Kendaraan</option>
-                            <option value="Perangkat Medis">Perangkat Medis</option>
-                        </select>
-                    </div>
+        <!-- Dropdown Jenis Laporan -->
+        <div>
+            <label for="type" class="block mb-2">Jenis Laporan:</label>
+            <select id="type" name="type" class="w-full border rounded p-2">
+                <option value="">Semua</option>
+                <option value="hilang" {{ request('type') == 'hilang' ? 'selected' : '' }}>Hilang</option>
+                <option value="ditemukan" {{ request('type') == 'ditemukan' ? 'selected' : '' }}>Ditemukan</option>
+            </select>
+        </div>
 
-                    <!-- Dropdown Jenis Laporan -->
-                    <div>
-                        <label for="type" class="block mb-2">Jenis Laporan:</label>
-                        <select id="type" name="type" class="w-full border rounded p-2">
-                            <option value="">Semua</option>
-                            <option value="hilang">Hilang</option>
-                            <option value="ditemukan">Ditemukan</option>
-                        </select>
-                    </div>
-
+    
                     <!-- Tombol Filter -->
                     <div class="md:col-span-2 text-right">
                         <button type="submit" class="bg-[#004274] text-white px-4 py-2 rounded">Terapkan Filter</button>
-                        <a href="activity.php" class="bg-gray-500 text-white px-4 py-[0.68rem] rounded">Reset Filter</a>
+                       <a href="{{ route('activity') }}" class="bg-gray-500 text-white px-4 py-[0.68rem] rounded">Reset Filter</a>
                     </div>
                 </form>
             </div>
+
 
             <!-- Activity List -->
             @if(count($userItems) > 0)
@@ -197,88 +198,108 @@
 
     <!-- Modal Detail -->
     <!-- Modal Edit -->
-    <div id="detailModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-        <form method="POST" id="updateItemForm" class="bg-white rounded-lg w-[90%] md:w-[50%] p-6 max-h-[90vh] overflow-y-auto" enctype="multipart/form-data">
-            @csrf
-            @method('PUT')
-            <!-- Header -->
-            <div class="flex justify-between items-center border-b pb-4">
-                <h3 class="text-xl font-semibold" id="modalTitle">Edit Laporan</h3>
-                <button type="button" class="text-gray-500 hover:text-gray-700">&times;</button>
+<div id="detailModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+    <form method="POST" id="updateItemForm" class="bg-white rounded-lg w-[90%] md:w-[50%] p-6 max-h-[90vh] overflow-y-auto" enctype="multipart/form-data">
+        @csrf
+        @method('PUT')
+
+        <!-- Header -->
+        <div class="flex justify-between items-center border-b pb-4">
+            <h3 class="text-xl font-semibold" id="modalTitle">Edit Laporan</h3>
+            <button type="button" class="text-gray-500 hover:text-gray-700" onclick="closeModal()">&times;</button>
+        </div>
+
+        <!-- Content -->
+        <div class="mt-4 space-y-4">
+            <!-- Hidden ID -->
+            <input type="hidden" id="modalItemId" name="id" value="">
+
+            <!-- Gambar Barang -->
+            <div class="text-center">
+                <img id="modalImage" src="" alt="Gambar Barang" class="w-32 h-32 object-cover mx-auto rounded mb-2">
+                <label class="block text-sm font-medium text-gray-700 mt-2"></label>
+                <input type="file" name="photo" id="modalPhotoInput" class="mt-1 block w-full text-sm text-gray-500
+                file:mr-4 file:py-2 file:px-4 file:rounded file:border-0
+                file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700
+                hover:file:bg-blue-100">
             </div>
-            <!-- Content -->
-            <div class="mt-4 space-y-4">
-                <!-- Hidden ID -->
-                <input type="hidden" id="modalItemId" name="id" value="">
 
-                <!-- Gambar Barang -->
-                <div class="text-center">
-                    <img id="modalImage" src="" alt="Gambar Barang" class="w-32 h-32 object-cover mx-auto rounded mb-2">
-                    <label class="block text-sm font-medium text-gray-700 mt-2"></label>
-                    <input type="file" name="photo" id="modalPhotoInput" class="mt-1 block w-full text-sm text-gray-500
-                    file:mr-4 file:py-2 file:px-4 file:rounded file:border-0
-                    file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700
-                    hover:file:bg-blue-100">
-                </div>
+            <!-- Form Lanjutan -->
+            <div>
+                <label for="modalNameInput" class="block mb-2">Nama Item:</label>
+                <input type="text" id="modalNameInput" name="item_name" class="w-full border rounded p-2">
+            </div>
 
-                <div>
-                    <label for="modalNameInput" class="block mb-2">Nama Item:</label>
-                    <input type="text" id="modalNameInput" name="item_name" class="w-full border rounded p-2">
-                </div>
+            <!-- Kategori -->
+            <div>
+                <label for="modalCategoryInput" class="block mb-2">Kategori:</label>
+                <select id="modalCategoryInput" name="category" class="w-full border rounded p-2">
+                    <option value="Perhiasan Khusus">Perhiasan Khusus</option>
+                    <option value="Elektronik">Elektronik</option>
+                    <option value="Buku & Dokumen">Buku & Dokumen</option>
+                    <option value="Aksesoris Pribadi">Aksesoris Pribadi</option>
+                    <option value="Kendaraan">Kendaraan</option>
+                    <option value="Perangkat Medis">Perangkat Medis</option>
+                </select>
+            </div>
 
-                <!-- Input Kategori -->
-                <div>
-                    <label for="modalCategoryInput" class="block mb-2">Kategori:</label>
-                    <select id="modalCategoryInput" name="category" class="w-full border rounded p-2">
-                        <option value="Perhiasan Khusus">Perhiasan Khusus</option>
-                        <option value="Elektronik">Elektronik</option>
-                        <option value="Buku & Dokumen">Buku & Dokumen</option>
-                        <option value="Aksesoris Pribadi">Aksesoris Pribadi</option>
-                        <option value="Kendaraan">Kendaraan</option>
-                        <option value="Perangkat Medis">Perangkat Medis</option>
-                    </select>
-                </div>
+            <!-- Jenis Laporan -->
+            <div>
+                <label for="modalTypeInput" class="block mb-2">Jenis Laporan:</label>
+                <select id="modalTypeInput" name="type" class="w-full border rounded p-2">
+                    <option value="hilang">Hilang</option>
+                    <option value="ditemukan">Ditemukan</option>
+                </select>
+            </div>
 
-                <!-- Input Jenis Laporan -->
-                <div>
-                    <label for="modalTypeInput" class="block mb-2">Jenis Laporan:</label>
-                    <select id="modalTypeInput" name="type" class="w-full border rounded p-2">
-                        <option value="hilang">Hilang</option>
-                        <option value="ditemukan">Ditemukan</option>
-                    </select>
-                </div>
+            <!-- Email -->
+            <div>
+                <label for="modalEmailInput" class="block mb-2">Email:</label>
+                <input type="email" id="modalEmailInput" name="email" class="w-full border rounded p-2">
+            </div>
 
-                <!-- Input Email -->
-                <div>
-                    <label for="modalEmailInput" class="block mb-2">Email:</label>
-                    <input type="email" id="modalEmailInput" name="email" class="w-full border rounded p-2">
-                </div>
+            <!-- Nomor Telepon -->
+            <div>
+                <label for="modalPhoneInput" class="block mb-2">Nomor Telepon:</label>
+                <input type="text" id="modalPhoneInput" name="phone_number" class="w-full border rounded p-2">
+            </div>
 
-                <!-- Input Nomor Telepon -->
-                <div>
-                    <label for="modalPhoneInput" class="block mb-2">Nomor Telepon:</label>
-                    <input type="text" id="modalPhoneInput" name="phone_number" class="w-full border rounded p-2">
-                </div>
+            <!-- Tanggal Kejadian -->
+            <div>
+                <label for="modalDateInput" class="block mb-2">Tanggal Kejadian:</label>
+                <input type="date" id="modalDateInput" name="date_of_event" class="w-full border rounded p-2">
+            </div>
 
-                <!-- Input Tanggal Kejadian -->
-                <div>
-                    <label for="modalDateInput" class="block mb-2">Tanggal Kejadian:</label>
-                    <input type="date" id="modalDateInput" name="date_of_event" class="w-full border rounded p-2">
-                </div>
+            <!-- Deskripsi -->
+            <div>
+                <label for="modalDescriptionInput" class="block mb-2">Deskripsi:</label>
+                <textarea id="modalDescriptionInput" name="description" class="w-full border rounded p-2"></textarea>
+            </div>
+        </div>
 
-                <!-- Input Deskripsi -->
-                <div>
-                    <label for="modalDescriptionInput" class="block mb-2">Deskripsi:</label>
-                    <textarea id="modalDescriptionInput" name="description" class="w-full border rounded p-2"></textarea>
+        <!-- Footer -->
+        <div class="mt-6 text-right">
+            <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700" onclick="closeModal()">Batal</button>
+            <!-- Ubah submit jadi button -->
+            <button type="button" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700" onclick="confirmUpdate()">Simpan Perubahan</button>
+        </div>
+    </form>
+</div>
+
+
+                <!-- Modal Konfirmasi Update -->
+            <div id="confirmUpdateModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+                <div class="bg-white p-6 rounded-lg w-[90%] md:w-[30%] text-center">
+                    <div class="text-5xl text-orange-400 mb-4">!</div>
+                    <h2 class="text-lg font-semibold mb-2">Ingin mengubah laporan ini?</h2>
+                    <p class="text-sm text-gray-600 mb-4">Perubahan akan disimpan dan tidak dapat dikembalikan!</p>
+                    <div class="flex justify-center gap-4">
+                        <button onclick="submitUpdate()" class="bg-blue-800 text-white px-4 py-2 rounded hover:bg-blue-900">Ya, Simpan!</button>
+                        <button onclick="closeConfirmUpdate()" class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-600">Batal</button>
+                    </div>
                 </div>
             </div>
-            <!-- Footer -->
-            <div class="mt-6 text-right">
-                <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700" onclick="closeModal()">Batal</button>
-                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">Simpan Perubahan</button>
-            </div>
-        </form>
-    </div>
+
 
     <!-- Footer Section -->
     <footer class="bg-[#124076]">
@@ -456,6 +477,20 @@
             }
         });
     </script>
+    <script>
+        function confirmUpdate() {
+            document.getElementById("confirmUpdateModal").classList.remove("hidden");
+        }
+
+        function closeConfirmUpdate() {
+            document.getElementById("confirmUpdateModal").classList.add("hidden");
+        }
+
+        function submitUpdate() {
+            document.getElementById("updateItemForm").submit();
+        }
+</script>
+
 </body>
 
 </html>

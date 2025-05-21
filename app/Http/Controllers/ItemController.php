@@ -128,17 +128,23 @@ class ItemController extends Controller
         return view('users.formReport', compact('user'));
     }
 
-    public function activity()
-    {
-        $userItems = Item::where('user_id', Auth::id())
-            ->orderBy('created_at', 'desc')
-            ->get();
+    public function activity(Request $request)
+{
+    $query = Item::where('user_id', Auth::id());
 
-        // Add the authenticated user to the data passed to the view
-        $user = Auth::user();
-
-        return view('users.activity', compact('userItems', 'user'));
+    if ($request->filled('category')) {
+        $query->where('category', $request->category);
     }
+
+    if ($request->filled('type')) {
+        $query->where('type', $request->type);
+    }
+
+    $userItems = $query->orderBy('created_at', 'desc')->get();
+    $user = Auth::user();
+
+    return view('users.activity', compact('userItems', 'user'));
+}
 
     /**
      * Store a newly created item report.
