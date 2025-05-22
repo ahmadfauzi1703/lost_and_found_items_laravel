@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('last_name', 50);
             $table->string('nim', 15)->nullable();
             $table->string('address')->nullable();
-            $table->enum('role', ['user', 'admin,']);
+            $table->enum('role', ['user', 'admin,','satpam']);
             $table->string('profile_picture')->nullable();
             $table->timestamps();
         });

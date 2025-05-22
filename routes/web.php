@@ -9,6 +9,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\FeedbackController;
 
 
 // Landing Page Section
@@ -103,8 +104,6 @@ Route::get('/activity', [ItemController::class, 'activity'])
     ->middleware('auth')
     ->name('activity');
 
-Route::get('/about-us', [App\Http\Controllers\UserController::class, 'aboutUs'])->name('about-us');
-
 
 // Functional User 
 Route::resource('items', ItemController::class)->only([
@@ -112,29 +111,8 @@ Route::resource('items', ItemController::class)->only([
     'destroy'
 ])->middleware('auth');
 
-Route::get('/about-us', [App\Http\Controllers\UserController::class, 'aboutUs'])->name('about-us');
-
-
-
-
-
-
-
-
-
-    
-
-
-
-        
-
-
-
-
-
-
-
-
+Route::get('/about-us', [FeedbackController::class, 'showAboutUs'])->name('about-us');
+Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
 
 
 
