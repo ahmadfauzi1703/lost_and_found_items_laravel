@@ -31,7 +31,7 @@ class AdminController extends Controller
         $foundItemsCount = Item::where('type', 'ditemukan')->count();
 
         // Mengambil item terbaru untuk ditampilkan di dashboard
-        $items = Item::orderBy('created_at', 'desc')->limit(5)->get();
+        $items = Item::orderBy('created_at', 'desc')->limit(3)->get();
 
         return view('admin.admin_dashboard', compact(
             'userCount',

@@ -19,7 +19,8 @@ class Item extends Model
         'location',
         'photo_path',
         'user_id',
-        'status'
+        'status',
+        'report_by',
     ];
 
     protected $casts = [

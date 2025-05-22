@@ -68,10 +68,39 @@ Route::get('/admin/dashboard', [AdminController::class, 'index'])
 # SATPAM SECTION
 Route::middleware(['auth', 'role:satpam'])->group(function () {
     Route::get('/satpam/dashboard', [SatpamController::class, 'index'])->name('satpam_dashboard');
-    Route::get('/satpam/approval', [SatpamController::class, 'approval'])->name('satpam_dashboard_approval');
-    Route::get('/satpam/lost', [SatpamController::class, 'lost'])->name('satpam_dashboard_lost');
-    Route::get('/satpam/found', [SatpamController::class, 'found'])->name('satpam_dashboard_found');
-    Route::get('/satpam/user', [SatpamController::class, 'user'])->name('satpam_dashboard_user');
+    // Route satpam dashboard view
+    Route::get('/satpam/items', [App\Http\Controllers\SatpamController::class, 'viewItems'])
+        ->middleware(['auth', 'role:satpam'])
+        ->name('satpam.dashboard.view');
+
+    // Functional Satpam
+    Route::get('/satpam/item/create', [SatpamController::class, 'create'])->name('satpam.dashboard.create');
+    Route::post('/satpam/item/store', [SatpamController::class, 'store'])->name('satpam.dashboard.store');
+
+    Route::get('/items/{item}', [SatpamController::class, 'getItemDetails']);
+    Route::put('/satpam/items/{item}', [App\Http\Controllers\SatpamController::class, 'updateItem'])
+        ->middleware(['auth', 'role:satpam'])
+        ->name('satpam.items.update');
+
+    Route::get('/satpam/claims/create', [App\Http\Controllers\SatpamController::class, 'createClaim'])
+        ->middleware(['auth', 'role:satpam'])
+        ->name('satpam.dashboard.createClaim');
+
+    Route::post('/satpam/claims', [App\Http\Controllers\SatpamController::class, 'storeClaim'])
+        ->middleware(['auth', 'role:satpam'])
+        ->name('satpam.claims.store');
+
+    Route::get('/satpam/claims/history', [App\Http\Controllers\SatpamController::class, 'viewHistory'])
+        ->middleware(['auth', 'role:satpam'])
+        ->name('satpam.dashboard.viewHistory');
+
+    Route::get('/satpam/profile', [App\Http\Controllers\SatpamController::class, 'profile'])
+        ->middleware(['auth', 'role:satpam'])
+        ->name('satpam.dashboard.profile');
+
+    Route::post('/satpam/profile/update', [App\Http\Controllers\SatpamController::class, 'updateProfile'])
+        ->middleware(['auth', 'role:satpam'])
+        ->name('satpam.profile.update');
 });
 
 
@@ -111,6 +140,34 @@ Route::resource('items', ItemController::class)->only([
     'update',
     'destroy'
 ])->middleware('auth');
+
+// Ganti dari ClaimController dan ReturnController ke ItemController
+Route::get('/claim-item', [App\Http\Controllers\ItemController::class, 'showClaimForm'])
+    ->middleware('auth')
+    ->name('claim.form');
+
+Route::post('/claim-item', [App\Http\Controllers\ItemController::class, 'processClaim'])
+    ->middleware('auth')
+    ->name('claim.submit');
+
+Route::get('/return-item', [App\Http\Controllers\ItemController::class, 'showReturnForm'])
+    ->middleware('auth')
+    ->name('return.form');
+
+Route::post('/return-item', [App\Http\Controllers\ItemController::class, 'processReturn'])
+    ->middleware('auth')
+    ->name('return.submit');
+
+Route::post('/items/claim/update-status', [ItemController::class, 'updateClaimStatus'])->name('claim.update-status');
+
+Route::get('/items/{item}/claim', [App\Http\Controllers\ItemController::class, 'showClaimForm'])
+    ->name('items.claim.form')
+    ->middleware('auth');
+
+// Route untuk menyimpan data klaim
+Route::post('/items/{item}/claim', [App\Http\Controllers\ItemController::class, 'storeClaim'])
+    ->name('items.claim.store')
+    ->middleware('auth');
 
 
 

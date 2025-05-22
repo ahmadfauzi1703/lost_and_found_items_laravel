@@ -133,65 +133,195 @@
                 </form>
             </div>
 
-            <!-- Activity List -->
-            @if(count($userItems) > 0)
-            @foreach($userItems as $item)
-            <div class="flex items-start justify-between bg-blue-50 p-4 rounded-md mb-4">
-                <div class="flex items-center space-x-4">
-                    <img src="{{ $item->photo_path ? asset('storage/' . $item->photo_path) : asset('Assets/img/no-image.png') }}"
-                        alt="{{ $item->item_name }}"
-                        class="w-24 h-24 object-cover rounded" />
-                    <div>
-                        <h3 class="text-xl font-medium">{{ $item->item_name }}</h3>
-                        <p class="text-sm text-gray-500">Tanggal Kejadian: {{ $item->date_of_event }}</p>
-                        <p class="text-sm text-gray-500">Dibuat pada: {{ $item->created_at->format('d M Y') }}</p>
+            <!-- Tab Navigation - Tambahkan setelah filter section -->
+            <div class="border-b border-gray-200 mb-6">
+                <ul class="flex flex-wrap -mb-px text-sm font-medium text-center">
+                    <li class="mr-2">
+                        <a href="#" class="inline-block p-4 border-b-2 border-blue-600 text-blue-600 active"
+                            onclick="showTab('tab-content-1', this); return false;">Barang Saya</a>
+                    </li>
+                    <li class="mr-2">
+                        <a href="#" class="inline-block p-4 border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300"
+                            onclick="showTab('tab-content-2', this); return false;">Aktivitas Pada Barang Saya</a>
+                    </li>
+                    <li class="mr-2">
+                        <a href="#" class="inline-block p-4 border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300"
+                            onclick="showTab('tab-content-3', this); return false;">Pengajuan Saya</a>
+                    </li>
+                </ul>
+            </div>
 
-                        <!-- Status Badge -->
-                        <div class="mt-1">
-                            <span class="inline-block px-2 py-1 text-xs font-semibold rounded-full 
-                        {{ $item->status == 'approved' ? 'bg-green-100 text-green-800' : 
-                          ($item->status == 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
-                                {{ ucfirst($item->status) }}
-                            </span>
+            <!-- Tab content 1: Barang Saya -->
+            <div id="tab-content-1">
+                @if(count($userItems) > 0)
+                @foreach($userItems as $item)
+                <div class="flex items-start justify-between bg-blue-50 p-4 rounded-md mb-4">
+                    <div class="flex items-center space-x-4">
+                        <img src="{{ $item->photo_path ? asset('storage/' . $item->photo_path) : asset('Assets/img/no-image.png') }}"
+                            alt="{{ $item->item_name }}"
+                            class="w-24 h-24 object-cover rounded" />
+                        <div>
+                            <h3 class="text-xl font-medium">{{ $item->item_name }}</h3>
+                            <p class="text-sm text-gray-500">Tanggal Kejadian: {{ $item->date_of_event }}</p>
+                            <p class="text-sm text-gray-500">Dibuat pada: {{ $item->created_at->format('d M Y') }}</p>
+
+                            <!-- Status Badge -->
+                            <div class="mt-1">
+                                <span class="inline-block px-2 py-1 text-xs font-semibold rounded-full 
+                                {{ $item->status == 'approved' ? 'bg-green-100 text-green-800' : 
+                                  ($item->status == 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
+                                    {{ ucfirst($item->status) }}
+                                </span>
+                            </div>
+
+                            <!-- Tombol Detail/Edit Laporan -->
+                            <button
+                                data-id="{{ $item->id }}"
+                                data-name="{{ $item->item_name }}"
+                                data-category="{{ $item->category }}"
+                                data-type="{{ $item->type }}"
+                                data-date="{{ \Carbon\Carbon::parse($item->date_of_event)->format('Y-m-d') }}"
+                                data-description="{{ $item->description }}"
+                                data-email="{{ $item->email ?? '' }}"
+                                data-phone="{{ $item->phone_number ?? '' }}"
+                                data-image="{{ $item->photo_path ? asset('storage/' . $item->photo_path) : asset('Assets/img/no-image.png') }}"
+                                onclick="openModalFromData(this)"
+                                class="mt-2 mr-4 bg-[#004274] text-white py-1 px-4 rounded">
+                                Edit Laporan
+                            </button>
+
+                            <!-- Tombol Hapus -->
+                            <a href="javascript:void(0);" class="mt-2 bg-red-100 text-red-700 py-2 px-4 rounded hover:bg-red-200"
+                                onclick="confirmDelete('{{ $item->id }}')">Hapus Laporan</a>
                         </div>
+                    </div>
 
-                        <!-- Tombol Detail/Edit Laporan -->
-                        <button
-                            data-id="{{ $item->id }}"
-                            data-name="{{ $item->item_name }}"
-                            data-category="{{ $item->category }}"
-                            data-type="{{ $item->type }}"
-                            data-date="{{ \Carbon\Carbon::parse($item->date_of_event)->format('Y-m-d') }}"
-                            data-description="{{ $item->description }}"
-                            data-email="{{ $item->email ?? '' }}"
-                            data-phone="{{ $item->phone_number ?? '' }}"
-                            data-image="{{ $item->photo_path ? asset('storage/' . $item->photo_path) : asset('Assets/img/no-image.png') }}"
-                            onclick="openModalFromData(this)"
-                            class="mt-2 mr-4 bg-[#004274] text-white py-1 px-4 rounded">
-                            Edit Laporan
-                        </button>
-
-
-                        <!-- Tombol Hapus -->
-                        <a href="javascript:void(0);" class="mt-2 bg-red-100 text-red-700 py-2 px-4 rounded hover:bg-red-200"
-                            onclick="confirmDelete('{{ $item->id }}')">Hapus Laporan</a>
+                    <!-- Bagian label jenis laporan -->
+                    <div class="flex flex-col space-y-2 ml-4">
+                        <span class="bg-{{ $item->type == 'hilang' ? 'red' : 'green' }}-100 text-{{ $item->type == 'hilang' ? 'red' : 'green' }}-700 px-3 py-1 rounded-md text-sm text-center">
+                            {{ $item->type }}
+                        </span>
                     </div>
                 </div>
-
-                <!-- Bagian label jenis laporan -->
-                <div class="flex flex-col space-y-2 ml-4">
-                    <span class="bg-{{ $item->type == 'hilang' ? 'red' : 'green' }}-100 text-{{ $item->type == 'hilang' ? 'red' : 'green' }}-700 px-3 py-1 rounded-md text-sm text-center">
-                        {{ $item->type }}
-                    </span>
+                @endforeach
+                @else
+                <div class="text-center py-8">
+                    <p class="text-gray-500">Tidak ada laporan yang ditemukan.</p>
+                    <a href="{{ route('formReport') }}" class="inline-block mt-4 bg-[#124076] text-white px-6 py-2 rounded-lg">Buat Laporan Baru</a>
                 </div>
+                @endif
             </div>
-            @endforeach
-            @else
-            <div class="text-center py-8">
-                <p class="text-gray-500">Tidak ada laporan yang ditemukan.</p>
-                <a href="{{ route('formReport') }}" class="inline-block mt-4 bg-[#124076] text-white px-6 py-2 rounded-lg">Buat Laporan Baru</a>
+
+
+            <!-- Tab content 2: Aktivitas Pada Barang Saya -->
+            <div id="tab-content-2" class="hidden">
+                <h3 class="text-xl font-semibold mb-4">Permintaan Pengembalian & Klaim Barang Anda</h3>
+
+                @if(isset($claimsOnMyItems) && $claimsOnMyItems->count() > 0)
+                <div class="space-y-4">
+                    @foreach($claimsOnMyItems as $claim)
+                    <div class="bg-white p-4 rounded-lg shadow border-l-4 {{ $claim->type == 'return' ? 'border-purple-500' : 'border-blue-500' }}">
+                        <div class="flex justify-between">
+                            <div>
+                                <span class="inline-block px-2 py-1 text-xs {{ $claim->type == 'return' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800' }} rounded-full mb-2">
+                                    {{ $claim->type == 'return' ? 'Pengembalian' : 'Klaim' }}
+                                </span>
+                                <h4 class="font-semibold">{{ $claim->item->item_name }}</h4>
+                                <p class="text-sm text-gray-600">
+                                    Oleh: {{ $claim->claimer_name }} ({{ $claim->claimer_phone }})
+                                </p>
+                                <p class="text-sm text-gray-500">{{ \Carbon\Carbon::parse($claim->claim_date)->format('d M Y H:i') }}</p>
+
+                                @if($claim->type == 'return')
+                                <p class="text-sm mt-2">
+                                    <strong>Lokasi ditemukan:</strong> {{ $claim->where_found }}
+                                </p>
+                                <p class="text-sm">
+                                    <strong>Catatan:</strong> {{ $claim->notes ?? 'Tidak ada catatan' }}
+                                </p>
+                                @if($claim->item_photo)
+                                <div class="mt-2">
+                                    <img src="{{ asset('storage/'.$claim->item_photo) }}" alt="Foto Barang" class="w-24 h-24 object-cover rounded">
+                                </div>
+                                @endif
+                                @endif
+                            </div>
+
+                            <div>
+                                @if($claim->status == 'pending')
+                                <span class="inline-block px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">Menunggu</span>
+
+                                <div class="mt-2 space-x-2">
+                                    <form action="{{ route('claim.update-status') }}" method="POST" class="inline">
+                                        @csrf
+                                        <input type="hidden" name="claim_id" value="{{ $claim->id }}">
+                                        <input type="hidden" name="status" value="approved">
+                                        <button type="submit" class="bg-green-500 text-white text-xs px-2 py-1 rounded hover:bg-green-600">
+                                            {{ $claim->type == 'return' ? 'Terima Pengembalian' : 'Terima Klaim' }}
+                                        </button>
+                                    </form>
+
+                                    <form action="{{ route('claim.update-status') }}" method="POST" class="inline">
+                                        @csrf
+                                        <input type="hidden" name="claim_id" value="{{ $claim->id }}">
+                                        <input type="hidden" name="status" value="rejected">
+                                        <button type="submit" class="bg-red-500 text-white text-xs px-2 py-1 rounded hover:bg-red-600">
+                                            Tolak
+                                        </button>
+                                    </form>
+                                </div>
+                                @elseif($claim->status == 'approved')
+                                <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Diterima</span>
+                                @elseif($claim->status == 'rejected')
+                                <span class="inline-block px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">Ditolak</span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+                @else
+                <div class="bg-gray-50 p-4 rounded-lg text-center text-gray-500">
+                    Belum ada aktivitas pada barang Anda
+                </div>
+                @endif
             </div>
-            @endif
+
+            <!-- Tab content 3: Pengajuan Saya -->
+            <div id="tab-content-3" class="hidden">
+                <h3 class="text-xl font-semibold mb-4">Klaim & Pengembalian yang Saya Ajukan</h3>
+
+                @if(isset($myClaimsAndReturns) && $myClaimsAndReturns->count() > 0)
+                <div class="space-y-4">
+                    @foreach($myClaimsAndReturns as $myClaim)
+                    <div class="bg-white p-4 rounded-lg shadow border-l-4 {{ $myClaim->type == 'return' ? 'border-purple-500' : 'border-blue-500' }}">
+                        <div class="flex justify-between">
+                            <div>
+                                <span class="inline-block px-2 py-1 text-xs {{ $myClaim->type == 'return' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800' }} rounded-full mb-2">
+                                    {{ $myClaim->type == 'return' ? 'Pengembalian' : 'Klaim' }}
+                                </span>
+                                <h4 class="font-semibold">{{ $myClaim->item->item_name }}</h4>
+                                <p class="text-sm text-gray-500">{{ \Carbon\Carbon::parse($myClaim->claim_date)->format('d M Y H:i') }}</p>
+
+                                <div class="mt-2">
+                                    <span class="inline-block px-2 py-1 
+                                    {{ $myClaim->status == 'approved' ? 'bg-green-100 text-green-800' : 
+                                       ($myClaim->status == 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }} 
+                                    text-xs rounded-full">
+                                        {{ ucfirst($myClaim->status) }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+                @else
+                <div class="bg-gray-50 p-4 rounded-lg text-center text-gray-500">
+                    Anda belum melakukan klaim atau pengembalian apapun
+                </div>
+                @endif
+            </div>
         </section>
     </div>
 
@@ -455,6 +585,27 @@
                 dropdown.classList.add("hidden");
             }
         });
+    </script>
+
+    <script>
+        function showTab(tabId, clickedTab) {
+            // Hide all tab contents
+            document.querySelectorAll('[id^="tab-content-"]').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+
+            // Show the selected tab content
+            document.getElementById(tabId).classList.remove('hidden');
+
+            // Update active tab styling
+            document.querySelectorAll('.border-b-2').forEach(tab => {
+                tab.classList.remove('border-blue-600', 'text-blue-600');
+                tab.classList.add('border-transparent');
+            });
+
+            clickedTab.classList.remove('border-transparent');
+            clickedTab.classList.add('border-blue-600', 'text-blue-600');
+        }
     </script>
 </body>
 

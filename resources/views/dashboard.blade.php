@@ -191,7 +191,10 @@
                   data-location="{{ $item->location }}"
                   data-description="{{ $item->description }}"
                   data-image="{{ asset($imagePath) }}"
-                  data-whatsapp="https://wa.me/{{ $item->whatsapp_number }}">
+                  data-reporter="{{ $item->report_by ?: ($item->user ? 'Satpam: ' . $item->user->name : 'Unknown') }}"
+                  data-whatsapp="https://wa.me/{{ $item->whatsapp_number }}"
+                  data-type="{{ $item->type }}"
+                  data-id="{{ $item->id }}">
                   Detail
                 </button>
               </div>
@@ -215,6 +218,11 @@
 
         <!-- Nama Item -->
         <h2 class="text-xl font-semibold text-gray-800" id="modalItemName">Item Name</h2>
+
+        <div class="mt-4">
+          <span class="text-gray-600 font-semibold">Dilaporkan oleh:</span>
+          <span id="modalReportedBy">-</span>
+        </div>
 
         <!-- Date -->
         <p class="text-sm text-gray-500 mt-5 flex items-center gap-2">
@@ -259,6 +267,14 @@
         <div class="mt-4 flex items-center gap-2">
           <a id="modalWhatsAppButton" href="#" target="_blank" class="bg-green-500 text-white text-xs px-3 py-2 rounded hover:bg-green-600">
             <i class='bx bxl-whatsapp text-sm'></i> Hubungi via What'sApp
+          </a>
+          <!-- Tombol Claim/Return yang tampil sesuai jenis laporan -->
+          <a id="modalClaimButton" href="#" class="hidden bg-blue-600 text-white text-xs px-3 py-2 rounded hover:bg-blue-700">
+            <i class='bx bxs-hand-up text-sm'></i> Claim Barang
+          </a>
+
+          <a id="modalReturnButton" href="#" class="hidden bg-purple-600 text-white text-xs px-3 py-2 rounded hover:bg-purple-700">
+            <i class='bx bx-arrow-back text-sm'></i> Kembalikan Barang
           </a>
         </div>
       </div>
@@ -409,6 +425,9 @@
   const modalItemImage = document.getElementById('modalItemImage');
   const modalWhatsAppButton = document.getElementById('modalWhatsAppButton');
   const modalGoogleMapsButton = document.getElementById('modalGoogleMapsButton');
+  // Tambahkan referensi untuk tombol claim dan return
+  const modalClaimButton = document.getElementById('modalClaimButton');
+  const modalReturnButton = document.getElementById('modalReturnButton');
 
   // Tambahkan event listener ke setiap tombol
   detailButtons.forEach(button => {
@@ -421,8 +440,12 @@
       const location = button.getAttribute('data-location');
       const description = button.getAttribute('data-description');
       const image = button.getAttribute('data-image');
-      console.log('Image URL:', image); // Debug URL gambar
       const whatsapp = button.getAttribute('data-whatsapp');
+      // Tambahkan untuk mengambil tipe dan ID
+      const itemType = button.getAttribute('data-type');
+      const itemId = button.getAttribute('data-id');
+
+      console.log('Image URL:', image); // Debug URL gambar
 
       // Isi modal dengan data
       modalItemName.textContent = name;
@@ -434,20 +457,46 @@
       modalItemImage.src = image;
       modalWhatsAppButton.href = whatsapp;
 
+      const reporter = button.getAttribute('data-reporter');
+      document.getElementById('modalReportedBy').textContent = reporter;
+
+      // Tampilkan tombol berdasarkan tipe laporan
+      if (itemType === 'ditemukan') {
+        // Jika item ditemukan, tampilkan tombol claim
+        modalClaimButton.classList.remove('hidden');
+        modalReturnButton.classList.add('hidden');
+        modalClaimButton.href = `/claim-item?item_id=${itemId}`;
+      } else if (itemType === 'hilang') {
+        // Jika item hilang, tampilkan tombol return
+        modalReturnButton.classList.remove('hidden');
+        modalClaimButton.classList.add('hidden');
+        modalReturnButton.href = `/return-item?item_id=${itemId}`;
+      } else {
+        // Sembunyikan kedua tombol jika tidak jelas jenisnya
+        modalClaimButton.classList.add('hidden');
+        modalReturnButton.classList.add('hidden');
+      }
+
       // Tampilkan modal
       modal.classList.remove('hidden');
     });
   });
 
-  // Tutup modal
-  const closeModalBtn = document.getElementById('closeModalBtn');
-  closeModalBtn.addEventListener('click', () => {
+  // Tambahkan event listener untuk tombol close
+  document.getElementById('closeModalBtn').addEventListener('click', function() {
     modal.classList.add('hidden');
   });
 
-  // Tutup modal jika klik di luar modal
-  window.addEventListener('click', (e) => {
+  // Tambahkan fitur untuk menutup modal ketika mengklik di luar modal
+  modal.addEventListener('click', function(e) {
     if (e.target === modal) {
+      modal.classList.add('hidden');
+    }
+  });
+
+  // Tambahkan keyboard support untuk menutup dengan tombol Escape
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
       modal.classList.add('hidden');
     }
   });
