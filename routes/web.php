@@ -34,32 +34,33 @@ Route::post('/register', [RegisterController::class, 'register'])->name('registe
 
 # ADMIN SECTION
 // Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin_dashboard');
-Route::get('/admin/lost', [AdminController::class, 'lost'])->name('admin_dashboard_lost'); // Items Lost
-Route::get('/admin/found', [AdminController::class, 'found'])->name('admin_dashboard_found'); // Items Found
-Route::get('/admin/user', [AdminController::class, 'user'])->name('admin_dashboard_user');
-Route::get('/admin/approval', [AdminController::class, 'approval'])->name('admin_dashboard_approval');
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    // Dashboard Admin
+    Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin_dashboard');
 
-# Halaman Functional Admin
-Route::get('/items/filter', [ItemController::class, 'filterItems'])->name('filter.items');
-Route::get('/dashboard/lost-items', [ItemController::class, 'showLostItems']);
-Route::get('/dashboard/found-items', [ItemController::class, 'showFoundItems']);
-Route::get('/dashboard/recent-items', [ItemController::class, 'showRecentItems']);
-// Route::get('/admin/user/search', [AdminController::class, 'search'])->name('user.admin.users.search');
+    // Halaman Admin lainnya
+    Route::get('/admin/lost', [AdminController::class, 'lost'])->name('admin_dashboard_lost');
+    Route::get('/admin/found', [AdminController::class, 'found'])->name('admin_dashboard_found');
+    Route::get('/admin/user', [AdminController::class, 'user'])->name('admin_dashboard_user');
+    Route::get('/admin/approval', [AdminController::class, 'approval'])->name('admin_dashboard_approval');
 
-# ADMIN CRUD
-// Route untuk edit user
-Route::get('/admin/users/{user}/edit', [AdminController::class, 'edit'])->name('admin.users.edit');
-Route::put('/admin/users/{user}', [AdminController::class, 'update'])->name('admin.users.update');
-Route::delete('/admin/users/{user}', [AdminController::class, 'destroy'])->name('admin.users.destroy');
+    // Admin CRUD
+    Route::get('/admin/users/{user}/edit', [AdminController::class, 'edit'])->name('admin.users.edit');
+    Route::put('/admin/users/{user}', [AdminController::class, 'update'])->name('admin.users.update');
+    Route::delete('/admin/users/{user}', [AdminController::class, 'destroy'])->name('admin.users.destroy');
 
-// Aprove Admin
-Route::post('/admin/items/{id}/approve', [AdminController::class, 'approveItem'])->name('admin.approve.item');
-Route::post('/admin/items/{id}/reject', [AdminController::class, 'rejectItem'])->name('admin.reject.item');
+    // Approve/Reject Items
+    Route::post('/admin/items/{id}/approve', [AdminController::class, 'approveItem'])->name('admin.approve.item');
+    Route::post('/admin/items/{id}/reject', [AdminController::class, 'rejectItem'])->name('admin.reject.item');
+});
 
-// Route untuk dashboard admin
-Route::get('/admin/dashboard', [AdminController::class, 'index'])
-    ->middleware(['auth', 'role:admin'])  // Pastikan role admin bisa akses
-    ->name('admin_dashboard');
+// Halaman Functional Admin - juga dilindungi dengan middleware
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/items/filter', [ItemController::class, 'filterItems'])->name('filter.items');
+    Route::get('/dashboard/lost-items', [ItemController::class, 'showLostItems']);
+    Route::get('/dashboard/found-items', [ItemController::class, 'showFoundItems']);
+    Route::get('/dashboard/recent-items', [ItemController::class, 'showRecentItems']);
+});
 
 
 

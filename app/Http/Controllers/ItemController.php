@@ -11,23 +11,58 @@ use Illuminate\Support\Facades\Storage;
 
 class ItemController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        // Mulai query dasar
+        $query = Item::where('status', 'approved');
 
-        $items = Item::all();
+        // Filter berdasarkan kategori jika ada
+        if ($request->filled('category')) {
+            $query->where('category', $request->category);
+        }
 
-        return view('landing.index_items', compact('items'));
+        // Filter berdasarkan nama item jika ada
+        if ($request->filled('search')) {
+            $query->where('item_name', 'like', '%' . $request->search . '%');
+        }
+
+        // Ambil hasil setelah semua filter
+        $items = $query->latest()->get();
+
+        // Informasi filter untuk ditampilkan
+        $filterInfo = [];
+        if ($request->filled('category')) {
+            $filterInfo[] = "Kategori: " . $request->category;
+        }
+        if ($request->filled('search')) {
+            $filterInfo[] = "Pencarian: " . $request->search;
+        }
+
+        return view('landing.index_items', compact('items', 'filterInfo'));
     }
 
-    public function dashboard()
+    public function dashboard(Request $request)
     {
-        // Hanya ambil item dengan status 'approved'
-        $items = Item::where('status', 'approved')->get();
+        // Mulai query dasar untuk item yang disetujui
+        $query = Item::where('status', 'approved');
+
+        // Filter berdasarkan kategori jika ada
+        if ($request->filled('category')) {
+            $query->where('category', $request->category);
+        }
+
+        // Filter berdasarkan nama item jika ada
+        if ($request->filled('search')) {
+            $query->where('item_name', 'like', '%' . $request->search . '%');
+        }
+
+        // Ambil hasil setelah semua filter
+        $items = $query->latest()->get();
 
         // Dapatkan user yang sedang login
         $user = Auth::user();
 
-        // Menampilkan notifikasi laporan pending milik user saat ini (opsional)
+        // Menampilkan notifikasi laporan pending milik user saat ini
         $pendingItemsCount = Item::where('user_id', Auth::id())
             ->where('status', 'pending')
             ->count();
@@ -128,14 +163,25 @@ class ItemController extends Controller
         return view('users.formReport', compact('user'));
     }
 
-    public function activity()
+    public function activity(Request $request)
     {
         $user = Auth::user();
 
-        // Ambil barang yang dilaporkan user
-        $userItems = Item::where('user_id', $user->id)
-            ->orderBy('created_at', 'desc')
-            ->get();
+        // Mulai query dasar untuk barang user
+        $userItemsQuery = Item::where('user_id', $user->id);
+
+        // Filter berdasarkan kategori
+        if ($request->filled('category')) {
+            $userItemsQuery->where('category', $request->category);
+        }
+
+        // Filter berdasarkan jenis laporan
+        if ($request->filled('type')) {
+            $userItemsQuery->where('type', $request->type);
+        }
+
+        // Execute query dan urutkan
+        $userItems = $userItemsQuery->orderBy('created_at', 'desc')->get();
 
         // Ambil ID barang yang dilaporkan user
         $myItemIds = $userItems->pluck('id')->toArray();
@@ -147,16 +193,24 @@ class ItemController extends Controller
             ->get();
 
         // Ambil klaim/pengembalian yang dibuat oleh user
-        $myClaimsAndReturns = \App\Models\Claim::where('claimer_email', $user->email)
-            ->with(['item']) // Load relasi item
-            ->latest()
-            ->get();
+        $myClaimsQuery = \App\Models\Claim::where('claimer_email', $user->email);
+
+        // Filter klaim berdasarkan kategori barang jika ada
+        if ($request->filled('category')) {
+            $myClaimsQuery->whereHas('item', function ($q) use ($request) {
+                $q->where('category', $request->category);
+            });
+        }
+
+        $myClaimsAndReturns = $myClaimsQuery->with(['item'])->latest()->get();
 
         return view('users.activity', [
             'user' => $user,
             'userItems' => $userItems,
             'claimsOnMyItems' => $claimsOnMyItems,
-            'myClaimsAndReturns' => $myClaimsAndReturns
+            'myClaimsAndReturns' => $myClaimsAndReturns,
+            'filterCategory' => $request->category,
+            'filterType' => $request->type
         ]);
     }
 
@@ -435,5 +489,46 @@ class ItemController extends Controller
         $statusText = $validated['status'] == 'approved' ? 'diterima' : 'ditolak';
 
         return redirect()->back()->with('success', "Permintaan $actionType berhasil $statusText");
+    }
+
+    public function storeClaim(Request $request, $item)
+    {
+        $validated = $request->validate([
+            'claimer_name' => 'required|string|max:255',
+            'claimer_email' => 'required|email',
+            'claimer_phone' => 'required|string|max:15',
+            'ownership_proof' => 'required|string',
+            'notes' => 'nullable|string',
+            'terms' => 'required',
+        ]);
+
+        // Buat objek klaim baru
+        $claim = new \App\Models\Claim();
+        $claim->item_id = $item;
+        $claim->claimer_name = $request->claimer_name;
+        $claim->claimer_email = $request->claimer_email;
+        $claim->claimer_phone = $request->claimer_phone;
+        $claim->ownership_proof = $request->ownership_proof;
+        $claim->notes = $request->notes ?? null;
+        $claim->claim_date = now();
+        $claim->status = 'pending';
+
+        // Tambahkan tipe claim
+        $claim->type = 'claim'; // Pastikan nilai default sesuai dengan definisi tabel
+
+        // HAPUS ATAU KOMENTARI BAGIAN INI
+        // if (Auth::check()) {
+        //     $claim->user_id = Auth::id();
+        // }
+
+        // Upload dokumen bukti jika ada
+        if ($request->hasFile('proof_document')) {
+            $filePath = $request->file('proof_document')->store('claim_proofs', 'public');
+            $claim->proof_document = $filePath;
+        }
+
+        $claim->save();
+
+        return redirect()->route('dashboard')->with('success', 'Klaim barang berhasil diajukan. Mohon tunggu verifikasi dari petugas.');
     }
 }

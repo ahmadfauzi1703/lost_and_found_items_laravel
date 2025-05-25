@@ -33,6 +33,7 @@ class AdminController extends Controller
         // Mengambil item terbaru untuk ditampilkan di dashboard
         $items = Item::orderBy('created_at', 'desc')->limit(3)->get();
 
+
         return view('admin.admin_dashboard', compact(
             'userCount',
             'unapprovedCount',
@@ -44,27 +45,82 @@ class AdminController extends Controller
     }
 
 
-    public function found()
+    public function found(Request $request)
     {
-        // Ambil item dengan kategori "kehilangan" (bisa disesuaikan nama kategorinya)
-        $foundItems = Item::where('type', 'ditemukan')->get();
+        // Mulai dengan query dasar
+        $query = Item::where('type', 'ditemukan');
+
+        // Filter berdasarkan kategori
+        if ($request->filled('category')) {
+            $query->where('category', $request->category);
+        }
+
+        // Filter berdasarkan pencarian
+        if ($request->filled('search')) {
+            $searchTerm = '%' . $request->search . '%';
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('item_name', 'like', $searchTerm)
+                    ->orWhere('description', 'like', $searchTerm)
+                    ->orWhere('location', 'like', $searchTerm);
+            });
+        }
+
+        // Jalankan query dan ambil hasilnya
+        $foundItems = $query->orderBy('created_at', 'desc')->get();
 
         return view('admin.admin_dashboard_found', compact('foundItems'));
     }
 
-    public function lost()
+    public function lost(Request $request)
     {
-        // Ambil item dengan kategori "kehilangan" (bisa disesuaikan nama kategorinya)
-        $lostItems = Item::where('type', 'hilang')->get();
+        // Base query untuk item hilang
+        $query = Item::where('type', 'hilang');
+
+        // Filter berdasarkan kategori
+        if ($request->filled('category')) {
+            $query->where('category', $request->category);
+        }
+
+        // Filter berdasarkan pencarian
+        if ($request->filled('search')) {
+            $searchTerm = '%' . $request->search . '%';
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('item_name', 'like', $searchTerm)
+                    ->orWhere('description', 'like', $searchTerm)
+                    ->orWhere('location', 'like', $searchTerm);
+            });
+        }
+
+        // Ambil data setelah filter diterapkan
+        $lostItems = $query->orderBy('created_at', 'desc')->get();
 
         return view('admin.admin_dashboard_lost', compact('lostItems'));
     }
 
-    public function user()
+    public function user(Request $request)
     {
-        $users = User::all(); // ambil semua data user dari DB
+        // Mulai dengan query dasar
+        $query = User::query();
 
-        return view('admin.admin_dashboard_user', compact('users',));
+        // Filter berdasarkan nama (first_name, last_name, atau keduanya)
+        if ($request->filled('search')) {
+            $searchTerm = '%' . $request->search . '%';
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('first_name', 'like', $searchTerm)
+                    ->orWhere('last_name', 'like', $searchTerm)
+                    ->orWhere('email', 'like', $searchTerm);
+            });
+        }
+
+        // Filter berdasarkan role
+        if ($request->filled('role')) {
+            $query->where('role', $request->role);
+        }
+
+        // Ambil data setelah filter diterapkan dan urutkan berdasarkan nama
+        $users = $query->orderBy('first_name')->get();
+
+        return view('admin.admin_dashboard_user', compact('users'));
     }
 
     public function approval()

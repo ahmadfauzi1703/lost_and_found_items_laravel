@@ -100,18 +100,20 @@
 
             <!-- Filter Section -->
             <div class="mb-6">
-                <form method="GET" action="activity.php" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <form method="GET" action="{{ route('activity') }}" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- Dropdown Kategori -->
                     <div>
                         <label for="category" class="block mb-2">Kategori:</label>
                         <select id="category" name="category" class="w-full border rounded p-2">
                             <option value="">Semua</option>
-                            <option value="Perhiasan Khusus">Perhiasan Khusus</option>
-                            <option value="Elektronik">Elektronik</option>
-                            <option value="Buku & Dokumen">Buku & Dokumen</option>
-                            <option value="Aksesoris Pribadi">Aksesoris Pribadi</option>
-                            <option value="Kendaraan">Kendaraan</option>
-                            <option value="Perangkat Medis">Perangkat Medis</option>
+                            <option value="Perhiasan Khusus" {{ request('category') == 'Perhiasan Khusus' ? 'selected' : '' }}>Perhiasan Khusus</option>
+                            <option value="Elektronik" {{ request('category') == 'Elektronik' ? 'selected' : '' }}>Elektronik</option>
+                            <option value="Buku & Dokumen" {{ request('category') == 'Buku & Dokumen' ? 'selected' : '' }}>Buku & Dokumen</option>
+                            <option value="Tas & Dompet" {{ request('category') == 'Tas & Dompet' ? 'selected' : '' }}>Tas & Dompet</option>
+                            <option value="Perlengkapan Pribadi" {{ request('category') == 'Perlengkapan Pribadi' ? 'selected' : '' }}>Perlengkapan Pribadi</option>
+                            <option value="Peralatan Praktikum" {{ request('category') == 'Peralatan Praktikum' ? 'selected' : '' }}>Peralatan Praktikum</option>
+                            <option value="Aksesori" {{ request('category') == 'Aksesori' ? 'selected' : '' }}>Aksesori</option>
+                            <option value="Lainnya" {{ request('category') == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
                         </select>
                     </div>
 
@@ -120,15 +122,15 @@
                         <label for="type" class="block mb-2">Jenis Laporan:</label>
                         <select id="type" name="type" class="w-full border rounded p-2">
                             <option value="">Semua</option>
-                            <option value="hilang">Hilang</option>
-                            <option value="ditemukan">Ditemukan</option>
+                            <option value="hilang" {{ request('type') == 'hilang' ? 'selected' : '' }}>Hilang</option>
+                            <option value="ditemukan" {{ request('type') == 'ditemukan' ? 'selected' : '' }}>Ditemukan</option>
                         </select>
                     </div>
 
                     <!-- Tombol Filter -->
                     <div class="md:col-span-2 text-right">
                         <button type="submit" class="bg-[#004274] text-white px-4 py-2 rounded">Terapkan Filter</button>
-                        <a href="activity.php" class="bg-gray-500 text-white px-4 py-[0.68rem] rounded">Reset Filter</a>
+                        <a href="{{ route('activity') }}" class="bg-gray-500 text-white px-4 py-[0.68rem] rounded">Reset Filter</a>
                     </div>
                 </form>
             </div>
@@ -360,12 +362,15 @@
                 <div>
                     <label for="modalCategoryInput" class="block mb-2">Kategori:</label>
                     <select id="modalCategoryInput" name="category" class="w-full border rounded p-2">
-                        <option value="Perhiasan Khusus">Perhiasan Khusus</option>
+                        <option value="">All Categories</option>
+                        <option value="Alat Tulis">Perhiasan Khusus</option>
                         <option value="Elektronik">Elektronik</option>
                         <option value="Buku & Dokumen">Buku & Dokumen</option>
-                        <option value="Aksesoris Pribadi">Aksesoris Pribadi</option>
-                        <option value="Kendaraan">Kendaraan</option>
-                        <option value="Perangkat Medis">Perangkat Medis</option>
+                        <option value="Tas & Dompet">Tas & Dompet</option>
+                        <option value="Perlengkapan Pribadi">Perlengkapan Pribadi</option>
+                        <option value="Peralatan Praktikum">Peralatan Praktikum</option>
+                        <option value="Aksesori">Aksesori</option>
+                        <option value="Lainnya">Lainnya</option>
                     </select>
                 </div>
 

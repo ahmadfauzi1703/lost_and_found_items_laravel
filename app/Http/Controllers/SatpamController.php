@@ -35,6 +35,8 @@ class SatpamController extends Controller
         // Mengambil item terbaru untuk ditampilkan di dashboard
         $items = Item::orderBy('created_at', 'desc')->limit(5)->get();
 
+        $claimedItemsCount = \App\Models\Claim::whereIn('status', ['approved', 'Claimed'])->count();
+
         // Data untuk chart laporan bulanan
         $monthlyReports = DB::table('items')
             ->selectRaw('MONTH(created_at) as month, COUNT(*) as count')
@@ -65,6 +67,7 @@ class SatpamController extends Controller
             'totalReports',
             'lostItemsCount',
             'foundItemsCount',
+            'claimedItemsCount',
             'items',
             'monthlyReports',
             'highestMonth',

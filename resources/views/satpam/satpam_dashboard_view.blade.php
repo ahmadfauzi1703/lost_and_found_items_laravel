@@ -32,13 +32,13 @@
                     <a href="{{ route('satpam.dashboard.view') }}" class="block px-4 py-2 bg-[#5C5470]"><i class='bx bx-list-ul'></i> List Item</a>
                 </li>
                 <li>
-                    <a href="{{ route('satpam.dashboard.createClaim') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-clipboard'></i> Laporan Claim Barang</a>
+                    <a href="{{ route('satpam.dashboard.createClaim') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-clipboard'></i> Create Claim Items</a>
                 </li>
                 <li>
-                    <a href="{{ route('satpam.dashboard.viewHistory') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-history'></i> History Claim Barang</a>
+                    <a href="{{ route('satpam.dashboard.viewHistory') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-history'></i> Item Claim History</a>
                 </li>
                 <li>
-                    <a href="{{ route('satpam.dashboard.profile') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-user'></i> Profile Satpam</a>
+                    <a href="{{ route('satpam.dashboard.profile') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-user'></i> Satpam Profile</a>
                 </li>
             </ul>
             <!-- Logout Button -->
@@ -77,7 +77,6 @@
                                             <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Category</th>
                                             <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Type</th>
                                             <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Date of Events</th>
-                                            <th scope="col" class="px-6 py-3 text-end text-xs font-medium text-white uppercase">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-gray-200">
@@ -105,22 +104,6 @@
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
                                                 {{ \Carbon\Carbon::parse($item->date_of_event)->format('d M Y') }}
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
-                                                <div class="flex justify-end space-x-2">
-
-                                                    <a href="javascript:void(0)" onclick="editItem('{{ $item->id }}')" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-blue-600 hover:text-blue-800 focus:outline-hidden">
-                                                        <i class='bx bx-edit'></i> Edit
-                                                    </a>
-
-                                                    <form action="#" method="POST" class="inline delete-form">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-red-600 hover:text-red-800 focus:outline-hidden">
-                                                            <i class='bx bx-trash'></i> Delete
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                            </td>
                                         </tr>
                                         @empty
                                         <tr class="bg-white">
@@ -136,7 +119,7 @@
                 <!-- Modal Edit (Versi Lebih Lebar) -->
                 <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden">
                     <div class="flex items-center justify-center min-h-screen p-4">
-                        <div class="bg-white rounded-lg w-full max-w-3xl p-6 relative"> <!-- Ubah dari max-w-md ke max-w-3xl -->
+                        <div class="bg-white rounded-lg w-full max-w-3xl p-6 relative">
                             <button onclick="closeModal()" class="absolute top-3 right-3 text-gray-400 hover:text-gray-500">
                                 <i class='bx bx-x text-2xl'></i>
                             </button>

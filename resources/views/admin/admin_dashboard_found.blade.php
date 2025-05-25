@@ -50,23 +50,50 @@
       <div class="bg-white rounded-lg shadow-lg p-6">
         <h2 class="text-2xl font-semibold mb-4">Found Items Reports</h2>
         <div class="flex justify-between mb-4">
-          <form method="GET" action="" class="flex space-x-4">
+          <form method="GET" action="{{ route('admin_dashboard_found') }}" class="flex space-x-4">
             <select name="category" class="p-2 bg-gray-100 rounded-lg border border-gray-300">
               <option value="">All Categories</option>
-              <option value="Perhiasan Khusus">Perhiasan Khusus</option>
-              <option value="Elektronik">Elektronik</option>
-              <option value="Buku & Dokumen">Buku & Dokumen</option>
-              <option value="Aksesoris Pribadi">Aksesoris Pribadi</option>
-              <option value="Kendaraan">Kendaraan</option>
-              <option value="Perangkat Medis">Perangkat Medis</option>
+              <option value="Perhiasan Khusus" {{ request('category') == 'Perhiasan Khusus' ? 'selected' : '' }}>Perhiasan Khusus</option>
+              <option value="Elektronik" {{ request('category') == 'Elektronik' ? 'selected' : '' }}>Elektronik</option>
+              <option value="Buku & Dokumen" {{ request('category') == 'Buku & Dokumen' ? 'selected' : '' }}>Buku & Dokumen</option>
+              <option value="Tas & Dompet" {{ request('category') == 'Tas & Dompet' ? 'selected' : '' }}>Tas & Dompet</option>
+              <option value="Perlengkapan Pribadi" {{ request('category') == 'Perlengkapan Pribadi' ? 'selected' : '' }}>Perlengkapan Pribadi</option>
+              <option value="Peralatan Praktikum" {{ request('category') == 'Peralatan Praktikum' ? 'selected' : '' }}>Peralatan Praktikum</option>
+              <option value="Aksesori" {{ request('category') == 'Aksesori' ? 'selected' : '' }}>Aksesori</option>
+              <option value="Lainnya" {{ request('category') == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
             </select>
             <input
               type="text"
               name="search"
+              value="{{ request('search') }}"
               class="p-2 bg-gray-100 rounded-lg border border-gray-300"
               placeholder="Search Items" />
             <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500">Filter</button>
+            @if(request('category') || request('search'))
+            <a href="{{ route('admin_dashboard_found') }}" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600">Clear</a>
+            @endif
           </form>
+
+          <!-- Tambahkan setelah form filter -->
+          <div class="mb-4">
+            @if(request('category') || request('search'))
+            <p class="text-sm text-gray-600">
+              Filter aktif:
+              @if(request('category'))
+              <span class="font-medium">Kategori: "{{ request('category') }}"</span>
+              @endif
+
+              @if(request('search'))
+              @if(request('category')) | @endif
+              <span class="font-medium">Pencarian: "{{ request('search') }}"</span>
+              @endif
+
+              ({{ $foundItems->count() }} item ditemukan)
+            </p>
+            @else
+            <p class="text-sm text-gray-600">Menampilkan semua item: {{ $foundItems->count() }} item</p>
+            @endif
+          </div>
         </div>
 
         <!-- Table dengan max-height dan overflow untuk scroll di tabel saja -->
@@ -145,8 +172,7 @@
     </div>
   </div>
 
-  <!-- Footer tidak lagi fixed -->
-  <footer class="bg-gray-800 text-white text-center py-4 w-full">
+  <footer class="bg-gray-800 text-white text-center py-4 fixed bottom-0 w-full -z-50">
     Dibuat dengan 💙 oleh © 2025 Lost and Found items Team
   </footer>
 

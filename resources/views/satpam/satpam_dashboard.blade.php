@@ -60,13 +60,13 @@
                     <a href="{{ route('satpam.dashboard.view') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-list-ul'></i> List Item</a>
                 </li>
                 <li>
-                    <a href="{{ route('satpam.dashboard.createClaim') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-clipboard'></i> Laporan Claim Barang</a>
+                    <a href="{{ route('satpam.dashboard.createClaim') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-clipboard'></i> Create Claim Items</a>
                 </li>
                 <li>
-                    <a href="{{ route('satpam.dashboard.viewHistory') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-history'></i> History Claim Barang</a>
+                    <a href="{{ route('satpam.dashboard.viewHistory') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-history'></i> Item Claim History</a>
                 </li>
                 <li>
-                    <a href="{{ route('satpam.dashboard.profile') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-user'></i> Profile Satpam</a>
+                    <a href="{{ route('satpam.dashboard.profile') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-user'></i> Satpam Profile</a>
                 </li>
             </ul>
             <!-- Logout Button -->
@@ -83,12 +83,12 @@
             <div class="bg-white rounded-lg shadow-lg p-6">
                 <h2 class="text-2xl font-semibold mb-4">Dashboard</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Unaproved Report -->
-                    <div class="bg-white p-4 rounded-lg shadow-md flex items-center border-l-4 border-t-4 border-yellow-600">
-                        <i class='bx bx-doughnut-chart text-4xl text-yellow-600 mr-4'></i>
+                    <!-- Claimed Items -->
+                    <div class="bg-white p-4 rounded-lg shadow-md flex items-center border-l-4 border-t-4 border-green-600">
+                        <i class='bx bx-doughnut-chart text-4xl text-green-600 mr-4'></i>
                         <div>
-                            <h3 class="text-lg font-semibold">Unaproved Report</h3>
-                            <p class="text-xl font-bold">{{ $unapprovedCount }}</p> <!-- Ganti angka 0 dengan variabel userCount -->
+                            <h3 class="text-lg font-semibold">Claimed Items</h3>
+                            <p class="text-xl font-bold">{{ $claimedItemsCount }}</p>
                         </div>
                     </div>
                     <!-- Total Report -->

@@ -151,7 +151,7 @@
             placeholder="Write your comment"></textarea>
 
           <div class="mt-3"></div>
-          <button type="submit" class="text-white bg-[#124076] focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2">Submit</button>
+          <button type="button" onclick="sendFeedbackToGmail()" class="text-white bg-[#124076] focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2">Submit</button>
         </div>
       </section>
   </div>
@@ -270,6 +270,7 @@
     function sendFeedbackToGmail() {
       const feedback = document.getElementById('feedback-description').value.trim();
       const comments = document.getElementById('comments-suggestions').value.trim();
+      const rating = selectedRating; // Mengambil rating dari variabel yang sudah ada
 
       // Validasi input sebelum mengirim
       if (!feedback || !comments) {
@@ -277,13 +278,25 @@
         return;
       }
 
-      const email = 'recipient@example.com'; // Ganti dengan email tujuan Anda
-      const subject = 'User Feedback';
-      const body = `Feedback:\n${feedback}\n\nComments and Suggestions:\n${comments}`;
+      if (rating === 0) {
+        alert("Harap berikan rating bintang sebelum mengirim.");
+        return;
+      }
 
-      // Redirect ke Gmail compose URL
+      // Email tujuan - ganti dengan email yang sebenarnya
+      const email = 'your-email@example.com'; // GANTI DENGAN EMAIL ANDA
+      const subject = 'Feedback Lost and Found Items';
+      const body = `Rating: ${rating} bintang\n\nFeedback:\n${feedback}\n\nKomentar dan Saran:\n${comments}\n\nDikirim oleh: ${document.querySelector('#menuDropdownButton span').textContent.trim()}`;
+
+      // Opsi 1: Menggunakan mailto (akan membuka email client default)
+      // window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+      // Opsi 2: Menggunakan Gmail (uncomment jika ingin menggunakan Gmail)
       const gmailURL = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-      window.open(gmailURL, '_blank'); // Membuka di tab baru
+      window.open(gmailURL, '_blank');
+
+      // Tampilkan pesan sukses
+      alert("Terima kasih atas feedback Anda!");
     }
 
     // Peringkat Bintang

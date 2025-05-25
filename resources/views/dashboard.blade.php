@@ -101,20 +101,22 @@
   <section class="bg-[#91B0D3] h-[15rem] flex flex-col items-center justify-center">
     <!-- Dropdown Buttons and Search -->
     <div class="w-full max-w-4xl px-4">
-      <form class="flex flex-col sm:flex-row items-center gap-4 w-full" method="GET" action="">
+      <form class="flex flex-col sm:flex-row items-center gap-4 w-full" method="GET" action="{{ route('dashboard') }}">
         <!-- Dropdown (Select) -->
         <div class="relative w-full sm:w-auto">
           <select
             id="category-dropdown"
             name="category"
             class="w-full sm:w-auto flex-shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-black bg-gray-100 border border-gray-300 rounded-lg sm:rounded-l-lg sm:rounded-r-none focus:ring-2 focus:outline-none focus:ring-blue-500">
-            <option value="all">Semua Kategori</option>
-            <option value="Perhiasan Khusus">Perhiasan Khusus</option>
-            <option value="Elektronik">Elektronik</option>
-            <option value="Buku & Dokumen">Buku & Dokumen</option>
-            <option value="Aksesoris Pribadi">Aksesoris Pribadi</option>
-            <option value="Kendaraan">Kendaraan</option>
-            <option value="Perangkat Medis">Perangkat Medis</option>
+            <option value="">Semua Kategori</option>
+            <option value="Perhiasan Khusus" {{ request('category') == 'Perhiasan Khusus' ? 'selected' : '' }}>Perhiasan Khusus</option>
+            <option value="Elektronik" {{ request('category') == 'Elektronik' ? 'selected' : '' }}>Elektronik</option>
+            <option value="Buku & Dokumen" {{ request('category') == 'Buku & Dokumen' ? 'selected' : '' }}>Buku & Dokumen</option>
+            <option value="Tas & Dompet" {{ request('category') == 'Tas & Dompet' ? 'selected' : '' }}>Tas & Dompet</option>
+            <option value="Perlengkapan Pribadi" {{ request('category') == 'Perlengkapan Pribadi' ? 'selected' : '' }}>Perlengkapan Pribadi</option>
+            <option value="Peralatan Praktikum" {{ request('category') == 'Peralatan Praktikum' ? 'selected' : '' }}>Peralatan Praktikum</option>
+            <option value="Aksesori" {{ request('category') == 'Aksesori' ? 'selected' : '' }}>Aksesori</option>
+            <option value="Lainnya" {{ request('category') == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
           </select>
         </div>
 
@@ -124,6 +126,7 @@
             type="search"
             id="search-dropdown"
             name="search"
+            value="{{ request('search') }}"
             class="block p-2.5 w-full z-20 text-sm text-black bg-white rounded-lg sm:rounded-none sm:rounded-r-lg border border-gray-300 focus:text-black focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400"
             placeholder="Search" />
           <button
@@ -266,15 +269,15 @@
         <!-- Kontak -->
         <div class="mt-4 flex items-center gap-2">
           <a id="modalWhatsAppButton" href="#" target="_blank" class="bg-green-500 text-white text-xs px-3 py-2 rounded hover:bg-green-600">
-            <i class='bx bxl-whatsapp text-sm'></i> Hubungi via What'sApp
+            <i class=''></i> Hubungi via What'sApp
           </a>
           <!-- Tombol Claim/Return yang tampil sesuai jenis laporan -->
-          <a id="modalClaimButton" href="#" class="hidden bg-blue-600 text-white text-xs px-3 py-2 rounded hover:bg-blue-700">
-            <i class='bx bxs-hand-up text-sm'></i> Claim Barang
+          <a id="modalClaimButton" href="#" class="hidden bg-[#124076] text-white text-xs px-3 py-2 rounded hover:bg-blue-600">
+            <i class=''></i> Claim Barang
           </a>
 
-          <a id="modalReturnButton" href="#" class="hidden bg-purple-600 text-white text-xs px-3 py-2 rounded hover:bg-purple-700">
-            <i class='bx bx-arrow-back text-sm'></i> Kembalikan Barang
+          <a id="modalReturnButton" href="#" class="hidden bg-[#FF9D3D] text-white text-xs px-3 py-2 rounded hover:bg-orange-300">
+            <i class=''></i> Kembalikan Barang
           </a>
         </div>
       </div>
