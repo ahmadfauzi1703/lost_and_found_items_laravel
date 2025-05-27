@@ -146,7 +146,7 @@
                         <button onclick="" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-blue-600 hover:text-blue-800 focus:outline-hidden focus:text-blue-800">
                           Edit
                         </button>
-                        <form action="" method="POST" class="inline delete-form">
+                        <form action="{{ route('admin.items.destroy', $item->id) }}" method="POST" class="inline delete-form">
                           @csrf
                           @method('DELETE')
                           <button type="submit" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-red-600 hover:text-red-800 focus:outline-hidden focus:text-red-800">

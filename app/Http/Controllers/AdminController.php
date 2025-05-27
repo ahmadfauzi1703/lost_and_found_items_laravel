@@ -175,4 +175,16 @@ class AdminController extends Controller
 
         return redirect()->route('admin_dashboard_user')->with('success', 'User deleted successfully');
     }
+
+    public function destroyItems(Item $item)
+    {
+        try {
+            // Hapus item
+            $item->delete();
+
+            return redirect()->back()->with('success', 'Item berhasil dihapus');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal menghapus item: ' . $e->getMessage());
+        }
+    }
 }

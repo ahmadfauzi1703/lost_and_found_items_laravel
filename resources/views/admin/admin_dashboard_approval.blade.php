@@ -65,6 +65,7 @@
                                     <thead class="bg-[#124076]">
                                         <tr>
                                             <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Item Name</th>
+                                            <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Item Picture</th>
                                             <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Category</th>
                                             <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Type</th>
                                             <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Date</th>
@@ -78,6 +79,12 @@
                                         @foreach($pendingItems as $item)
                                         <tr class="odd:bg-white even:bg-gray-100 hover:bg-gray-100">
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">{{ $item->item_name }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <img src="{{ $item->photo_path ? asset('storage/'.$item->photo_path) : asset('assets/img/no-image.png') }}"
+                                                    alt="Item Image"
+                                                    class="w-16 h-16 object-cover rounded shadow"
+                                                    style=" cursor: pointer;">
+                                            </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $item->category }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $item->type }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $item->date_of_event }}</td>

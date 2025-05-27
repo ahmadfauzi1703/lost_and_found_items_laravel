@@ -7,6 +7,7 @@ use App\Models\Item;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Notification;
 
 
 class ItemController extends Controller
@@ -264,6 +265,14 @@ class ItemController extends Controller
             'user_id' => Auth::id(),
             'status' => 'pending',
             'report_by' => $reporter // Tambahkan field report_by dengan nilai nama user
+        ]);
+
+        Notification::create([
+            'user_id' => Auth::id(),
+            'message' => 'Laporan barang ' . ($request->type == 'hilang' ? 'hilang' : 'ditemukan') .
+                ' (' . $request->item_name . ') telah berhasil dibuat dan sedang menunggu approval admin.',
+            'created_at' => now(),
+            'is_read' => 0
         ]);
 
         return redirect()->route('dashboard')->with('success', 'Laporan telah berhasil dikirimkan, dan sedang menunggu approval admin');

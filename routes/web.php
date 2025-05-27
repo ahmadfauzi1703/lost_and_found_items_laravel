@@ -48,6 +48,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/users/{user}/edit', [AdminController::class, 'edit'])->name('admin.users.edit');
     Route::put('/admin/users/{user}', [AdminController::class, 'update'])->name('admin.users.update');
     Route::delete('/admin/users/{user}', [AdminController::class, 'destroy'])->name('admin.users.destroy');
+    Route::delete('/admin/items/{item}', [AdminController::class, 'destroyItems'])->name('admin.items.destroy');
+
 
     // Approve/Reject Items
     Route::post('/admin/items/{id}/approve', [AdminController::class, 'approveItem'])->name('admin.approve.item');
@@ -170,6 +172,22 @@ Route::post('/items/{item}/claim', [App\Http\Controllers\ItemController::class, 
     ->name('items.claim.store')
     ->middleware('auth');
 
+
+
+
+// Nontification Functionality
+
+// filepath: routes/web.php
+// Tambahkan dalam grup middleware auth
+Route::middleware(['auth'])->group(function () {
+    // Routes lain yang sudah ada...
+
+    // Notification routes
+    Route::get('/notifications', [App\Http\Controllers\NotificationController::class, 'index']);
+    Route::put('/notifications/{id}/read', [App\Http\Controllers\NotificationController::class, 'markAsRead']);
+    Route::put('/notifications/read-all', [App\Http\Controllers\NotificationController::class, 'markAllAsRead']);
+    Route::delete('/notifications/{id}', [App\Http\Controllers\NotificationController::class, 'destroy']);
+});
 
 
 

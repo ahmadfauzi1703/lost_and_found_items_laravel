@@ -66,7 +66,7 @@
                                             <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Pengklaim</th>
                                             <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Tanggal Klaim</th>
                                             <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Status</th>
-                                            <th scope="col" class="px-6 py-3 text-end text-xs font-medium text-white uppercase">Actions</th>
+                                            <!-- <th scope="col" class="px-6 py-3 text-end text-xs font-medium text-white uppercase">Actions</th> -->
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-gray-200">
@@ -102,13 +102,13 @@
                                                     {{ $claim->status }}
                                                 </span>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
+                                            <!-- <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
                                                 <div class="flex justify-end space-x-2">
                                                     <a href="javascript:void(0)" onclick="viewClaimDetails('{{ $claim->id }}')" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-blue-600 hover:text-blue-800 focus:outline-hidden">
                                                         <i class='bx bx-info-circle'></i> Detail
                                                     </a>
                                                 </div>
-                                            </td>
+                                            </td> -->
                                         </tr>
                                         @empty
                                         <tr class="bg-white">

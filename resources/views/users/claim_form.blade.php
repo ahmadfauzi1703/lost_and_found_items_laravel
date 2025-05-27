@@ -150,6 +150,11 @@
                             <input type="text" id="claimer_name" name="claimer_name" value="{{ old('claimer_name', Auth::user()->first_name . ' ' . Auth::user()->last_name) }}" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200" required>
                         </div>
 
+                        <div>
+                            <label for="returner_nim" class="block text-sm font-medium text-gray-700 mb-1">NIM</label>
+                            <input type="text" id="returner_nim" name="returner_nim" value="{{ Auth::user()->nim }}" class="w-full rounded-md border-gray-300 bg-gray-100 shadow-sm" readonly>
+                        </div>
+
                         <!-- Email -->
                         <div>
                             <label for="claimer_email" class="block text-sm font-medium text-gray-700 mb-1">Email <span class="text-red-600">*</span></label>
