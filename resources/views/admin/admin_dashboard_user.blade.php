@@ -48,14 +48,47 @@
       <div class="bg-white rounded-lg shadow-lg p-6">
         <h2 class="text-2xl font-semibold mb-4">Users Management</h2>
         <div class="flex justify-between mb-4">
-          <form method="GET" action="" class="flex space-x-4">
+          <form method="GET" action="{{ route('admin_dashboard_user') }}" class="flex space-x-4">
+            <!-- Search by Name -->
             <input
               type="text"
               name="search"
+              value="{{ request('search') }}"
               class="p-2 bg-gray-100 rounded-lg border border-gray-300"
               placeholder="Search Users by Name" />
-            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500">Search</button>
+
+            <!-- Filter by Role -->
+            <select name="role" class="p-2 bg-gray-100 rounded-lg border border-gray-300 w-48">
+              <option value="">All Roles</option>
+              <option value="user" {{ request('role') == 'user' ? 'selected' : '' }}>User</option>
+              <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin</option>
+              <option value="satpam" {{ request('role') == 'satpam' ? 'selected' : '' }}>Satpam</option>
+            </select>
+
+            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500">Filter</button>
+
+            @if(request('search') || request('role'))
+            <a href="{{ route('admin_dashboard_user') }}" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600">Clear</a>
+            @endif
           </form>
+          <!-- Filter Info Section -->
+          @if(request('search') || request('role'))
+          <div class="mb-4">
+            <p class="text-sm text-gray-600">
+              Filter aktif:
+              @if(request('search'))
+              <span class="font-medium">Nama: "{{ request('search') }}"</span>
+              @endif
+
+              @if(request('role'))
+              @if(request('search')) | @endif
+              <span class="font-medium">Role: "{{ ucfirst(request('role')) }}"</span>
+              @endif
+
+              ({{ $users->count() }} user ditemukan)
+            </p>
+          </div>
+          @endif
         </div>
 
         <div class="flex flex-col">

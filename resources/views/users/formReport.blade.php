@@ -138,12 +138,15 @@
                             <label class="block text-gray-700 text-sm font-bold mb-2">Pilih Kategori Barang</label>
                             <div class="flex flex-wrap gap-2">
                                 <select name="category" class="block w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500" required>
-                                    <option value="Perhiasan Khusus">Perhiasan Khusus</option>
+                                    <option value="">All Categories</option>
+                                    <option value="Alat Tulis">Perhiasan Khusus</option>
                                     <option value="Elektronik">Elektronik</option>
                                     <option value="Buku & Dokumen">Buku & Dokumen</option>
-                                    <option value="Aksesoris Pribadi">Aksesoris Pribadi</option>
-                                    <option value="Kendaraan">Kendaraan</option>
-                                    <option value="Perangkat Medis">Perangkat Medis</option>
+                                    <option value="Tas & Dompet">Tas & Dompet</option>
+                                    <option value="Perlengkapan Pribadi">Perlengkapan Pribadi</option>
+                                    <option value="Peralatan Praktikum">Peralatan Praktikum</option>
+                                    <option value="Aksesori">Aksesori</option>
+                                    <option value="Lainnya">Lainnya</option>
                                 </select>
                             </div>
                         </div>

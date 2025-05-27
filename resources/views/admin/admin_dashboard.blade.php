@@ -127,7 +127,7 @@
                       <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">{{ $item->item_name }}</td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $item->category }}</td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $item->date_of_event }}</td>
-                      <td class="px-6 py-4 text-sm text-gray-800 max-w-xs truncate">{{ $item->description }}</td>
+                      <td class="px-6 py-4 text-sm text-gray-800 max-w-xs truncate">{{ \Illuminate\Support\Str::limit($item->description, 25, '..') }}</td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $item->location }}</td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $item->email }}</td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $item->phone_number }}</td>

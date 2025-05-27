@@ -34,14 +34,16 @@
                 <!-- Notification Button -->
                 <button id="notification-icon" type="button" class="relative text-[#124076] p-0 w-full h-full items-center rounded-[20%]">
                     <i class="bx bxs-bell text-3xl"></i>
-                    <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-2">
-                        0
-                    </span>
+                    <span id="notification-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-2 hidden">0</span>
                 </button>
 
                 <!-- Notification Dropdown -->
                 <div id="notification-dropdown" class="absolute top-full mt-2 right-0 w-80 bg-white shadow-lg rounded-lg hidden z-20">
-                    <ul class="divide-y divide-gray-200">
+                    <!-- <div class="p-2 border-b border-gray-200 flex justify-between items-center">
+              <h3 class="font-semibold">Notifikasi</h3>
+              <button id="mark-all-read" class="text-xs text-blue-600 hover:underline">Tandai semua dibaca</button>
+            </div> -->
+                    <ul class="divide-y divide-gray-200 max-h-96 overflow-y-auto">
                         <li class="p-4 text-center text-gray-500">Tidak ada pemberitahuan baru</li>
                     </ul>
                 </div>
@@ -100,18 +102,20 @@
 
             <!-- Filter Section -->
             <div class="mb-6">
-                <form method="GET" action="activity.php" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <form method="GET" action="{{ route('activity') }}" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- Dropdown Kategori -->
                     <div>
                         <label for="category" class="block mb-2">Kategori:</label>
                         <select id="category" name="category" class="w-full border rounded p-2">
                             <option value="">Semua</option>
-                            <option value="Perhiasan Khusus">Perhiasan Khusus</option>
-                            <option value="Elektronik">Elektronik</option>
-                            <option value="Buku & Dokumen">Buku & Dokumen</option>
-                            <option value="Aksesoris Pribadi">Aksesoris Pribadi</option>
-                            <option value="Kendaraan">Kendaraan</option>
-                            <option value="Perangkat Medis">Perangkat Medis</option>
+                            <option value="Perhiasan Khusus" {{ request('category') == 'Perhiasan Khusus' ? 'selected' : '' }}>Perhiasan Khusus</option>
+                            <option value="Elektronik" {{ request('category') == 'Elektronik' ? 'selected' : '' }}>Elektronik</option>
+                            <option value="Buku & Dokumen" {{ request('category') == 'Buku & Dokumen' ? 'selected' : '' }}>Buku & Dokumen</option>
+                            <option value="Tas & Dompet" {{ request('category') == 'Tas & Dompet' ? 'selected' : '' }}>Tas & Dompet</option>
+                            <option value="Perlengkapan Pribadi" {{ request('category') == 'Perlengkapan Pribadi' ? 'selected' : '' }}>Perlengkapan Pribadi</option>
+                            <option value="Peralatan Praktikum" {{ request('category') == 'Peralatan Praktikum' ? 'selected' : '' }}>Peralatan Praktikum</option>
+                            <option value="Aksesori" {{ request('category') == 'Aksesori' ? 'selected' : '' }}>Aksesori</option>
+                            <option value="Lainnya" {{ request('category') == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
                         </select>
                     </div>
 
@@ -120,78 +124,219 @@
                         <label for="type" class="block mb-2">Jenis Laporan:</label>
                         <select id="type" name="type" class="w-full border rounded p-2">
                             <option value="">Semua</option>
-                            <option value="hilang">Hilang</option>
-                            <option value="ditemukan">Ditemukan</option>
+                            <option value="hilang" {{ request('type') == 'hilang' ? 'selected' : '' }}>Hilang</option>
+                            <option value="ditemukan" {{ request('type') == 'ditemukan' ? 'selected' : '' }}>Ditemukan</option>
                         </select>
                     </div>
 
                     <!-- Tombol Filter -->
                     <div class="md:col-span-2 text-right">
                         <button type="submit" class="bg-[#004274] text-white px-4 py-2 rounded">Terapkan Filter</button>
-                        <a href="activity.php" class="bg-gray-500 text-white px-4 py-[0.68rem] rounded">Reset Filter</a>
+                        <a href="{{ route('activity') }}" class="bg-gray-500 text-white px-4 py-[0.68rem] rounded">Reset Filter</a>
                     </div>
                 </form>
             </div>
 
-            <!-- Activity List -->
-            @if(count($userItems) > 0)
-            @foreach($userItems as $item)
-            <div class="flex items-start justify-between bg-blue-50 p-4 rounded-md mb-4">
-                <div class="flex items-center space-x-4">
-                    <img src="{{ $item->photo_path ? asset('storage/' . $item->photo_path) : asset('Assets/img/no-image.png') }}"
-                        alt="{{ $item->item_name }}"
-                        class="w-24 h-24 object-cover rounded" />
-                    <div>
-                        <h3 class="text-xl font-medium">{{ $item->item_name }}</h3>
-                        <p class="text-sm text-gray-500">Tanggal Kejadian: {{ $item->date_of_event }}</p>
-                        <p class="text-sm text-gray-500">Dibuat pada: {{ $item->created_at->format('d M Y') }}</p>
+            <!-- Tab Navigation - Tambahkan setelah filter section -->
+            <div class="border-b border-gray-200 mb-6">
+                <ul class="flex flex-wrap -mb-px text-sm font-medium text-center">
+                    <li class="mr-2">
+                        <a href="#" class="inline-block p-4 border-b-2 border-blue-600 text-blue-600 active"
+                            onclick="showTab('tab-content-1', this); return false;">Barang Saya</a>
+                    </li>
+                    <li class="mr-2">
+                        <a href="#" class="inline-block p-4 border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300"
+                            onclick="showTab('tab-content-2', this); return false;">Aktivitas Pada Barang Saya</a>
+                    </li>
+                    <li class="mr-2">
+                        <a href="#" class="inline-block p-4 border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300"
+                            onclick="showTab('tab-content-3', this); return false;">Pengajuan Saya</a>
+                    </li>
+                </ul>
+            </div>
 
-                        <!-- Status Badge -->
-                        <div class="mt-1">
-                            <span class="inline-block px-2 py-1 text-xs font-semibold rounded-full 
-                        {{ $item->status == 'approved' ? 'bg-green-100 text-green-800' : 
-                          ($item->status == 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
-                                {{ ucfirst($item->status) }}
-                            </span>
+            <!-- Tab content 1: Barang Saya -->
+            <div id="tab-content-1">
+                @if(count($userItems) > 0)
+                @foreach($userItems as $item)
+                <div class="flex items-start justify-between bg-blue-50 p-4 rounded-md mb-4">
+                    <div class="flex items-center space-x-4">
+                        <img src="{{ $item->photo_path ? asset('storage/' . $item->photo_path) : asset('Assets/img/no-image.png') }}"
+                            alt="{{ $item->item_name }}"
+                            class="w-24 h-24 object-cover rounded" />
+                        <div>
+                            <h3 class="text-xl font-medium">{{ $item->item_name }}</h3>
+                            <p class="text-sm text-gray-500">Tanggal Kejadian: {{ $item->date_of_event }}</p>
+                            <p class="text-sm text-gray-500">Dibuat pada: {{ $item->created_at->format('d M Y') }}</p>
+
+                            <!-- Status Badge -->
+                            <div class="mt-1">
+                                <span class="inline-block px-2 py-1 text-xs font-semibold rounded-full 
+                                {{ $item->status == 'approved' ? 'bg-green-100 text-green-800' : 
+                                  ($item->status == 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
+                                    {{ ucfirst($item->status) }}
+                                </span>
+                            </div>
+
+                            <!-- Tombol Detail/Edit Laporan -->
+                            <button
+                                data-id="{{ $item->id }}"
+                                data-name="{{ $item->item_name }}"
+                                data-category="{{ $item->category }}"
+                                data-type="{{ $item->type }}"
+                                data-date="{{ \Carbon\Carbon::parse($item->date_of_event)->format('Y-m-d') }}"
+                                data-description="{{ $item->description }}"
+                                data-email="{{ $item->email ?? '' }}"
+                                data-phone="{{ $item->phone_number ?? '' }}"
+                                data-image="{{ $item->photo_path ? asset('storage/' . $item->photo_path) : asset('Assets/img/no-image.png') }}"
+                                onclick="openModalFromData(this)"
+                                class="mt-2 mr-4 bg-[#004274] text-white py-1 px-4 rounded">
+                                Edit Laporan
+                            </button>
+
+                            <!-- Tombol Hapus -->
+                            <a href="javascript:void(0);" class="mt-2 bg-red-100 text-red-700 py-2 px-4 rounded hover:bg-red-200"
+                                onclick="confirmDelete('{{ $item->id }}')">Hapus Laporan</a>
                         </div>
+                    </div>
 
-                        <!-- Tombol Detail/Edit Laporan -->
-                        <button
-                            data-id="{{ $item->id }}"
-                            data-name="{{ $item->item_name }}"
-                            data-category="{{ $item->category }}"
-                            data-type="{{ $item->type }}"
-                            data-date="{{ \Carbon\Carbon::parse($item->date_of_event)->format('Y-m-d') }}"
-                            data-description="{{ $item->description }}"
-                            data-email="{{ $item->email ?? '' }}"
-                            data-phone="{{ $item->phone_number ?? '' }}"
-                            data-image="{{ $item->photo_path ? asset('storage/' . $item->photo_path) : asset('Assets/img/no-image.png') }}"
-                            onclick="openModalFromData(this)"
-                            class="mt-2 mr-4 bg-[#004274] text-white py-1 px-4 rounded">
-                            Edit Laporan
-                        </button>
-
-
-                        <!-- Tombol Hapus -->
-                        <a href="javascript:void(0);" class="mt-2 bg-red-100 text-red-700 py-2 px-4 rounded hover:bg-red-200"
-                            onclick="confirmDelete('{{ $item->id }}')">Hapus Laporan</a>
+                    <!-- Bagian label jenis laporan -->
+                    <div class="flex flex-col space-y-2 ml-4">
+                        <span class="bg-{{ $item->type == 'hilang' ? 'red' : 'green' }}-100 text-{{ $item->type == 'hilang' ? 'red' : 'green' }}-700 px-3 py-1 rounded-md text-sm text-center">
+                            {{ $item->type }}
+                        </span>
                     </div>
                 </div>
-
-                <!-- Bagian label jenis laporan -->
-                <div class="flex flex-col space-y-2 ml-4">
-                    <span class="bg-{{ $item->type == 'hilang' ? 'red' : 'green' }}-100 text-{{ $item->type == 'hilang' ? 'red' : 'green' }}-700 px-3 py-1 rounded-md text-sm text-center">
-                        {{ $item->type }}
-                    </span>
+                @endforeach
+                @else
+                <div class="text-center py-8">
+                    <p class="text-gray-500">Tidak ada laporan yang ditemukan.</p>
+                    <a href="{{ route('formReport') }}" class="inline-block mt-4 bg-[#124076] text-white px-6 py-2 rounded-lg">Buat Laporan Baru</a>
                 </div>
+                @endif
             </div>
-            @endforeach
-            @else
-            <div class="text-center py-8">
-                <p class="text-gray-500">Tidak ada laporan yang ditemukan.</p>
-                <a href="{{ route('formReport') }}" class="inline-block mt-4 bg-[#124076] text-white px-6 py-2 rounded-lg">Buat Laporan Baru</a>
+
+
+            <!-- Tab content 2: Aktivitas Pada Barang Saya -->
+            <div id="tab-content-2" class="hidden">
+                <h3 class="text-xl font-semibold mb-4">Permintaan Pengembalian & Klaim Barang Anda</h3>
+
+                @if(isset($claimsOnMyItems) && $claimsOnMyItems->count() > 0)
+                <div class="space-y-4">
+                    @foreach($claimsOnMyItems as $claim)
+                    <div class="bg-white p-4 rounded-lg shadow border-l-4 {{ $claim->type == 'return' ? 'border-purple-500' : 'border-blue-500' }}">
+                        <div class="flex justify-between">
+                            <div>
+                                <span class="inline-block px-2 py-1 text-xs {{ $claim->type == 'return' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800' }} rounded-full mb-2">
+                                    {{ $claim->type == 'return' ? 'Pengembalian' : 'Klaim' }}
+                                </span>
+                                <h4 class="font-semibold">{{ $claim->item->item_name }}</h4>
+                                <p class="text-sm text-gray-600">
+                                    Oleh: {{ $claim->claimer_name }}
+                                </p>
+                                <p class="text-sm text-gray-500">{{ \Carbon\Carbon::parse($claim->claim_date)->format('d M Y H:i') }}</p>
+
+                                @if($claim->type == 'return')
+                                <p class="text-sm mt-2">
+                                    <strong>Lokasi ditemukan:</strong> {{ $claim->where_found }}
+                                </p>
+                                <p class="text-sm">
+                                    <strong>Catatan:</strong> {{ $claim->notes ?? 'Tidak ada catatan' }}
+                                </p>
+                                @if($claim->item_photo)
+                                <div class="mt-2">
+                                    <img src="{{ asset('storage/'.$claim->item_photo) }}" alt="Foto Barang" class="w-24 h-24 object-cover rounded">
+                                </div>
+                                @endif
+                                @else
+                                <!-- Tambahkan kode ini untuk menampilkan gambar pada klaim barang -->
+                                <div class="mt-2">
+                                    <img src="{{ $claim->item->photo_path ? asset('storage/'.$claim->item->photo_path) : asset('Assets/img/no-image.png') }}"
+                                        alt="Foto Barang" class="w-24 h-24 object-cover rounded">
+                                </div>
+                                @endif
+                            </div>
+
+                            <div>
+                                @if($claim->status == 'pending')
+                                <span class="inline-block px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-md">Menunggu</span>
+
+                                <div class="mt-2 space-x-2">
+                                    <form action="{{ route('claim.update-status') }}" method="POST" class="inline">
+                                        @csrf
+                                        <input type="hidden" name="claim_id" value="{{ $claim->id }}">
+                                        <input type="hidden" name="status" value="approved">
+                                        <button type="submit" class="bg-green-500 text-white text-xs px-2 py-1 rounded hover:bg-green-600">
+                                            {{ $claim->type == 'return' ? 'Terima Pengembalian' : 'Terima Klaim' }}
+                                        </button>
+                                    </form>
+
+                                    <form action="{{ route('claim.update-status') }}" method="POST" class="inline">
+                                        @csrf
+                                        <input type="hidden" name="claim_id" value="{{ $claim->id }}">
+                                        <input type="hidden" name="status" value="rejected">
+                                        <button type="submit" class="bg-red-500 text-white text-xs px-2 py-1 rounded hover:bg-red-600">
+                                            Tolak
+                                        </button>
+                                    </form>
+                                </div>
+                                <a href="https://wa.me/{{ preg_replace('/^0/', '62', $claim->claimer_phone) }}"
+                                    target="_blank"
+                                    class="mt-32 inline-block bg-green-500 text-white text-xs px-3 py-2 rounded hover:bg-green-600">
+                                    <i class='bx bxl-whatsapp mr-1'></i> Hubungi via WhatsApp
+                                </a>
+                                @elseif($claim->status == 'approved')
+                                <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Diterima</span>
+                                @elseif($claim->status == 'rejected')
+                                <span class="inline-block px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">Ditolak</span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+                @else
+                <div class="bg-gray-50 p-4 rounded-lg text-center text-gray-500">
+                    Belum ada aktivitas pada barang Anda
+                </div>
+                @endif
             </div>
-            @endif
+
+            <!-- Tab content 3: Pengajuan Saya -->
+            <div id="tab-content-3" class="hidden">
+                <h3 class="text-xl font-semibold mb-4">Klaim & Pengembalian yang Saya Ajukan</h3>
+
+                @if(isset($myClaimsAndReturns) && $myClaimsAndReturns->count() > 0)
+                <div class="space-y-4">
+                    @foreach($myClaimsAndReturns as $myClaim)
+                    <div class="bg-white p-4 rounded-lg shadow border-l-4 {{ $myClaim->type == 'return' ? 'border-purple-500' : 'border-blue-500' }}">
+                        <div class="flex justify-between">
+                            <div>
+                                <span class="inline-block px-2 py-1 text-xs {{ $myClaim->type == 'return' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800' }} rounded-full mb-2">
+                                    {{ $myClaim->type == 'return' ? 'Pengembalian' : 'Klaim' }}
+                                </span>
+                                <h4 class="font-semibold">{{ $myClaim->item->item_name }}</h4>
+                                <p class="text-sm text-gray-500">{{ \Carbon\Carbon::parse($myClaim->claim_date)->format('d M Y H:i') }}</p>
+
+                                <div class="mt-2">
+                                    <span class="inline-block px-2 py-1 
+                                    {{ $myClaim->status == 'approved' ? 'bg-green-100 text-green-800' : 
+                                       ($myClaim->status == 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }} 
+                                    text-xs rounded-full">
+                                        {{ ucfirst($myClaim->status) }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+                @else
+                <div class="bg-gray-50 p-4 rounded-lg text-center text-gray-500">
+                    Anda belum melakukan klaim atau pengembalian apapun
+                </div>
+                @endif
+            </div>
         </section>
     </div>
 
@@ -230,12 +375,15 @@
                 <div>
                     <label for="modalCategoryInput" class="block mb-2">Kategori:</label>
                     <select id="modalCategoryInput" name="category" class="w-full border rounded p-2">
-                        <option value="Perhiasan Khusus">Perhiasan Khusus</option>
+                        <option value="">All Categories</option>
+                        <option value="Alat Tulis">Perhiasan Khusus</option>
                         <option value="Elektronik">Elektronik</option>
                         <option value="Buku & Dokumen">Buku & Dokumen</option>
-                        <option value="Aksesoris Pribadi">Aksesoris Pribadi</option>
-                        <option value="Kendaraan">Kendaraan</option>
-                        <option value="Perangkat Medis">Perangkat Medis</option>
+                        <option value="Tas & Dompet">Tas & Dompet</option>
+                        <option value="Perlengkapan Pribadi">Perlengkapan Pribadi</option>
+                        <option value="Peralatan Praktikum">Peralatan Praktikum</option>
+                        <option value="Aksesori">Aksesori</option>
+                        <option value="Lainnya">Lainnya</option>
                     </select>
                 </div>
 
@@ -378,7 +526,7 @@
         }
     </script>
 
-    <script>
+    <!-- <script>
         document.getElementById("notification-icon").addEventListener("click", function() {
             const dropdown = document.getElementById("notification-dropdown");
             dropdown.classList.toggle("hidden");
@@ -391,7 +539,7 @@
                 dropdown.classList.add("hidden");
             }
         });
-    </script>
+    </script> -->
 
     <script>
         function openModalFromData(element) {
@@ -455,6 +603,187 @@
                 dropdown.classList.add("hidden");
             }
         });
+    </script>
+
+    <script>
+        function showTab(tabId, clickedTab) {
+            // Hide all tab contents
+            document.querySelectorAll('[id^="tab-content-"]').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+
+            // Show the selected tab content
+            document.getElementById(tabId).classList.remove('hidden');
+
+            // Update active tab styling
+            document.querySelectorAll('.border-b-2').forEach(tab => {
+                tab.classList.remove('border-blue-600', 'text-blue-600');
+                tab.classList.add('border-transparent');
+            });
+
+            clickedTab.classList.remove('border-transparent');
+            clickedTab.classList.add('border-blue-600', 'text-blue-600');
+        }
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cek notifikasi saat halaman dimuat
+            loadNotifications();
+
+            // Toggle dropdown notifikasi
+            document.getElementById('notification-icon').addEventListener('click', function(e) {
+                e.stopPropagation();
+                const dropdown = document.getElementById('notification-dropdown');
+                dropdown.classList.toggle('hidden');
+
+                // Refresh notifikasi ketika dropdown dibuka
+                if (!dropdown.classList.contains('hidden')) {
+                    loadNotifications();
+                }
+            });
+
+            // Tutup dropdown ketika klik di luar
+            document.addEventListener('click', function(e) {
+                const icon = document.getElementById('notification-icon');
+                const dropdown = document.getElementById('notification-dropdown');
+                if (!icon.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.classList.add('hidden');
+                }
+            });
+
+            // Tombol "Tandai semua dibaca"
+            // const markAllReadBtn = document.createElement('div');
+            // markAllReadBtn.classList.add('p-2', 'border-b', 'border-gray-200', 'flex', 'justify-between', 'items-center');
+            // markAllReadBtn.innerHTML = `
+            //   <h3 class="font-semibold">Notifikasi</h3>
+            //   <button id="mark-all-read" class="text-xs text-blue-600 hover:underline">Tandai semua dibaca</button>
+            // `;
+
+            // document.getElementById('notification-dropdown').prepend(markAllReadBtn);
+
+            document.getElementById('mark-all-read').addEventListener('click', function() {
+                markAllNotificationsAsRead();
+            });
+        });
+
+        function loadNotifications() {
+            fetch('/notifications')
+                .then(response => response.json())
+                .then(data => {
+                    updateNotificationBadge(data);
+                    displayNotifications(data);
+                })
+                .catch(error => console.error('Error fetching notifications:', error));
+        }
+
+        function updateNotificationBadge(notifications) {
+            const unreadCount = notifications.filter(n => n.is_read === 0).length;
+            const badge = document.getElementById('notification-badge');
+
+            badge.textContent = unreadCount;
+
+            if (unreadCount === 0) {
+                badge.classList.add('hidden');
+            } else {
+                badge.classList.remove('hidden');
+            }
+        }
+
+        function displayNotifications(notifications) {
+            const container = document.getElementById('notification-dropdown').querySelector('ul');
+            container.innerHTML = '';
+
+            if (notifications.length === 0) {
+                container.innerHTML = '<li class="p-4 text-center text-gray-500">Tidak ada notifikasi</li>';
+                return;
+            }
+
+            notifications.forEach(notif => {
+                const li = document.createElement('li');
+                li.className = `p-3 border-b ${notif.is_read === 0 ? 'bg-blue-50' : ''}`;
+
+                // Format tanggal
+                const date = new Date(notif.created_at);
+                const formattedDate = date.toLocaleString('id-ID', {
+                    day: 'numeric',
+                    month: 'short',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                li.innerHTML = `
+        <div class="flex justify-between items-start">
+          <div class="flex-1">
+            <p class="text-gray-600 text-sm">${notif.message}</p>
+            <p class="text-gray-400 text-xs mt-1">${formattedDate}</p>
+          </div>
+          <button class="text-red-500 text-xs ml-2" onclick="deleteNotification(${notif.id})">
+            <i class="bx bx-trash"></i>
+          </button>
+        </div>
+      `;
+
+                if (notif.is_read === 0) {
+                    const markReadBtn = document.createElement('button');
+                    markReadBtn.className = 'text-xs text-blue-600 mt-1';
+                    markReadBtn.textContent = 'Tandai sudah dibaca';
+                    markReadBtn.onclick = () => markAsRead(notif.id);
+
+                    li.querySelector('.flex-1').appendChild(markReadBtn);
+                }
+
+                container.appendChild(li);
+            });
+        }
+
+        function markAsRead(id) {
+            fetch(`/notifications/${id}/read`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        loadNotifications();
+                    }
+                });
+        }
+
+        function markAllNotificationsAsRead() {
+            fetch('/notifications/read-all', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        loadNotifications();
+                    }
+                });
+        }
+
+        function deleteNotification(id) {
+            fetch(`/notifications/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        loadNotifications();
+                    }
+                });
+        }
     </script>
 </body>
 

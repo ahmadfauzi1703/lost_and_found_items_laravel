@@ -44,14 +44,16 @@
           <!-- Notification Button -->
           <button id="notification-icon" type="button" class="relative text-[#124076] p-0 w-full h-full items-center rounded-[20%]">
             <i class="bx bxs-bell text-3xl"></i>
-            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-2">
-              0
-            </span>
+            <span id="notification-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-2 hidden">0</span>
           </button>
 
           <!-- Notification Dropdown -->
           <div id="notification-dropdown" class="absolute top-full mt-2 right-0 w-80 bg-white shadow-lg rounded-lg hidden z-20">
-            <ul class="divide-y divide-gray-200">
+            <!-- <div class="p-2 border-b border-gray-200 flex justify-between items-center">
+              <h3 class="font-semibold">Notifikasi</h3>
+              <button id="mark-all-read" class="text-xs text-blue-600 hover:underline">Tandai semua dibaca</button>
+            </div> -->
+            <ul class="divide-y divide-gray-200 max-h-96 overflow-y-auto">
               <li class="p-4 text-center text-gray-500">Tidak ada pemberitahuan baru</li>
             </ul>
           </div>
@@ -413,7 +415,7 @@
       }
     </script>
 
-    <script>
+    <!-- <script>
       const notificationIcon = document.getElementById('notification-icon');
       const notificationDropdown = document.getElementById('notification-dropdown');
 
@@ -426,7 +428,7 @@
           notificationDropdown.classList.add('hidden');
         }
       });
-    </script>
+    </script> -->
 
     <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.20/dist/sweetalert2.min.js"></script>
@@ -602,6 +604,166 @@
           }
         });
       });
+    </script>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Cek notifikasi saat halaman dimuat
+        loadNotifications();
+
+        // Toggle dropdown notifikasi
+        document.getElementById('notification-icon').addEventListener('click', function(e) {
+          e.stopPropagation();
+          const dropdown = document.getElementById('notification-dropdown');
+          dropdown.classList.toggle('hidden');
+
+          // Refresh notifikasi ketika dropdown dibuka
+          if (!dropdown.classList.contains('hidden')) {
+            loadNotifications();
+          }
+        });
+
+        // Tutup dropdown ketika klik di luar
+        document.addEventListener('click', function(e) {
+          const icon = document.getElementById('notification-icon');
+          const dropdown = document.getElementById('notification-dropdown');
+          if (!icon.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.classList.add('hidden');
+          }
+        });
+
+        // Tombol "Tandai semua dibaca"
+        // const markAllReadBtn = document.createElement('div');
+        // markAllReadBtn.classList.add('p-2', 'border-b', 'border-gray-200', 'flex', 'justify-between', 'items-center');
+        // markAllReadBtn.innerHTML = `
+        //   <h3 class="font-semibold">Notifikasi</h3>
+        //   <button id="mark-all-read" class="text-xs text-blue-600 hover:underline">Tandai semua dibaca</button>
+        // `;
+
+        // document.getElementById('notification-dropdown').prepend(markAllReadBtn);
+
+        document.getElementById('mark-all-read').addEventListener('click', function() {
+          markAllNotificationsAsRead();
+        });
+      });
+
+      function loadNotifications() {
+        fetch('/notifications')
+          .then(response => response.json())
+          .then(data => {
+            updateNotificationBadge(data);
+            displayNotifications(data);
+          })
+          .catch(error => console.error('Error fetching notifications:', error));
+      }
+
+      function updateNotificationBadge(notifications) {
+        const unreadCount = notifications.filter(n => n.is_read === 0).length;
+        const badge = document.getElementById('notification-badge');
+
+        badge.textContent = unreadCount;
+
+        if (unreadCount === 0) {
+          badge.classList.add('hidden');
+        } else {
+          badge.classList.remove('hidden');
+        }
+      }
+
+      function displayNotifications(notifications) {
+        const container = document.getElementById('notification-dropdown').querySelector('ul');
+        container.innerHTML = '';
+
+        if (notifications.length === 0) {
+          container.innerHTML = '<li class="p-4 text-center text-gray-500">Tidak ada notifikasi</li>';
+          return;
+        }
+
+        notifications.forEach(notif => {
+          const li = document.createElement('li');
+          li.className = `p-3 border-b ${notif.is_read === 0 ? 'bg-blue-50' : ''}`;
+
+          // Format tanggal
+          const date = new Date(notif.created_at);
+          const formattedDate = date.toLocaleString('id-ID', {
+            day: 'numeric',
+            month: 'short',
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+
+          li.innerHTML = `
+        <div class="flex justify-between items-start">
+          <div class="flex-1">
+            <p class="text-gray-600 text-sm">${notif.message}</p>
+            <p class="text-gray-400 text-xs mt-1">${formattedDate}</p>
+          </div>
+          <button class="text-red-500 text-xs ml-2" onclick="deleteNotification(${notif.id})">
+            <i class="bx bx-trash"></i>
+          </button>
+        </div>
+      `;
+
+          if (notif.is_read === 0) {
+            const markReadBtn = document.createElement('button');
+            markReadBtn.className = 'text-xs text-blue-600 mt-1';
+            markReadBtn.textContent = 'Tandai sudah dibaca';
+            markReadBtn.onclick = () => markAsRead(notif.id);
+
+            li.querySelector('.flex-1').appendChild(markReadBtn);
+          }
+
+          container.appendChild(li);
+        });
+      }
+
+      function markAsRead(id) {
+        fetch(`/notifications/${id}/read`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              loadNotifications();
+            }
+          });
+      }
+
+      function markAllNotificationsAsRead() {
+        fetch('/notifications/read-all', {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              loadNotifications();
+            }
+          });
+      }
+
+      function deleteNotification(id) {
+        fetch(`/notifications/${id}`, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              loadNotifications();
+            }
+          });
+      }
     </script>
 
 

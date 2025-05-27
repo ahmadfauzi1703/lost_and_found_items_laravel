@@ -34,32 +34,35 @@ Route::post('/register', [RegisterController::class, 'register'])->name('registe
 
 # ADMIN SECTION
 // Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin_dashboard');
-Route::get('/admin/lost', [AdminController::class, 'lost'])->name('admin_dashboard_lost'); // Items Lost
-Route::get('/admin/found', [AdminController::class, 'found'])->name('admin_dashboard_found'); // Items Found
-Route::get('/admin/user', [AdminController::class, 'user'])->name('admin_dashboard_user');
-Route::get('/admin/approval', [AdminController::class, 'approval'])->name('admin_dashboard_approval');
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    // Dashboard Admin
+    Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin_dashboard');
 
-# Halaman Functional Admin
-Route::get('/items/filter', [ItemController::class, 'filterItems'])->name('filter.items');
-Route::get('/dashboard/lost-items', [ItemController::class, 'showLostItems']);
-Route::get('/dashboard/found-items', [ItemController::class, 'showFoundItems']);
-Route::get('/dashboard/recent-items', [ItemController::class, 'showRecentItems']);
-// Route::get('/admin/user/search', [AdminController::class, 'search'])->name('user.admin.users.search');
+    // Halaman Admin lainnya
+    Route::get('/admin/lost', [AdminController::class, 'lost'])->name('admin_dashboard_lost');
+    Route::get('/admin/found', [AdminController::class, 'found'])->name('admin_dashboard_found');
+    Route::get('/admin/user', [AdminController::class, 'user'])->name('admin_dashboard_user');
+    Route::get('/admin/approval', [AdminController::class, 'approval'])->name('admin_dashboard_approval');
 
-# ADMIN CRUD
-// Route untuk edit user
-Route::get('/admin/users/{user}/edit', [AdminController::class, 'edit'])->name('admin.users.edit');
-Route::put('/admin/users/{user}', [AdminController::class, 'update'])->name('admin.users.update');
-Route::delete('/admin/users/{user}', [AdminController::class, 'destroy'])->name('admin.users.destroy');
+    // Admin CRUD
+    Route::get('/admin/users/{user}/edit', [AdminController::class, 'edit'])->name('admin.users.edit');
+    Route::put('/admin/users/{user}', [AdminController::class, 'update'])->name('admin.users.update');
+    Route::delete('/admin/users/{user}', [AdminController::class, 'destroy'])->name('admin.users.destroy');
+    Route::delete('/admin/items/{item}', [AdminController::class, 'destroyItems'])->name('admin.items.destroy');
 
-// Aprove Admin
-Route::post('/admin/items/{id}/approve', [AdminController::class, 'approveItem'])->name('admin.approve.item');
-Route::post('/admin/items/{id}/reject', [AdminController::class, 'rejectItem'])->name('admin.reject.item');
 
-// Route untuk dashboard admin
-Route::get('/admin/dashboard', [AdminController::class, 'index'])
-    ->middleware(['auth', 'role:admin'])  // Pastikan role admin bisa akses
-    ->name('admin_dashboard');
+    // Approve/Reject Items
+    Route::post('/admin/items/{id}/approve', [AdminController::class, 'approveItem'])->name('admin.approve.item');
+    Route::post('/admin/items/{id}/reject', [AdminController::class, 'rejectItem'])->name('admin.reject.item');
+});
+
+// Halaman Functional Admin - juga dilindungi dengan middleware
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/items/filter', [ItemController::class, 'filterItems'])->name('filter.items');
+    Route::get('/dashboard/lost-items', [ItemController::class, 'showLostItems']);
+    Route::get('/dashboard/found-items', [ItemController::class, 'showFoundItems']);
+    Route::get('/dashboard/recent-items', [ItemController::class, 'showRecentItems']);
+});
 
 
 
@@ -68,10 +71,39 @@ Route::get('/admin/dashboard', [AdminController::class, 'index'])
 # SATPAM SECTION
 Route::middleware(['auth', 'role:satpam'])->group(function () {
     Route::get('/satpam/dashboard', [SatpamController::class, 'index'])->name('satpam_dashboard');
-    Route::get('/satpam/approval', [SatpamController::class, 'approval'])->name('satpam_dashboard_approval');
-    Route::get('/satpam/lost', [SatpamController::class, 'lost'])->name('satpam_dashboard_lost');
-    Route::get('/satpam/found', [SatpamController::class, 'found'])->name('satpam_dashboard_found');
-    Route::get('/satpam/user', [SatpamController::class, 'user'])->name('satpam_dashboard_user');
+    // Route satpam dashboard view
+    Route::get('/satpam/items', [App\Http\Controllers\SatpamController::class, 'viewItems'])
+        ->middleware(['auth', 'role:satpam'])
+        ->name('satpam.dashboard.view');
+
+    // Functional Satpam
+    Route::get('/satpam/item/create', [SatpamController::class, 'create'])->name('satpam.dashboard.create');
+    Route::post('/satpam/item/store', [SatpamController::class, 'store'])->name('satpam.dashboard.store');
+
+    Route::get('/items/{item}', [SatpamController::class, 'getItemDetails']);
+    Route::put('/satpam/items/{item}', [App\Http\Controllers\SatpamController::class, 'updateItem'])
+        ->middleware(['auth', 'role:satpam'])
+        ->name('satpam.items.update');
+
+    Route::get('/satpam/claims/create', [App\Http\Controllers\SatpamController::class, 'createClaim'])
+        ->middleware(['auth', 'role:satpam'])
+        ->name('satpam.dashboard.createClaim');
+
+    Route::post('/satpam/claims', [App\Http\Controllers\SatpamController::class, 'storeClaim'])
+        ->middleware(['auth', 'role:satpam'])
+        ->name('satpam.claims.store');
+
+    Route::get('/satpam/claims/history', [App\Http\Controllers\SatpamController::class, 'viewHistory'])
+        ->middleware(['auth', 'role:satpam'])
+        ->name('satpam.dashboard.viewHistory');
+
+    Route::get('/satpam/profile', [App\Http\Controllers\SatpamController::class, 'profile'])
+        ->middleware(['auth', 'role:satpam'])
+        ->name('satpam.dashboard.profile');
+
+    Route::post('/satpam/profile/update', [App\Http\Controllers\SatpamController::class, 'updateProfile'])
+        ->middleware(['auth', 'role:satpam'])
+        ->name('satpam.profile.update');
 });
 
 
@@ -112,6 +144,50 @@ Route::resource('items', ItemController::class)->only([
     'destroy'
 ])->middleware('auth');
 
+// Ganti dari ClaimController dan ReturnController ke ItemController
+Route::get('/claim-item', [App\Http\Controllers\ItemController::class, 'showClaimForm'])
+    ->middleware('auth')
+    ->name('claim.form');
+
+Route::post('/claim-item', [App\Http\Controllers\ItemController::class, 'processClaim'])
+    ->middleware('auth')
+    ->name('claim.submit');
+
+Route::get('/return-item', [App\Http\Controllers\ItemController::class, 'showReturnForm'])
+    ->middleware('auth')
+    ->name('return.form');
+
+Route::post('/return-item', [App\Http\Controllers\ItemController::class, 'processReturn'])
+    ->middleware('auth')
+    ->name('return.submit');
+
+Route::post('/items/claim/update-status', [ItemController::class, 'updateClaimStatus'])->name('claim.update-status');
+
+Route::get('/items/{item}/claim', [App\Http\Controllers\ItemController::class, 'showClaimForm'])
+    ->name('items.claim.form')
+    ->middleware('auth');
+
+// Route untuk menyimpan data klaim
+Route::post('/items/{item}/claim', [App\Http\Controllers\ItemController::class, 'storeClaim'])
+    ->name('items.claim.store')
+    ->middleware('auth');
+
+
+
+
+// Nontification Functionality
+
+// filepath: routes/web.php
+// Tambahkan dalam grup middleware auth
+Route::middleware(['auth'])->group(function () {
+    // Routes lain yang sudah ada...
+
+    // Notification routes
+    Route::get('/notifications', [App\Http\Controllers\NotificationController::class, 'index']);
+    Route::put('/notifications/{id}/read', [App\Http\Controllers\NotificationController::class, 'markAsRead']);
+    Route::put('/notifications/read-all', [App\Http\Controllers\NotificationController::class, 'markAllAsRead']);
+    Route::delete('/notifications/{id}', [App\Http\Controllers\NotificationController::class, 'destroy']);
+});
 
 
 

@@ -43,12 +43,16 @@
         <div class="relative">
           <button id="notification-icon" type="button" class="relative text-[#124076] p-0 w-full h-full items-center rounded-[20%]">
             <i class="bx bxs-bell text-3xl"></i>
-            <!-- Badge -->
+            <span id="notification-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-2 hidden">0</span>
           </button>
 
           <!-- Dropdown Notifikasi -->
           <div id="notification-dropdown" class="absolute top-full mt-2 right-0 w-80 bg-white shadow-lg rounded-lg hidden z-20">
-            <ul class="divide-y divide-gray-200">
+            <!-- <div class="p-2 border-b border-gray-200 flex justify-between items-center">
+              <h3 class="font-semibold">Notifikasi</h3>
+              <button id="mark-all-read" class="text-xs text-blue-600 hover:underline">Tandai semua dibaca</button>
+            </div> -->
+            <ul class="divide-y divide-gray-200 max-h-96 overflow-y-auto">
               <li class="p-4 text-center text-gray-500">Tidak ada pemberitahuan baru</li>
             </ul>
           </div>
@@ -101,20 +105,22 @@
   <section class="bg-[#91B0D3] h-[15rem] flex flex-col items-center justify-center">
     <!-- Dropdown Buttons and Search -->
     <div class="w-full max-w-4xl px-4">
-      <form class="flex flex-col sm:flex-row items-center gap-4 w-full" method="GET" action="">
+      <form class="flex flex-col sm:flex-row items-center gap-4 w-full" method="GET" action="{{ route('dashboard') }}">
         <!-- Dropdown (Select) -->
         <div class="relative w-full sm:w-auto">
           <select
             id="category-dropdown"
             name="category"
             class="w-full sm:w-auto flex-shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-black bg-gray-100 border border-gray-300 rounded-lg sm:rounded-l-lg sm:rounded-r-none focus:ring-2 focus:outline-none focus:ring-blue-500">
-            <option value="all">Semua Kategori</option>
-            <option value="Perhiasan Khusus">Perhiasan Khusus</option>
-            <option value="Elektronik">Elektronik</option>
-            <option value="Buku & Dokumen">Buku & Dokumen</option>
-            <option value="Aksesoris Pribadi">Aksesoris Pribadi</option>
-            <option value="Kendaraan">Kendaraan</option>
-            <option value="Perangkat Medis">Perangkat Medis</option>
+            <option value="">Semua Kategori</option>
+            <option value="Perhiasan Khusus" {{ request('category') == 'Perhiasan Khusus' ? 'selected' : '' }}>Perhiasan Khusus</option>
+            <option value="Elektronik" {{ request('category') == 'Elektronik' ? 'selected' : '' }}>Elektronik</option>
+            <option value="Buku & Dokumen" {{ request('category') == 'Buku & Dokumen' ? 'selected' : '' }}>Buku & Dokumen</option>
+            <option value="Tas & Dompet" {{ request('category') == 'Tas & Dompet' ? 'selected' : '' }}>Tas & Dompet</option>
+            <option value="Perlengkapan Pribadi" {{ request('category') == 'Perlengkapan Pribadi' ? 'selected' : '' }}>Perlengkapan Pribadi</option>
+            <option value="Peralatan Praktikum" {{ request('category') == 'Peralatan Praktikum' ? 'selected' : '' }}>Peralatan Praktikum</option>
+            <option value="Aksesori" {{ request('category') == 'Aksesori' ? 'selected' : '' }}>Aksesori</option>
+            <option value="Lainnya" {{ request('category') == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
           </select>
         </div>
 
@@ -124,6 +130,7 @@
             type="search"
             id="search-dropdown"
             name="search"
+            value="{{ request('search') }}"
             class="block p-2.5 w-full z-20 text-sm text-black bg-white rounded-lg sm:rounded-none sm:rounded-r-lg border border-gray-300 focus:text-black focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400"
             placeholder="Search" />
           <button
@@ -191,7 +198,11 @@
                   data-location="{{ $item->location }}"
                   data-description="{{ $item->description }}"
                   data-image="{{ asset($imagePath) }}"
-                  data-whatsapp="https://wa.me/{{ $item->whatsapp_number }}">
+                  data-reporter="{{ $item->report_by ?: ($item->user ? 'Satpam: ' . $item->user->name : 'Unknown') }}"
+                  data-whatsapp="https://wa.me/{{ $item->whatsapp_number }}"
+                  data-type="{{ $item->type }}"
+                  data-id="{{ $item->id }}"
+                  data-user-id="{{ $item->user_id }}">
                   Detail
                 </button>
               </div>
@@ -215,6 +226,11 @@
 
         <!-- Nama Item -->
         <h2 class="text-xl font-semibold text-gray-800" id="modalItemName">Item Name</h2>
+
+        <div class="mt-4">
+          <span class="text-gray-600 font-semibold">Dilaporkan oleh:</span>
+          <span id="modalReportedBy">-</span>
+        </div>
 
         <!-- Date -->
         <p class="text-sm text-gray-500 mt-5 flex items-center gap-2">
@@ -258,7 +274,15 @@
         <!-- Kontak -->
         <div class="mt-4 flex items-center gap-2">
           <a id="modalWhatsAppButton" href="#" target="_blank" class="bg-green-500 text-white text-xs px-3 py-2 rounded hover:bg-green-600">
-            <i class='bx bxl-whatsapp text-sm'></i> Hubungi via What'sApp
+            <i class=''></i> Hubungi via What'sApp
+          </a>
+          <!-- Tombol Claim/Return yang tampil sesuai jenis laporan -->
+          <a id="modalClaimButton" href="#" class="hidden bg-[#124076] text-white text-xs px-3 py-2 rounded hover:bg-blue-600">
+            <i class=''></i> Claim Barang
+          </a>
+
+          <a id="modalReturnButton" href="#" class="hidden bg-[#FF9D3D] text-white text-xs px-3 py-2 rounded hover:bg-orange-300">
+            <i class=''></i> Kembalikan Barang
           </a>
         </div>
       </div>
@@ -409,6 +433,9 @@
   const modalItemImage = document.getElementById('modalItemImage');
   const modalWhatsAppButton = document.getElementById('modalWhatsAppButton');
   const modalGoogleMapsButton = document.getElementById('modalGoogleMapsButton');
+  // Tambahkan referensi untuk tombol claim dan return
+  const modalClaimButton = document.getElementById('modalClaimButton');
+  const modalReturnButton = document.getElementById('modalReturnButton');
 
   // Tambahkan event listener ke setiap tombol
   detailButtons.forEach(button => {
@@ -421,8 +448,12 @@
       const location = button.getAttribute('data-location');
       const description = button.getAttribute('data-description');
       const image = button.getAttribute('data-image');
-      console.log('Image URL:', image); // Debug URL gambar
       const whatsapp = button.getAttribute('data-whatsapp');
+      // Tambahkan untuk mengambil tipe dan ID
+      const itemType = button.getAttribute('data-type');
+      const itemId = button.getAttribute('data-id');
+
+      console.log('Image URL:', image); // Debug URL gambar
 
       // Isi modal dengan data
       modalItemName.textContent = name;
@@ -434,33 +465,77 @@
       modalItemImage.src = image;
       modalWhatsAppButton.href = whatsapp;
 
+      const reporter = button.getAttribute('data-reporter');
+      document.getElementById('modalReportedBy').textContent = reporter;
+
+      // Tambahkan logic untuk menyembunyikan tombol untuk pelapor
+      const itemUserId = button.getAttribute('data-user-id');
+      const currentUserId = "{{ Auth::id() }}"; // ID user yang sedang login
+
+      // Tambahkan kondisi untuk menyembunyikan tombol jika user adalah pelapor
+      if (itemUserId === currentUserId) {
+        // Jika user adalah pelapor, sembunyikan tombol claim dan return
+        modalClaimButton.classList.add('hidden');
+        modalReturnButton.classList.add('hidden');
+      } else {
+        // Logic yang sudah ada untuk menentukan tombol mana yang ditampilkan
+        if (itemType === 'ditemukan') {
+          // Jika item ditemukan, tampilkan tombol claim
+          modalClaimButton.classList.remove('hidden');
+          modalReturnButton.classList.add('hidden');
+          modalClaimButton.href = `/claim-item?item_id=${itemId}`;
+        } else if (itemType === 'hilang') {
+          // Jika item hilang, tampilkan tombol return
+          modalReturnButton.classList.remove('hidden');
+          modalClaimButton.classList.add('hidden');
+          modalReturnButton.href = `/return-item?item_id=${itemId}`;
+        } else {
+          // Sembunyikan kedua tombol jika tidak jelas jenisnya
+          modalClaimButton.classList.add('hidden');
+          modalReturnButton.classList.add('hidden');
+        }
+      }
+
+      if (location && location.includes(',')) {
+        const cleanCoordinates = location.replace(/\s+/g, '');
+        modalGoogleMapsButton.href = `https://www.google.com/maps?q=${cleanCoordinates}`;
+        modalGoogleMapsButton.classList.remove('hidden');
+      } else {
+        modalGoogleMapsButton.classList.add('hidden');
+      }
+
       // Tampilkan modal
       modal.classList.remove('hidden');
     });
   });
 
-  // Tutup modal
-  const closeModalBtn = document.getElementById('closeModalBtn');
-  closeModalBtn.addEventListener('click', () => {
+  // Tambahkan event listener untuk tombol close
+  document.getElementById('closeModalBtn').addEventListener('click', function() {
     modal.classList.add('hidden');
   });
 
-  // Tutup modal jika klik di luar modal
-  window.addEventListener('click', (e) => {
+  // Tambahkan fitur untuk menutup modal ketika mengklik di luar modal
+  modal.addEventListener('click', function(e) {
     if (e.target === modal) {
+      modal.classList.add('hidden');
+    }
+  });
+
+  // Tambahkan keyboard support untuk menutup dengan tombol Escape
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
       modal.classList.add('hidden');
     }
   });
 </script>
 
-<script>
-  // Toggle Dropdown
+<!-- <script>
   document.getElementById('notification-icon').addEventListener('click', function() {
     const dropdown = document.getElementById('notification-dropdown');
     dropdown.classList.toggle('hidden');
   });
 
-  // Tutup dropdown saat klik di luar
+  
   document.addEventListener('click', function(e) {
     const icon = document.getElementById('notification-icon');
     const dropdown = document.getElementById('notification-dropdown');
@@ -468,44 +543,166 @@
       dropdown.classList.add('hidden');
     }
   });
-</script>
+</script> -->
 
 <!-- Nontifications -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-  function deleteNotification(notificationId) {
-    fetch('delete_notification.php', {
-        method: 'POST',
+  document.addEventListener('DOMContentLoaded', function() {
+    // Cek notifikasi saat halaman dimuat
+    loadNotifications();
+
+    // Toggle dropdown notifikasi
+    document.getElementById('notification-icon').addEventListener('click', function(e) {
+      e.stopPropagation();
+      const dropdown = document.getElementById('notification-dropdown');
+      dropdown.classList.toggle('hidden');
+
+      // Refresh notifikasi ketika dropdown dibuka
+      if (!dropdown.classList.contains('hidden')) {
+        loadNotifications();
+      }
+    });
+
+    // Tutup dropdown ketika klik di luar
+    document.addEventListener('click', function(e) {
+      const icon = document.getElementById('notification-icon');
+      const dropdown = document.getElementById('notification-dropdown');
+      if (!icon.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.classList.add('hidden');
+      }
+    });
+
+    // Tombol "Tandai semua dibaca"
+    // const markAllReadBtn = document.createElement('div');
+    // markAllReadBtn.classList.add('p-2', 'border-b', 'border-gray-200', 'flex', 'justify-between', 'items-center');
+    // markAllReadBtn.innerHTML = `
+    //   <h3 class="font-semibold">Notifikasi</h3>
+    //   <button id="mark-all-read" class="text-xs text-blue-600 hover:underline">Tandai semua dibaca</button>
+    // `;
+
+    // document.getElementById('notification-dropdown').prepend(markAllReadBtn);
+
+    document.getElementById('mark-all-read').addEventListener('click', function() {
+      markAllNotificationsAsRead();
+    });
+  });
+
+  function loadNotifications() {
+    fetch('/notifications')
+      .then(response => response.json())
+      .then(data => {
+        updateNotificationBadge(data);
+        displayNotifications(data);
+      })
+      .catch(error => console.error('Error fetching notifications:', error));
+  }
+
+  function updateNotificationBadge(notifications) {
+    const unreadCount = notifications.filter(n => n.is_read === 0).length;
+    const badge = document.getElementById('notification-badge');
+
+    badge.textContent = unreadCount;
+
+    if (unreadCount === 0) {
+      badge.classList.add('hidden');
+    } else {
+      badge.classList.remove('hidden');
+    }
+  }
+
+  function displayNotifications(notifications) {
+    const container = document.getElementById('notification-dropdown').querySelector('ul');
+    container.innerHTML = '';
+
+    if (notifications.length === 0) {
+      container.innerHTML = '<li class="p-4 text-center text-gray-500">Tidak ada notifikasi</li>';
+      return;
+    }
+
+    notifications.forEach(notif => {
+      const li = document.createElement('li');
+      li.className = `p-3 border-b ${notif.is_read === 0 ? 'bg-blue-50' : ''}`;
+
+      // Format tanggal
+      const date = new Date(notif.created_at);
+      const formattedDate = date.toLocaleString('id-ID', {
+        day: 'numeric',
+        month: 'short',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+
+      li.innerHTML = `
+        <div class="flex justify-between items-start">
+          <div class="flex-1">
+            <p class="text-gray-600 text-sm">${notif.message}</p>
+            <p class="text-gray-400 text-xs mt-1">${formattedDate}</p>
+          </div>
+          <button class="text-red-500 text-xs ml-2" onclick="deleteNotification(${notif.id})">
+            <i class="bx bx-trash"></i>
+          </button>
+        </div>
+      `;
+
+      if (notif.is_read === 0) {
+        const markReadBtn = document.createElement('button');
+        markReadBtn.className = 'text-xs text-blue-600 mt-1';
+        markReadBtn.textContent = 'Tandai sudah dibaca';
+        markReadBtn.onclick = () => markAsRead(notif.id);
+
+        li.querySelector('.flex-1').appendChild(markReadBtn);
+      }
+
+      container.appendChild(li);
+    });
+  }
+
+  function markAsRead(id) {
+    fetch(`/notifications/${id}/read`, {
+        method: 'PUT',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: `notification_id=${notificationId}`,
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        }
       })
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-          Swal.fire({
-            icon: 'success',
-            title: 'Berhasil',
-            text: 'Notifikasi berhasil dihapus!',
-          }).then(() => {
-            location.reload(); // Reload halaman untuk memperbarui daftar notifikasi
-          });
-        } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Gagal',
-            text: 'Gagal menghapus notifikasi: ' + (data.error || ''),
-          });
+          loadNotifications();
+        }
+      });
+  }
+
+  function markAllNotificationsAsRead() {
+    fetch('/notifications/read-all', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': '{{ csrf_token() }}'
         }
       })
-      .catch(error => {
-        console.error('Error:', error);
-        Swal.fire({
-          icon: 'error',
-          title: 'Kesalahan',
-          text: 'Terjadi kesalahan saat menghapus notifikasi.',
-        });
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          loadNotifications();
+        }
+      });
+  }
+
+  function deleteNotification(id) {
+    fetch(`/notifications/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          loadNotifications();
+        }
       });
   }
 </script>

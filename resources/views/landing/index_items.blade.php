@@ -45,15 +45,19 @@
   <section>
     <div class="search-content">
       <p class="qoute-search"><i class='bx bxs-quote-left'></i> Jangan khawatir, bersama kami barang Anda yang hilang akan kembali. Gunakan layanan kami untuk memulai pencarian sekarang.</p>
-      <form method="GET" action="">
+      <form method="GET" action="{{ route('landing.items') }}">
         <div class="search-bar">
           <!-- Dropdown untuk kategori -->
           <select id="category" name="category" class="btn-list">
-            <option value="">Kategori</option>
-            <option value="Elektronik">Elektronik</option>
-            <option value="Buku & Elektronik">Buku & Elektronik</option>
-            <option value="Aksesori Pribadi">Aksesori Pribadi</option>
-            <option value="Peralatan Khusus">Perhiasan Khusus</option>
+            <option value="">Semua Kategori</option>
+            <option value="Perhiasan Khusus" {{ request('category') == 'Perhiasan Khusus' ? 'selected' : '' }}>Perhiasan Khusus</option>
+            <option value="Elektronik" {{ request('category') == 'Elektronik' ? 'selected' : '' }}>Elektronik</option>
+            <option value="Buku & Dokumen" {{ request('category') == 'Buku & Dokumen' ? 'selected' : '' }}>Buku & Dokumen</option>
+            <option value="Tas & Dompet" {{ request('category') == 'Tas & Dompet' ? 'selected' : '' }}>Tas & Dompet</option>
+            <option value="Perlengkapan Pribadi" {{ request('category') == 'Perlengkapan Pribadi' ? 'selected' : '' }}>Perlengkapan Pribadi</option>
+            <option value="Peralatan Praktikum" {{ request('category') == 'Peralatan Praktikum' ? 'selected' : '' }}>Peralatan Praktikum</option>
+            <option value="Aksesori" {{ request('category') == 'Aksesori' ? 'selected' : '' }}>Aksesori</option>
+            <option value="Lainnya" {{ request('category') == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
           </select>
 
           <!-- Input untuk pencarian -->
@@ -61,6 +65,7 @@
             type="text"
             id="search"
             name="search"
+            value="{{ request('search') }}"
             placeholder="Search" />
 
           <!-- Tombol Submit -->
@@ -93,6 +98,9 @@
               {{ $statusText }}
             </span>
             <div class="card-image">
+              @php
+              $imagePath = !empty($item->photo_path) ? 'storage/' . $item->photo_path : 'images/default-image.jpg';
+              @endphp
               <img src="{{ asset($imagePath) }}" alt="Report Image" />
             </div>
             <div class="card-details">
@@ -296,7 +304,7 @@
         }
       }).then((result) => {
         if (result.isConfirmed) {
-          window.location.href = 'log_in.php'; // Redirect ke halaman login
+          window.location.href = '{{ route("login") }}'; // Redirect ke halaman login
         }
       });
     }
