@@ -343,4 +343,647 @@ class ItemApiController extends Controller
             'return_id' => $return->id
         ], 201);
     }
+
+
+
+
+
+
+
+    // ------------------------------------------------------ Section for Lost Items ------------------------------------------------------
+
+
+
+
+    /**
+     * Display a listing of lost items.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function lostItems(Request $request)
+    {
+        $query = Item::where('type', 'hilang')
+            ->where('status', 'approved');
+
+        // Filter dan sorting tetap sama...
+
+        // Pagination
+        $perPage = $request->get('per_page', 15);
+        $items = $query->paginate($perPage);
+
+        // Kembalikan hanya data saja, tanpa meta/links pagination
+        return response()->json([
+            'data' => ItemResource::collection($items)->collection
+        ]);
+    }
+
+    /**
+     * Display the specified lost item.
+     *
+     * @param  int  $item
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function showLostItem($item)
+    {
+        $item = Item::where('id', $item)
+            ->where('type', 'hilang')
+            ->firstOrFail();
+
+        return new ItemResource($item);
+    }
+
+    /**
+     * Search for lost items.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function searchLostItems(Request $request)
+    {
+        $query = Item::where('type', 'hilang')
+            ->where('status', 'approved');
+
+        // Search by name
+        if ($request->has('q')) {
+            $query->where('item_name', 'like', '%' . $request->q . '%');
+        }
+
+        // Filter by category
+        if ($request->has('category')) {
+            $query->where('category', $request->category);
+        }
+
+        // Filter by date range
+        if ($request->has('from_date')) {
+            $query->whereDate('date_of_event', '>=', $request->from_date);
+        }
+
+        if ($request->has('to_date')) {
+            $query->whereDate('date_of_event', '<=', $request->to_date);
+        }
+
+        $items = $query->latest()->paginate(15);
+
+        return response()->json([
+            'data' => ItemResource::collection($items)->collection
+        ]);
+    }
+
+
+    /**
+     * Store a newly created lost item.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function storeLostItem(Request $request)
+    {
+        $validated = $request->validate([
+            'item_name' => 'required|string|max:255',
+            'category' => 'required|string',
+            'date_of_event' => 'required|date',
+            'description' => 'nullable|string',
+            'location' => 'required|string',
+            'email' => 'nullable|email',
+            'phone_number' => 'nullable|string|max:20',
+            'photo' => 'nullable|image|max:5120', // 5MB
+        ]);
+
+        // Get authenticated user
+        $user = Auth::user();
+
+        // Ensure this is a lost item
+        $validated['type'] = 'hilang';
+        $validated['status'] = 'approved';
+        $validated['user_id'] = $user->id;
+
+        // Add report_by field from authenticated user
+        if (!empty($user->first_name) || !empty($user->last_name)) {
+            $validated['report_by'] = trim($user->first_name . ' ' . $user->last_name);
+        } else {
+            $validated['report_by'] = $user->name;
+        }
+
+        // Handle photo upload
+        if ($request->hasFile('photo')) {
+            $path = $request->file('photo')->store('items', 'public');
+            $validated['photo_path'] = $path;
+        }
+
+        $item = Item::create($validated);
+
+        return (new ItemResource($item))
+            ->response()
+            ->setStatusCode(201);
+    }
+
+
+    /**
+     * Update the specified lost item.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateLostItem(Request $request, $id) // Ganti $item menjadi $id agar konsisten
+    {
+        try {
+            // Coba ambil item tanpa constraint dulu
+            $item = Item::findOrFail($id);
+
+            // Kemudian verifikasi tipe item
+            if ($item->type !== 'hilang') {
+                return response()->json([
+                    'message' => 'Hanya barang dengan tipe "hilang" yang bisa diupdate melalui endpoint ini',
+                    'error' => 'INVALID_ITEM_TYPE'
+                ], 422);
+            }
+
+            // Update item
+            $validated = $request->validate([
+                'item_name' => 'sometimes|required|string|max:255',
+                'category' => 'sometimes|required|string',
+                'date_of_event' => 'sometimes|required|date',
+                'description' => 'nullable|string',
+                'location' => 'sometimes|required|string',
+                'email' => 'nullable|email',
+                'phone_number' => 'nullable|string|max:20',
+            ]);
+
+            $item->update($validated);
+
+            return new ItemResource($item);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'Item tidak ditemukan',
+                'error' => 'ITEM_NOT_FOUND',
+                'id' => $id
+            ], 404);
+        }
+    }
+
+    /**
+     * Remove the specified lost item.
+     *
+     * @param  int  $item
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function destroyLostItem(Request $request, $id)
+    {
+        try {
+            // Coba cari item tanpa filter dulu untuk debugging
+            $item = Item::find($id);
+
+            if (!$item) {
+                return response()->json([
+                    'message' => 'Item tidak ditemukan',
+                    'error' => 'ITEM_NOT_FOUND',
+                    'id' => $id
+                ], 404);
+            }
+
+            // Cek tipe item
+            if ($item->type !== 'hilang') {
+                return response()->json([
+                    'message' => 'Item ini bukan barang hilang',
+                    'error' => 'INVALID_ITEM_TYPE',
+                    'type' => $item->type
+                ], 422);
+            }
+
+            // Hapus foto jika ada
+            if ($item->photo_path) {
+                Storage::disk('public')->delete($item->photo_path);
+            }
+
+            // Hapus item
+            $item->delete();
+
+            return response()->json([
+                'message' => 'Item berhasil dihapus',
+                'id' => $id
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Terjadi kesalahan saat menghapus item',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function returnLostItem(Request $request, $item)
+    {
+        try {
+            // Find the item
+            $lostItem = Item::findOrFail($item);
+
+            // Check if the item is lost type and approved
+            if ($lostItem->type !== 'hilang') {
+                return response()->json([
+                    'message' => 'This item cannot be returned. Only lost items can be returned.',
+                    'error' => 'INVALID_ITEM_TYPE'
+                ], 422);
+            }
+
+            if ($lostItem->status !== 'approved') {
+                return response()->json([
+                    'message' => 'This item cannot be returned. Only approved items can be returned.',
+                    'error' => 'INVALID_ITEM_STATUS'
+                ], 422);
+            }
+
+            // Validate request
+            $validated = $request->validate([
+                'where_found' => 'required|string',
+                'returner_phone' => 'required|string|max:20',
+                'notes' => 'nullable|string',
+                'item_photo' => 'nullable|image|max:5120', // 5MB max
+            ]);
+
+            // Get authenticated user
+            $user = Auth::user();
+
+            // Create return record
+            $return = new \App\Models\ItemReturn();
+            $return->item_id = $lostItem->id;
+            $return->returner_id = $user->id;
+
+            // Set returner name
+            if (!empty($user->first_name) || !empty($user->last_name)) {
+                $return->returner_name = trim($user->first_name . ' ' . $user->last_name);
+            } else {
+                $return->returner_name = $user->name;
+            }
+
+            $return->returner_email = $user->email;
+            $return->returner_phone = $validated['returner_phone'];
+            $return->where_found = $validated['where_found'];
+            $return->notes = $validated['notes'] ?? null;
+            $return->return_date = now();
+            $return->status = 'pending';
+
+            // Upload item photo if provided
+            if ($request->hasFile('item_photo')) {
+                $filePath = $request->file('item_photo')->store('return_photos', 'public');
+                $return->item_photo = $filePath;
+            }
+
+            $return->save();
+
+            // Create notification for the original reporter
+            if ($lostItem->user_id) {
+                \App\Models\Notification::create([
+                    'user_id' => $lostItem->user_id,
+                    'message' => "Someone has returned your lost item: {$lostItem->item_name}",
+                    'is_read' => 0
+                ]);
+            }
+
+            return response()->json([
+                'message' => 'Return request submitted successfully',
+                'return_id' => $return->id,
+                'status' => 'pending',
+                'item' => [
+                    'id' => $lostItem->id,
+                    'name' => $lostItem->item_name,
+                    'category' => $lostItem->category
+                ]
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error submitting return request',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+    // ------------------------------------------------------ Section for Found Items ------------------------------------------------------
+
+
+    /**
+     * Display a listing of found items.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function foundItems(Request $request)
+    {
+        $query = Item::where('type', 'ditemukan')
+            ->where('status', 'approved');
+
+        // Filter by category if provided
+        if ($request->has('category')) {
+            $query->where('category', $request->category);
+        }
+
+        // Filter by date
+        if ($request->has('from_date')) {
+            $query->whereDate('date_of_event', '>=', $request->from_date);
+        }
+
+        if ($request->has('to_date')) {
+            $query->whereDate('date_of_event', '<=', $request->to_date);
+        }
+
+        // Pagination
+        $perPage = $request->get('per_page', 15);
+        $items = $query->latest()->paginate($perPage);
+
+        return response()->json([
+            'data' => ItemResource::collection($items)->collection
+        ]);
+    }
+
+    /**
+     * Display the specified found item.
+     *
+     * @param  int  $item
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function showFoundItem($item)
+    {
+        $item = Item::where('id', $item)
+            ->where('type', 'ditemukan')
+            ->firstOrFail();
+
+        return new ItemResource($item);
+    }
+
+    /**
+     * Search for found items.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function searchFoundItems(Request $request)
+    {
+        $query = Item::where('type', 'ditemukan')
+            ->where('status', 'approved');
+
+        // Search by name
+        if ($request->has('q')) {
+            $query->where('item_name', 'like', '%' . $request->q . '%');
+        }
+
+        // Filter by category
+        if ($request->has('category')) {
+            $query->where('category', $request->category);
+        }
+
+        // Filter by date range
+        if ($request->has('from_date')) {
+            $query->whereDate('date_of_event', '>=', $request->from_date);
+        }
+
+        if ($request->has('to_date')) {
+            $query->whereDate('date_of_event', '<=', $request->to_date);
+        }
+
+        $items = $query->latest()->paginate(15);
+
+        return response()->json([
+            'data' => ItemResource::collection($items)->collection
+        ]);
+    }
+
+    /**
+     * Store a newly created found item.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+
+    public function storeFoundItem(Request $request)
+    {
+        $validated = $request->validate([
+            'item_name' => 'required|string|max:255',
+            'category' => 'required|string',
+            'date_of_event' => 'required|date',
+            'description' => 'nullable|string',
+            'location' => 'required|string',
+            'email' => 'nullable|email',
+            'phone_number' => 'nullable|string|max:20',
+            'photo' => 'nullable|image|max:5120', // 5MB
+        ]);
+
+        // Get authenticated user
+        $user = Auth::user();
+
+        // Ensure this is a found item
+        $validated['type'] = 'ditemukan';
+        $validated['status'] = 'approved';
+        $validated['user_id'] = $user->id;
+
+        // Add report_by field from authenticated user
+        if (!empty($user->first_name) || !empty($user->last_name)) {
+            $validated['report_by'] = trim($user->first_name . ' ' . $user->last_name);
+        } else {
+            $validated['report_by'] = $user->name;
+        }
+
+        // Handle photo upload
+        if ($request->hasFile('photo')) {
+            $path = $request->file('photo')->store('items', 'public');
+            $validated['photo_path'] = $path;
+        }
+
+        $item = Item::create($validated);
+
+        return (new ItemResource($item))
+            ->response()
+            ->setStatusCode(201);
+    }
+
+    /**
+     * Claim a found item.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $item
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function claimFoundItem(Request $request, $item)
+    {
+        try {
+            // Find the item
+            $foundItem = Item::findOrFail($item);
+
+            // Check if the item is found type and approved
+            if ($foundItem->type !== 'ditemukan') {
+                return response()->json([
+                    'message' => 'This item cannot be claimed. Only found items can be claimed.',
+                    'error' => 'INVALID_ITEM_TYPE'
+                ], 422);
+            }
+
+            if ($foundItem->status !== 'approved') {
+                return response()->json([
+                    'message' => 'This item cannot be claimed. Only approved items can be claimed.',
+                    'error' => 'INVALID_ITEM_STATUS'
+                ], 422);
+            }
+
+            // Validate request
+            $validated = $request->validate([
+                'ownership_proof' => 'required|string',
+                'claimer_phone' => 'required|string|max:20',
+                'notes' => 'nullable|string',
+                'proof_document' => 'nullable|image|max:5120', // 5MB max
+            ]);
+
+            // Get authenticated user
+            $user = Auth::user();
+
+            // Create claim
+            $claim = new \App\Models\Claim();
+            $claim->type = 'claim';
+            $claim->item_id = $foundItem->id;
+            $claim->claimer_id = $user->id;
+
+            // Set claimer name
+            if (!empty($user->first_name) || !empty($user->last_name)) {
+                $claim->claimer_name = trim($user->first_name . ' ' . $user->last_name);
+            } else {
+                $claim->claimer_name = $user->name;
+            }
+
+            $claim->claimer_email = $user->email;
+            $claim->claimer_phone = $validated['claimer_phone'];
+            $claim->ownership_proof = $validated['ownership_proof'];
+            $claim->notes = $validated['notes'] ?? null;
+            $claim->claim_date = now();
+            $claim->status = 'pending';
+
+            // Upload proof document if provided
+            if ($request->hasFile('proof_document')) {
+                $filePath = $request->file('proof_document')->store('claim_proofs', 'public');
+                $claim->proof_document = $filePath;
+            }
+
+            $claim->save();
+
+            // Create notification for the finder
+            if ($foundItem->user_id) {
+                \App\Models\Notification::create([
+                    'user_id' => $foundItem->user_id,
+                    'message' => "Someone claimed your found item: {$foundItem->item_name}",
+                    'is_read' => 0
+                ]);
+            }
+
+            return response()->json([
+                'message' => 'Claim submitted successfully',
+                'claim_id' => $claim->id,
+                'status' => 'pending',
+                'item' => [
+                    'id' => $foundItem->id,
+                    'name' => $foundItem->item_name,
+                    'category' => $foundItem->category
+                ]
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error submitting claim',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Update the specified found item.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateFoundItem(Request $request, $id)
+    {
+        try {
+            // Find the item
+            $item = Item::findOrFail($id);
+
+            // Verify it's a found item
+            if ($item->type !== 'ditemukan') {
+                return response()->json([
+                    'message' => 'This is not a found item',
+                    'error' => 'INVALID_ITEM_TYPE',
+                    'type' => $item->type
+                ], 422);
+            }
+
+            // Validate request
+            $validated = $request->validate([
+                'item_name' => 'sometimes|string|max:255',
+                'category' => 'sometimes|string',
+                'date_of_event' => 'sometimes|date',
+                'description' => 'nullable|string',
+                'location' => 'sometimes|string',
+                'email' => 'nullable|email',
+                'phone_number' => 'nullable|string|max:20',
+                'photo' => 'nullable|image|max:5120', // 5MB max
+            ]);
+
+            // Handle photo upload
+            if ($request->hasFile('photo')) {
+                // Delete old photo if exists
+                if ($item->photo_path) {
+                    Storage::disk('public')->delete($item->photo_path);
+                }
+
+                $path = $request->file('photo')->store('items', 'public');
+                $validated['photo_path'] = $path;
+            }
+
+            $item->update($validated);
+
+            return new ItemResource($item);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error updating found item',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Remove the specified found item.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function destroyFoundItem($id)
+    {
+        try {
+            // Find the item
+            $item = Item::findOrFail($id);
+
+            // Verify it's a found item
+            if ($item->type !== 'ditemukan') {
+                return response()->json([
+                    'message' => 'Item ini bukan barang ditemukan',
+                    'error' => 'INVALID_ITEM_TYPE',
+                    'type' => $item->type
+                ], 422);
+            }
+
+            // Delete photo if exists
+            if ($item->photo_path) {
+                Storage::disk('public')->delete($item->photo_path);
+            }
+
+            // Delete item
+            $item->delete();
+
+            return response()->json([
+                'message' => 'Item berhasil dihapus',
+                'id' => $id
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Terjadi kesalahan saat menghapus item',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

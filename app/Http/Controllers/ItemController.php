@@ -187,13 +187,13 @@ class ItemController extends Controller
         // Ambil ID barang yang dilaporkan user
         $myItemIds = $userItems->pluck('id')->toArray();
 
-        // Ambil semua klaim terhadap barang user (termasuk pengembalian)
+        // Ambil semua klaim terhadap barang user
         $claimsOnMyItems = \App\Models\Claim::whereIn('item_id', $myItemIds)
             ->with(['item']) // Load relasi item
             ->latest()
             ->get();
 
-        // Ambil klaim/pengembalian yang dibuat oleh user
+        // Ambil klaim yang dibuat oleh user
         $myClaimsQuery = \App\Models\Claim::where('claimer_email', $user->email);
 
         // Filter klaim berdasarkan kategori barang jika ada
@@ -203,13 +203,34 @@ class ItemController extends Controller
             });
         }
 
-        $myClaimsAndReturns = $myClaimsQuery->with(['item'])->latest()->get();
+        $myClaims = $myClaimsQuery->with(['item'])->latest()->get();
 
+        // Query baru untuk returns yang dibuat user
+        $myReturnsQuery = \App\Models\ItemReturn::where('returner_id', $user->id);
+
+        // Filter berdasarkan kategori barang jika ada
+        if ($request->filled('category')) {
+            $myReturnsQuery->whereHas('item', function ($q) use ($request) {
+                $q->where('category', $request->category);
+            });
+        }
+
+        $myReturns = $myReturnsQuery->with(['item'])->latest()->get();
+
+        // Ambil returns untuk barang yang dimiliki user
+        $returnsOnMyItems = \App\Models\ItemReturn::whereIn('item_id', $myItemIds)
+            ->with(['item'])
+            ->latest()
+            ->get();
+
+        // SATU return statement dengan semua data
         return view('users.activity', [
             'user' => $user,
             'userItems' => $userItems,
             'claimsOnMyItems' => $claimsOnMyItems,
-            'myClaimsAndReturns' => $myClaimsAndReturns,
+            'myClaimsAndReturns' => $myClaims,
+            'myReturns' => $myReturns,
+            'returnsOnMyItems' => $returnsOnMyItems,
             'filterCategory' => $request->category,
             'filterType' => $request->type
         ]);
@@ -429,32 +450,26 @@ class ItemController extends Controller
         // Menggunakan data user yang login
         $user = Auth::user();
 
-        // Buat nama claimer berdasarkan informasi user (gunakan pendekatan yang sama seperti di store())
-        $claimer_name = '';
+        // Buat nama returner berdasarkan informasi user
+        $returner_name = '';
         if (!empty($user->first_name) || !empty($user->last_name)) {
-            // Jika ada first_name atau last_name, gunakan keduanya
-            $claimer_name = trim($user->first_name . ' ' . $user->last_name);
+            $returner_name = trim($user->first_name . ' ' . $user->last_name);
         } else if (!empty($user->name)) {
-            // Jika tidak ada first/last name tetapi ada name, gunakan name
-            $claimer_name = $user->name;
+            $returner_name = $user->name;
         } else {
-            // Fallback jika semua null
-            $claimer_name = 'User_' . $user->id;
+            $returner_name = 'User_' . $user->id;
         }
 
-        // Buat objek claim dengan tipe 'return'
-        $return = new \App\Models\Claim();
-        $return->type = 'return'; // Set tipe sebagai return
+        // Buat objek ItemReturn baru (bukan Claim)
+        $return = new \App\Models\ItemReturn();
         $return->item_id = $validated['item_id'];
-
-        // Gunakan field claim yang sudah ada untuk data return
-        $return->claimer_name = $claimer_name;  // Gunakan variabel claimer_name yang sudah dibuat
-        $return->claimer_email = $user->email;
-        $return->claimer_phone = $validated['returner_phone'];
+        $return->returner_id = $user->id;
+        $return->returner_name = $returner_name;
+        $return->returner_email = $user->email;
+        $return->returner_phone = $validated['returner_phone'];
         $return->where_found = $validated['where_found'];
-        $return->ownership_proof = 'Dikembalikan langsung oleh penemu';
         $return->notes = $validated['notes'] ?? null;
-        $return->claim_date = now();
+        $return->return_date = now();
         $return->status = 'pending';
 
         // Upload foto item jika ada
@@ -465,8 +480,47 @@ class ItemController extends Controller
 
         $return->save();
 
+        // Notifikasi untuk pemilik barang
+        if ($item = Item::find($validated['item_id'])) {
+            Notification::create([
+                'user_id' => $item->user_id,
+                'message' => "Barang Anda ({$item->item_name}) telah dikembalikan oleh seseorang. Mohon cek detailnya.",
+                'is_read' => 0
+            ]);
+        }
+
         return redirect()->route('dashboard')->with('success', 'Laporan pengembalian barang berhasil diajukan. Mohon tunggu konfirmasi dari pemilik barang.');
     }
+
+    public function updateReturnStatus(Request $request)
+    {
+        $validated = $request->validate([
+            'return_id' => 'required|exists:returns,id',
+            'status' => 'required|in:approved,rejected,completed',
+        ]);
+
+        $return = \App\Models\ItemReturn::findOrFail($validated['return_id']);
+
+        // Periksa kepemilikan item
+        $item = Item::findOrFail($return->item_id);
+        if ($item->user_id != Auth::id()) {
+            return redirect()->back()->with('error', 'Anda tidak memiliki izin untuk mengubah status pengembalian ini');
+        }
+
+        // Update status pengembalian
+        $return->status = $validated['status'];
+        $return->save();
+
+        // Jika disetujui, update status item menjadi 'Claimed' (yang sudah ada dalam ENUM)
+        // bukan 'returned' yang tidak ada dalam ENUM
+        if ($validated['status'] == 'approved' || $validated['status'] == 'completed') {
+            $item->status = 'Claimed'; // Menggunakan nilai yang valid dalam ENUM
+            $item->save();
+        }
+
+        return redirect()->back()->with('success', 'Status pengembalian berhasil diperbarui');
+    }
+
 
     public function updateClaimStatus(Request $request)
     {

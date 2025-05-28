@@ -221,14 +221,16 @@
             <div id="tab-content-2" class="hidden">
                 <h3 class="text-xl font-semibold mb-4">Permintaan Pengembalian & Klaim Barang Anda</h3>
 
-                @if(isset($claimsOnMyItems) && $claimsOnMyItems->count() > 0)
+                @if((isset($claimsOnMyItems) && $claimsOnMyItems->count() > 0) ||
+                (isset($returnsOnMyItems) && $returnsOnMyItems->count() > 0))
                 <div class="space-y-4">
+                    <!-- Menampilkan Claims -->
                     @foreach($claimsOnMyItems as $claim)
-                    <div class="bg-white p-4 rounded-lg shadow border-l-4 {{ $claim->type == 'return' ? 'border-purple-500' : 'border-blue-500' }}">
+                    <div class="bg-white p-4 rounded-lg shadow border-l-4 border-blue-500">
                         <div class="flex justify-between">
                             <div>
-                                <span class="inline-block px-2 py-1 text-xs {{ $claim->type == 'return' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800' }} rounded-full mb-2">
-                                    {{ $claim->type == 'return' ? 'Pengembalian' : 'Klaim' }}
+                                <span class="inline-block px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full mb-2">
+                                    Klaim
                                 </span>
                                 <h4 class="font-semibold">{{ $claim->item->item_name }}</h4>
                                 <p class="text-sm text-gray-600">
@@ -236,25 +238,7 @@
                                 </p>
                                 <p class="text-sm text-gray-500">{{ \Carbon\Carbon::parse($claim->claim_date)->format('d M Y H:i') }}</p>
 
-                                @if($claim->type == 'return')
-                                <p class="text-sm mt-2">
-                                    <strong>Lokasi ditemukan:</strong> {{ $claim->where_found }}
-                                </p>
-                                <p class="text-sm">
-                                    <strong>Catatan:</strong> {{ $claim->notes ?? 'Tidak ada catatan' }}
-                                </p>
-                                @if($claim->item_photo)
-                                <div class="mt-2">
-                                    <img src="{{ asset('storage/'.$claim->item_photo) }}" alt="Foto Barang" class="w-24 h-24 object-cover rounded">
-                                </div>
-                                @endif
-                                @else
-                                <!-- Tambahkan kode ini untuk menampilkan gambar pada klaim barang -->
-                                <div class="mt-2">
-                                    <img src="{{ $claim->item->photo_path ? asset('storage/'.$claim->item->photo_path) : asset('Assets/img/no-image.png') }}"
-                                        alt="Foto Barang" class="w-24 h-24 object-cover rounded">
-                                </div>
-                                @endif
+                                <!-- Detail klaim yang sudah ada... -->
                             </div>
 
                             <div>
@@ -267,27 +251,80 @@
                                         <input type="hidden" name="claim_id" value="{{ $claim->id }}">
                                         <input type="hidden" name="status" value="approved">
                                         <button type="submit" class="bg-green-500 text-white text-xs px-2 py-1 rounded hover:bg-green-600">
-                                            {{ $claim->type == 'return' ? 'Terima Pengembalian' : 'Terima Klaim' }}
+                                            Terima Klaim
                                         </button>
                                     </form>
 
-                                    <form action="{{ route('claim.update-status') }}" method="POST" class="inline">
+                                    <!-- Tombol Tolak -->
+                                </div>
+                                @elseif($claim->status == 'approved')
+                                <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Diterima</span>
+                                @elseif($claim->status == 'rejected')
+                                <span class="inline-block px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">Ditolak</span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+
+                    <!-- Menampilkan Returns dari tabel returns -->
+                    @foreach($returnsOnMyItems as $return)
+                    <div class="bg-white p-4 rounded-lg shadow border-l-4 border-purple-500">
+                        <div class="flex justify-between">
+                            <div>
+                                <span class="inline-block px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded-full mb-2">
+                                    Pengembalian
+                                </span>
+                                <h4 class="font-semibold">{{ $return->item->item_name }}</h4>
+                                <p class="text-sm text-gray-600">
+                                    Oleh: {{ $return->returner_name }}
+                                </p>
+                                <p class="text-sm text-gray-500">{{ \Carbon\Carbon::parse($return->return_date)->format('d M Y H:i') }}</p>
+
+                                <p class="text-sm mt-2">
+                                    <strong>Lokasi ditemukan:</strong> {{ $return->where_found }}
+                                </p>
+                                <p class="text-sm">
+                                    <strong>Catatan:</strong> {{ $return->notes ?? 'Tidak ada catatan' }}
+                                </p>
+                                @if($return->item_photo)
+                                <div class="mt-2">
+                                    <img src="{{ asset('storage/'.$return->item_photo) }}" alt="Foto Barang" class="w-24 h-24 object-cover rounded">
+                                </div>
+                                @endif
+                            </div>
+
+                            <div>
+                                @if($return->status == 'pending')
+                                <span class="inline-block px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-md">Menunggu</span>
+
+                                <div class="mt-2 space-x-2">
+                                    <form action="{{ route('return.update-status') }}" method="POST" class="inline">
                                         @csrf
-                                        <input type="hidden" name="claim_id" value="{{ $claim->id }}">
+                                        <input type="hidden" name="return_id" value="{{ $return->id }}">
+                                        <input type="hidden" name="status" value="approved">
+                                        <button type="submit" class="bg-green-500 text-white text-xs px-2 py-1 rounded hover:bg-green-600">
+                                            Terima Pengembalian
+                                        </button>
+                                    </form>
+
+                                    <form action="{{ route('return.update-status') }}" method="POST" class="inline">
+                                        @csrf
+                                        <input type="hidden" name="return_id" value="{{ $return->id }}">
                                         <input type="hidden" name="status" value="rejected">
                                         <button type="submit" class="bg-red-500 text-white text-xs px-2 py-1 rounded hover:bg-red-600">
                                             Tolak
                                         </button>
                                     </form>
                                 </div>
-                                <a href="https://wa.me/{{ preg_replace('/^0/', '62', $claim->claimer_phone) }}"
+                                <a href="https://wa.me/{{ preg_replace('/^0/', '62', $return->returner_phone) }}"
                                     target="_blank"
                                     class="mt-32 inline-block bg-green-500 text-white text-xs px-3 py-2 rounded hover:bg-green-600">
                                     <i class='bx bxl-whatsapp mr-1'></i> Hubungi via WhatsApp
                                 </a>
-                                @elseif($claim->status == 'approved')
+                                @elseif($return->status == 'approved')
                                 <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Diterima</span>
-                                @elseif($claim->status == 'rejected')
+                                @elseif($return->status == 'rejected')
                                 <span class="inline-block px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">Ditolak</span>
                                 @endif
                             </div>
@@ -306,24 +343,50 @@
             <div id="tab-content-3" class="hidden">
                 <h3 class="text-xl font-semibold mb-4">Klaim & Pengembalian yang Saya Ajukan</h3>
 
-                @if(isset($myClaimsAndReturns) && $myClaimsAndReturns->count() > 0)
+                @if((isset($myClaims) && $myClaims->count() > 0) ||
+                (isset($myReturns) && $myReturns->count() > 0))
                 <div class="space-y-4">
+                    <!-- Menampilkan Klaim Saya -->
                     @foreach($myClaimsAndReturns as $myClaim)
-                    <div class="bg-white p-4 rounded-lg shadow border-l-4 {{ $myClaim->type == 'return' ? 'border-purple-500' : 'border-blue-500' }}">
+                    <div class="bg-white p-4 rounded-lg shadow border-l-4 border-blue-500">
                         <div class="flex justify-between">
                             <div>
-                                <span class="inline-block px-2 py-1 text-xs {{ $myClaim->type == 'return' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800' }} rounded-full mb-2">
-                                    {{ $myClaim->type == 'return' ? 'Pengembalian' : 'Klaim' }}
+                                <span class="inline-block px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full mb-2">
+                                    Klaim
                                 </span>
                                 <h4 class="font-semibold">{{ $myClaim->item->item_name }}</h4>
                                 <p class="text-sm text-gray-500">{{ \Carbon\Carbon::parse($myClaim->claim_date)->format('d M Y H:i') }}</p>
 
                                 <div class="mt-2">
                                     <span class="inline-block px-2 py-1 
-                                    {{ $myClaim->status == 'approved' ? 'bg-green-100 text-green-800' : 
-                                       ($myClaim->status == 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }} 
-                                    text-xs rounded-full">
+                            {{ $myClaim->status == 'approved' ? 'bg-green-100 text-green-800' : 
+                               ($myClaim->status == 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }} 
+                            text-xs rounded-full">
                                         {{ ucfirst($myClaim->status) }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+
+                    <!-- Menampilkan Pengembalian Saya -->
+                    @foreach($myReturns as $myReturn)
+                    <div class="bg-white p-4 rounded-lg shadow border-l-4 border-purple-500">
+                        <div class="flex justify-between">
+                            <div>
+                                <span class="inline-block px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded-full mb-2">
+                                    Pengembalian
+                                </span>
+                                <h4 class="font-semibold">{{ $myReturn->item->item_name }}</h4>
+                                <p class="text-sm text-gray-500">{{ \Carbon\Carbon::parse($myReturn->return_date)->format('d M Y H:i') }}</p>
+
+                                <div class="mt-2">
+                                    <span class="inline-block px-2 py-1 
+                            {{ $myReturn->status == 'approved' ? 'bg-green-100 text-green-800' : 
+                               ($myReturn->status == 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }} 
+                            text-xs rounded-full">
+                                        {{ ucfirst($myReturn->status) }}
                                     </span>
                                 </div>
                             </div>

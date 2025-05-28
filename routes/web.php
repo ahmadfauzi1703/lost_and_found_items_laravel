@@ -163,6 +163,28 @@ Route::post('/return-item', [App\Http\Controllers\ItemController::class, 'proces
 
 Route::post('/items/claim/update-status', [ItemController::class, 'updateClaimStatus'])->name('claim.update-status');
 
+Route::post('/items/return/update-status', [ItemController::class, 'updateReturnStatus'])
+    ->name('return.update-status')
+    ->middleware('auth');
+
+Route::get('/items/{item}/return', [App\Http\Controllers\ItemController::class, 'showReturnItemForm'])
+    ->name('items.return.form')
+    ->middleware('auth');
+
+// Route untuk menyimpan data pengembalian dari detail item
+Route::post('/items/{item}/return', [App\Http\Controllers\ItemController::class, 'storeReturn'])
+    ->name('items.return.store')
+    ->middleware('auth');
+
+Route::middleware(['auth'])->group(function () {
+    // Routes lain yang sudah ada...
+    Route::get('/my-returns', [ItemController::class, 'myReturns'])->name('my.returns');
+    Route::get('/returns/{return}', [ItemController::class, 'showReturn'])->name('returns.show');
+});
+
+
+
+
 Route::get('/items/{item}/claim', [App\Http\Controllers\ItemController::class, 'showClaimForm'])
     ->name('items.claim.form')
     ->middleware('auth');
