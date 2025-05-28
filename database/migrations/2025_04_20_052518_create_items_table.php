@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('phone_number', 15)->nullable();
             $table->string('location', 100)->nullable();
             $table->string('photo_path')->nullable();
-            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending'); // Tambahkan baris ini
+            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->timestamps();
             $table->unsignedBigInteger('user_id');  // Assuming you have a users table
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
