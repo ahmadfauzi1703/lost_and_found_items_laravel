@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\ItemReturn; // Perbaikan import
-use App\Http\Resources\ReturnResource; // Anda perlu membuat resource ini
+use App\Models\ItemReturn; 
+use App\Http\Resources\ReturnResource; 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -42,7 +42,7 @@ class ReturnApiController extends Controller
     public function myReturns(Request $request)
     {
         $query = ItemReturn::with('item')
-            ->where('returner_id', Auth::id()); // Perhatikan perubahan nama field
+            ->where('returner_id', Auth::id()); 
 
         // Filter by status
         if ($request->filled('status')) {
@@ -91,9 +91,9 @@ class ReturnApiController extends Controller
 
         $validated = $request->validate([
             'where_found' => 'sometimes|required|string',
-            'returner_phone' => 'sometimes|required|string|max:20', // Perubahan nama field
+            'returner_phone' => 'sometimes|required|string|max:20', 
             'notes' => 'nullable|string',
-            'item_photo' => 'nullable|image|max:5120', // 5MB max
+            'item_photo' => 'nullable|image|max:5120', 
         ]);
 
 

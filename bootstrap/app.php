@@ -16,12 +16,17 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
-            'role' => \App\Http\Middleware\RoleMiddleware::class, // Pastikan RoleMiddleware ada di dalam app/Http/Middleware/
+            'role' => \App\Http\Middleware\RoleMiddleware::class,
         ]);
 
+        // Konfigurasi CORS untuk API
         $middleware->group('api', [
             EnsureFrontendRequestsAreStateful::class,
+            \Illuminate\Http\Middleware\HandleCors::class, // CORS bawaan Laravel 12
         ]);
+
+        // Tambahkan CORS middleware untuk web routes juga (opsional)
+        $middleware->prependToGroup('web', \Illuminate\Http\Middleware\HandleCors::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->reportable(function (Throwable $exception) {

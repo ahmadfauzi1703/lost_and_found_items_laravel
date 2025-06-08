@@ -100,6 +100,7 @@ class ClaimApiController extends Controller
         }
 
         $validated = $request->validate([
+            'status' => 'sometimes|in:pending,approved,rejected,Claimed',
             'ownership_proof' => 'sometimes|required|string',
             'claimer_phone' => 'sometimes|required|string|max:20',
             'notes' => 'nullable|string',

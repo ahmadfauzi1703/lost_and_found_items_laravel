@@ -18,6 +18,15 @@ Route::prefix('v1')->group(function () {
             'name' => 'Lost and Found Items API Barang Hilang',
             'version' => '1.0.1',
             'endpoints' => [
+                // Items Endpoints
+                'GET /api/v1/items' => 'Daftar semua barang',
+                'GET /api/v1/items/my' => 'Daftar barang milik user (auth required)',
+                'GET /api/v1/items/{id}' => 'Detail barang',
+                'GET /api/v1/search' => 'Pencarian barang',
+                'POST /api/v1/items' => 'Tambah barang baru (auth required)',
+                'PUT /api/v1/items/{id}' => 'Update barang (auth required)',
+                'DELETE /api/v1/items/{id}' => 'Hapus barang (auth required)',
+
                 // Lost Items Endpoints
                 'GET /api/v1/lost-items' => 'Daftar semua barang hilang',
                 'GET /api/v1/lost-items/{id}' => 'Detail barang hilang',
@@ -51,6 +60,7 @@ Route::prefix('v1')->group(function () {
                 'PUT /api/v1/returns/{id}' => 'Update pengembalian (auth required)',
                 'DELETE /api/v1/returns/{id}' => 'Hapus pengembalian (auth required)',
 
+
                 // Authentication Endpoints
                 'POST /api/v1/register' => 'Register user',
                 'POST /api/v1/login' => 'Login user',
@@ -59,9 +69,24 @@ Route::prefix('v1')->group(function () {
         ]);
     });
 
+
     Route::get('/test', function () {
         return response()->json(['message' => 'Test works!']);
     });
+
+    Route::get('/images/{path}', function ($path) {
+        $fullPath = storage_path('app/public/' . $path);
+
+        if (!file_exists($fullPath)) {
+            return response()->json(['error' => 'Image not found'], 404);
+        }
+
+        return response()->file($fullPath, [
+            'Access-Control-Allow-Origin' => '*',
+            'Access-Control-Allow-Methods' => 'GET, OPTIONS',
+            'Cache-Control' => 'public, max-age=86400'
+        ]);
+    })->where('path', '.*');
 
     // Authentication
     Route::post('/register', [AuthController::class, 'register']);
@@ -73,12 +98,13 @@ Route::prefix('v1')->group(function () {
 
     // Public endpoints
     Route::get('/items', [ItemApiController::class, 'index']);
-    Route::get('/items/{item}', [ItemApiController::class, 'show']);
     Route::get('/search', [ItemApiController::class, 'search']);
     Route::get('/lost-items', [ItemApiController::class, 'lostItems']);
 
     // Protected endpoints
     Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/items/my', [ItemApiController::class, 'myItems']);
+
         // Items CRUD
         Route::post('/items', [ItemApiController::class, 'store']);
         Route::put('/items/{id}', [ItemApiController::class, 'update']);
@@ -89,6 +115,8 @@ Route::prefix('v1')->group(function () {
         Route::post('/items/{item}/return', [ItemApiController::class, 'returnItem']);
     });
 });
+
+Route::get('/items/{item}', [ItemApiController::class, 'show']);
 
 
 // ---- END POINT LOST ITEMS ----

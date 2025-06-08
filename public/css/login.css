@@ -4,12 +4,42 @@
   font-family: "Lato", sans-serif;
 }
 
+
 body {
   background: rgba(0, 0, 0, 0.5) url("../Assets/img/kotak.jpg");
   background-size: cover;
   background-repeat: no-repeat;
   background-blend-mode: darken;
 }
+
+#password-error {
+  width: 300px;
+  max-width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 14px;
+  padding: 8px 10px;
+}
+
+.alert {
+    padding: 10px 15px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    /* Pengaturan lebar alert */
+    max-width: 40%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .alert-success {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+  }
+  .alert-error {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+  }
 
 .sign-in.section {
   display: flex;

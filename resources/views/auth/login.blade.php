@@ -1,9 +1,3 @@
-<?php
-session_start();
-$error = isset($_SESSION['error']) ? $_SESSION['error'] : '';
-unset($_SESSION['error']); // Hapus pesan setelah ditampilkan
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -44,6 +38,12 @@ unset($_SESSION['error']); // Hapus pesan setelah ditampilkan
           @if(session('success'))
           <div class="alert alert-success">
             {{ session('success') }}
+          </div>
+          @endif
+
+          @if(session('message'))
+          <div class="alert alert-error">
+            {{ session('message') }}
           </div>
           @endif
 
@@ -90,22 +90,41 @@ unset($_SESSION['error']); // Hapus pesan setelah ditampilkan
       </div>
     </div>
   </section>
-  <?php if (!empty($error)): ?>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-      Swal.fire({
-        title: 'Error!',
-        text: "<?= htmlspecialchars($error); ?>",
-        icon: 'error',
-        confirmButtonText: 'OK',
-        customClass: {
-          confirmButton: 'confirm-button'
-        }
-      });
-    </script>
-
-  <?php endif; ?>
-
 </body>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const passwordInput = document.getElementById('password');
+    const minimumLength = 6; // Sesuaikan dengan validasi di controller (min:6)
+
+    // Cek apakah elemen password-error sudah ada, jika belum buat baru
+    let passwordError = document.getElementById('password-error');
+    if (!passwordError) {
+      passwordError = document.createElement('div');
+      passwordError.id = 'password-error';
+      passwordError.className = 'alert alert-error';
+      passwordError.style.display = 'none';
+      passwordError.textContent = 'Password minimal harus ' + minimumLength + ' karakter.';
+
+      // Masukkan elemen error setelah div pwd-btn
+      const pwdBtn = document.querySelector('.pwd-btn');
+      if (pwdBtn) {
+        pwdBtn.parentNode.insertBefore(passwordError, pwdBtn.nextSibling);
+      }
+    }
+
+    // Hapus event listener untuk input
+    // Hanya validasi saat form submit
+    form.addEventListener('submit', function(event) {
+      if (passwordInput.value.length < minimumLength) {
+        event.preventDefault();
+        passwordError.style.display = 'block';
+        passwordInput.focus();
+      } else {
+        passwordError.style.display = 'none';
+      }
+    });
+  });
+</script>
 
 </html>

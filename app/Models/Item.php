@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Item extends Model
 {
 
-    // Menentukan kolom yang bisa diisi
+    
     protected $fillable = [
         'type',
         'item_name',
@@ -27,7 +27,6 @@ class Item extends Model
         'date_of_event' => 'datetime',
     ];
 
-    // Relasi dengan User
     public function user()
     {
         return $this->belongsTo(User::class);

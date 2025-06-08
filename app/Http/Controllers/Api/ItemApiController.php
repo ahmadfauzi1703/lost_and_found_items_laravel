@@ -986,4 +986,10 @@ class ItemApiController extends Controller
             ], 500);
         }
     }
+
+    public function myItems()
+    {
+        $items = Item::where('user_id', Auth::id())->latest()->paginate(10);
+        return new ItemCollection($items);
+    }
 }

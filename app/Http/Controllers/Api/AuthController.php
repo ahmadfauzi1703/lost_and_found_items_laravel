@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use App\Http\Resources\UserResource;
 
 class AuthController extends Controller
 {
@@ -48,7 +49,8 @@ class AuthController extends Controller
 
     public function user(Request $request)
     {
-        return response()->json($request->user());
+        $user = $request->user();
+        return new UserResource($user);
     }
 
     public function register(Request $request)
@@ -57,6 +59,7 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
+            'phone' => 'nullable|string|max:15',
             // 'first_name' => 'nullable|string|max:255', // Opsional
             // 'last_name' => 'nullable|string|max:255',  // Opsional
         ]);
@@ -72,6 +75,7 @@ class AuthController extends Controller
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
+            'phone' => $validated['phone'] ?? null, // Tambahkan phone
             'role' => 'user',
             'first_name' => $validated['first_name'] ?? $firstName ?? '',
             'last_name' => $validated['last_name'] ?? $lastName ?? '',
@@ -82,7 +86,7 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'Registration successful',
-            'user' => $user,
+            'user' => $user, // User sudah termasuk field phone
             'access_token' => $token,
             // 'token_type' => 'Bearer',
         ], 201);

@@ -131,6 +131,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/activity', [ItemController::class, 'activity'])->name('activity');
 });
 
+
 Route::get('/activity', [ItemController::class, 'activity'])
     ->middleware('auth')
     ->name('activity');
@@ -181,6 +182,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/my-returns', [ItemController::class, 'myReturns'])->name('my.returns');
     Route::get('/returns/{return}', [ItemController::class, 'showReturn'])->name('returns.show');
 });
+
 
 
 

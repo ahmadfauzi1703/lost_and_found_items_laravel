@@ -25,7 +25,7 @@ class ItemResource extends JsonResource
             'location' => $this->location,
             'status' => $this->status,
             'photo_url' => $this->photo_path
-                ? asset('storage/' . $this->photo_path)
+                ? url('api/v1/images/' . $this->photo_path)
                 : null,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

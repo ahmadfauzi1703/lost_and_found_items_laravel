@@ -351,6 +351,8 @@ class ItemController extends Controller
         } catch (\Exception $e) {
             // Kode error yang sudah ada
         }
+
+        return redirect()->route('activity')->with('success', 'Laporan berhasil diperbarui!');
     }
 
     public function destroy(Item $item)

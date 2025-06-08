@@ -224,7 +224,7 @@
                 @if((isset($claimsOnMyItems) && $claimsOnMyItems->count() > 0) ||
                 (isset($returnsOnMyItems) && $returnsOnMyItems->count() > 0))
                 <div class="space-y-4">
-                    <!-- Menampilkan Claims -->
+                    <!-- Menampilkan Claims dengan tambahan tombol tolak dan gambar -->
                     @foreach($claimsOnMyItems as $claim)
                     <div class="bg-white p-4 rounded-lg shadow border-l-4 border-blue-500">
                         <div class="flex justify-between">
@@ -238,10 +238,23 @@
                                 </p>
                                 <p class="text-sm text-gray-500">{{ \Carbon\Carbon::parse($claim->claim_date)->format('d M Y H:i') }}</p>
 
-                                <!-- Detail klaim yang sudah ada... -->
+                                <!-- Tambahkan informasi bukti kepemilikan -->
+                                <p class="text-sm mt-2">
+                                    <strong>Bukti Kepemilikan:</strong> {{ $claim->ownership_proof ?? 'Tidak ada bukti' }}
+                                </p>
+                                <p class="text-sm">
+                                    <strong>Catatan:</strong> {{ $claim->notes ?? 'Tidak ada catatan' }}
+                                </p>
+
+                                <!-- Tambahkan tampilan bukti dokumen jika ada -->
+                                @if($claim->proof_document)
+                                <div class="mt-2">
+                                    <img src="{{ asset('storage/'.$claim->proof_document) }}" alt="Bukti Kepemilikan" class="w-24 h-24 object-cover rounded">
+                                </div>
+                                @endif
                             </div>
 
-                            <div>
+                            <div class="pr-4">
                                 @if($claim->status == 'pending')
                                 <span class="inline-block px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-md">Menunggu</span>
 
@@ -255,8 +268,25 @@
                                         </button>
                                     </form>
 
-                                    <!-- Tombol Tolak -->
+                                    <!-- Tambahkan tombol Tolak -->
+                                    <form action="{{ route('claim.update-status') }}" method="POST" class="inline">
+                                        @csrf
+                                        <input type="hidden" name="claim_id" value="{{ $claim->id }}">
+                                        <input type="hidden" name="status" value="rejected">
+                                        <button type="submit" class="bg-red-500 text-white text-xs px-2 py-1 rounded hover:bg-red-600">
+                                            Tolak
+                                        </button>
+                                    </form>
                                 </div>
+
+                                <!-- Tambahkan tombol WhatsApp jika nomor tersedia -->
+                                @if(isset($claim->claimer_phone))
+                                <a href="https://wa.me/{{ preg_replace('/^0/', '62', $claim->claimer_phone) }}"
+                                    target="_blank"
+                                    class="mt-32 inline-block bg-green-500 text-white text-xs px-3 py-2 rounded hover:bg-green-600">
+                                    <i class='bx bxl-whatsapp mr-1'></i> Hubungi via WhatsApp
+                                </a>
+                                @endif
                                 @elseif($claim->status == 'approved')
                                 <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Diterima</span>
                                 @elseif($claim->status == 'rejected')
@@ -344,7 +374,8 @@
                 <h3 class="text-xl font-semibold mb-4">Klaim & Pengembalian yang Saya Ajukan</h3>
 
                 @if((isset($myClaims) && $myClaims->count() > 0) ||
-                (isset($myReturns) && $myReturns->count() > 0))
+                (isset($myReturns) && $myReturns->count() > 0) ||
+                (isset($myClaimsAndReturns) && $myClaimsAndReturns->count() > 0))
                 <div class="space-y-4">
                     <!-- Menampilkan Klaim Saya -->
                     @foreach($myClaimsAndReturns as $myClaim)
@@ -497,35 +528,63 @@
             <div class="md:flex md:justify-between">
                 <div class="mb-6 md:mb-0">
                     <a href="#" class="flex items-center">
-                        <img src="Assets/img/lostnfoundlogowhite.png" class="h-28 me-3" alt="FlowBite Logo" />
+                        <img
+                            src="Assets/img/lostnfoundlogowhite.png"
+                            class="h-28 me-3"
+                            alt="FlowBite Logo" />
                     </a>
                 </div>
                 <div class="grid grid-cols-2 gap-8 sm:gap-6 sm:grid-cols-3">
                     <div>
-                        <h2 class="mb-6 text-sm font-semibold text-white uppercase dark:text-white">About</h2>
+                        <h2
+                            class="mb-6 text-sm font-semibold text-white uppercase dark:text-white">
+                            About
+                        </h2>
                         <ul class="text-white font-medium">
-                            <li class="mb-4"><a href="about-us-non-log.html" class="hover:underline">About Lost and Found Items</a></li>
+                            <li class="mb-4">
+                                <a href="about-us-non-log.html" class="hover:underline">About Lost and Found Items</a>
+                            </li>
                         </ul>
                     </div>
                     <div>
-                        <h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase dark:text-white">Lost and Found Items</h2>
+                        <h2
+                            class="mb-6 text-sm font-semibold text-white uppercase dark:text-white">
+                            Lost and Found Items
+                        </h2>
                         <ul class="text-white font-medium">
-                            <li class="mb-4"><a href="#" class="hover:underline">Lost Items</a></li>
-                            <li><a href="#" class="hover:underline">Found Items</a></li>
+                            <li class="mb-4">
+                                <a
+                                    href="#"
+                                    class="hover:underline">Lost Items</a>
+                            </li>
+                            <li>
+                                <a
+                                    href="#"
+                                    class="hover:underline">Found Items</a>
+                            </li>
                         </ul>
                     </div>
                     <div>
-                        <h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase dark:text-white">Legal</h2>
+                        <h2
+                            class="mb-6 text-sm font-semibold text-white uppercase dark:text-white">
+                            Legal
+                        </h2>
                         <ul class="text-white font-medium">
-                            <li class="mb-4"><a href="about-us.php" class="hover:underline">Feedback</a></li>
-                            <li><a href="terms-condition.html" class="hover:underline">Terms & Conditions Lost and Found Items</a></li>
+                            <li class="mb-4">
+                                <a href="about-us.php" class="hover:underline">Feedback</a>
+                            </li>
+                            <li>
+                                <a href="terms-condition.html" class="hover:underline">Terms &amp; Conditions Lost and Found Items</a>
+                            </li>
                         </ul>
                     </div>
                 </div>
             </div>
             <hr class="my-6 border-white sm:mx-auto" />
             <div class="text-center sm:flex sm:items-center sm:justify-between">
-                <span class="text-sm text-white text-center">© 2024 <a href="terms-condition.html" class="hover:underline">Lost and Found Team</a>. All Rights Reserved.</span>
+                <span class="text-sm text-white text-center">© 2025 <a href="/" class="hover:underline">Lost and Found Team</a>.
+                    All Rights Reserved.
+                </span>
             </div>
         </div>
     </footer>

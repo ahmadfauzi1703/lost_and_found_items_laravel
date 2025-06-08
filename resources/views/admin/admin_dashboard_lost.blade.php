@@ -140,9 +140,9 @@
                         </span>
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
-                        <button onclick="openEditModal('{{ $item->id }}')" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-blue-600 hover:text-blue-800 focus:outline-hidden focus:text-blue-800">
+                        <!-- <button onclick="openEditModal('{{ $item->id }}')" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-blue-600 hover:text-blue-800 focus:outline-hidden focus:text-blue-800">
                           Edit
-                        </button>
+                        </button> -->
                         <form action="{{ route('admin.items.destroy', $item->id) }}" method="POST" class="inline delete-form">
                           @csrf
                           @method('DELETE')

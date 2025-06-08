@@ -96,6 +96,21 @@
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
                                                 <div class="flex justify-end space-x-2">
+                                                    <button type="button"
+                                                        data-id="{{ $item->id }}"
+                                                        data-name="{{ $item->item_name }}"
+                                                        data-category="{{ $item->category }}"
+                                                        data-type="{{ $item->type }}"
+                                                        data-date="{{ $item->date_of_event }}"
+                                                        data-description="{{ $item->description }}"
+                                                        data-photo="{{ $item->photo_path ? asset('storage/'.$item->photo_path) : asset('assets/img/no-image.png') }}"
+                                                        data-reporter-name="{{ $item->user ? $item->user->first_name.' '.$item->user->last_name : ($item->reporter_name ?? 'Unknown') }}"
+                                                        data-reporter-email="{{ $item->user ? $item->user->email : ($item->email ?? '') }}"
+                                                        data-reporter-phone="{{ $item->user ? $item->user->phone : ($item->phone_number ?? $item->phone ?? '') }}"
+                                                        data-reporter-nim="{{ $item->user ? $item->user->nim : 'N/A' }}"
+                                                        class="detail-btn inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-blue-600 hover:text-blue-800">
+                                                        Detail
+                                                    </button>
                                                     <form action="{{ route('admin.approve.item', $item->id) }}" method="POST" class="inline">
                                                         @csrf
                                                         <button type="submit" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-green-600 hover:text-green-800 focus:outline-hidden focus:text-green-800">
@@ -120,6 +135,94 @@
                                         @endif
                                     </tbody>
                                 </table>
+
+                                <!-- Modal Detail Item -->
+                                <div id="itemDetailModal" class="fixed inset-0 z-50 hidden overflow-y-auto overflow-x-hidden">
+                                    <!-- Overlay background -->
+                                    <div class="fixed inset-0 bg-gray-900 bg-opacity-50 transition-opacity" id="modalOverlay"></div>
+
+                                    <!-- Modal content -->
+                                    <div class="flex items-center justify-center min-h-screen p-4 relative z-60">
+                                        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-auto">
+                                            <!-- Modal header -->
+                                            <div class="flex items-center justify-between p-4 border-b">
+                                                <h3 class="text-xl font-semibold text-gray-800" id="modalTitle">Detail Barang</h3>
+                                                <button type="button" class="text-gray-400 hover:text-gray-500" onclick="closeModal()">
+                                                    <span class="text-2xl">&times;</span>
+                                                </button>
+                                            </div>
+
+                                            <!-- Modal body -->
+                                            <div class="p-6">
+                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                    <!-- Kiri: Foto Barang -->
+                                                    <div class="flex flex-col items-center justify-center">
+                                                        <img id="modalItemPhoto" src="" alt="Item Photo" class="w-full max-h-64 object-contain rounded-lg border">
+                                                    </div>
+
+                                                    <!-- Kanan: Informasi Detail -->
+                                                    <div>
+                                                        <div class="mb-4">
+                                                            <h4 class="text-sm text-gray-500">Nama Barang</h4>
+                                                            <p id="modalItemName" class="text-lg font-medium"></p>
+                                                        </div>
+
+                                                        <div class="mb-4">
+                                                            <h4 class="text-sm text-gray-500">Kategori</h4>
+                                                            <p id="modalItemCategory" class="text-lg font-medium"></p>
+                                                        </div>
+
+                                                        <div class="mb-4">
+                                                            <h4 class="text-sm text-gray-500">Jenis Laporan</h4>
+                                                            <p id="modalItemType" class="text-lg font-medium"></p>
+                                                        </div>
+
+                                                        <div class="mb-4">
+                                                            <h4 class="text-sm text-gray-500">Tanggal Kejadian</h4>
+                                                            <p id="modalItemDate" class="text-lg font-medium"></p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Informasi Kontak -->
+                                                <div class="mt-6">
+                                                    <h4 class="font-semibold text-gray-800 mb-2">Informasi Pelapor</h4>
+                                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 p-4 rounded-lg">
+                                                        <div>
+                                                            <p class="text-sm text-gray-500">Nama</p>
+                                                            <p id="modalReporterName" class="font-medium"></p>
+                                                        </div>
+                                                        <div>
+                                                            <p class="text-sm text-gray-500">NIM</p>
+                                                            <p id="modalReporterNIM" class="font-medium"></p>
+                                                        </div>
+                                                        <div>
+                                                            <p class="text-sm text-gray-500">Email</p>
+                                                            <p id="modalReporterEmail" class="font-medium"></p>
+                                                        </div>
+                                                        <div>
+                                                            <p class="text-sm text-gray-500">Telepon</p>
+                                                            <p id="modalReporterPhone" class="font-medium"></p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Deskripsi -->
+                                                <div class="mt-6">
+                                                    <h4 class="text-sm text-gray-500">Deskripsi</h4>
+                                                    <p id="modalItemDescription" class="text-base mt-1"></p>
+                                                </div>
+                                            </div>
+
+                                            <!-- Modal footer -->
+                                            <div class="flex justify-end p-4 border-t">
+                                                <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600" onclick="closeModal()">
+                                                    Tutup
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -131,5 +234,66 @@
         Dibuat dengan 💙 oleh © 2025 Lost and Found items Team
     </footer>
 </body>
+
+<script>
+    // Dapatkan semua tombol dengan class detail-btn
+    const detailButtons = document.querySelectorAll('.detail-btn');
+
+    // Tambahkan event listener ke setiap tombol
+    detailButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            const name = this.getAttribute('data-name');
+            const category = this.getAttribute('data-category');
+            const type = this.getAttribute('data-type');
+            const date = this.getAttribute('data-date');
+            const description = this.getAttribute('data-description');
+            const photoPath = this.getAttribute('data-photo');
+            const reporterName = this.getAttribute('data-reporter-name');
+            const reporterEmail = this.getAttribute('data-reporter-email');
+            const reporterPhone = this.getAttribute('data-reporter-phone');
+            const reporterNIM = this.getAttribute('data-reporter-nim');
+
+            // Sekarang panggil fungsi untuk menampilkan modal
+            showItemDetail(id, name, category, type, date, description, photoPath,
+                reporterName, reporterEmail, reporterPhone, reporterNIM);
+        });
+    });
+
+    // Fungsi untuk menampilkan modal detail
+    function showItemDetail(id, name, category, type, date, description, photoPath, reporterName, reporterEmail, reporterPhone, reporterNIM) {
+        // Set nilai-nilai ke elemen HTML di dalam modal
+        document.getElementById('modalItemName').textContent = name;
+        document.getElementById('modalItemCategory').textContent = category;
+        document.getElementById('modalItemType').textContent = type === 'hilang' ? 'Barang Hilang' : 'Barang Ditemukan';
+        document.getElementById('modalItemDate').textContent = date;
+        document.getElementById('modalItemDescription').textContent = description;
+        document.getElementById('modalItemPhoto').src = photoPath;
+
+        document.getElementById('modalReporterName').textContent = reporterName;
+        document.getElementById('modalReporterEmail').textContent = reporterEmail;
+        document.getElementById('modalReporterPhone').textContent = reporterPhone;
+        document.getElementById('modalReporterNIM').textContent = reporterNIM;
+
+        // Tampilkan modal
+        document.getElementById('itemDetailModal').classList.remove('hidden');
+
+        // Mencegah scrolling pada body
+        document.body.style.overflow = 'hidden';
+    }
+
+    // Fungsi untuk menutup modal
+    function closeModal() {
+        document.getElementById('itemDetailModal').classList.add('hidden');
+
+        // Mengaktifkan kembali scrolling pada body
+        document.body.style.overflow = 'auto';
+    }
+
+    // Menutup modal ketika mengklik overlay
+    document.getElementById('modalOverlay').addEventListener('click', closeModal);
+</script>
+
+
 
 </html>

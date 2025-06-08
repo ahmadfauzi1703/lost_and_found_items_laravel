@@ -199,7 +199,7 @@
                   data-description="{{ $item->description }}"
                   data-image="{{ asset($imagePath) }}"
                   data-reporter="{{ $item->report_by ?: ($item->user ? 'Satpam: ' . $item->user->name : 'Unknown') }}"
-                  data-whatsapp="https://wa.me/{{ $item->whatsapp_number }}"
+                  data-whatsapp="https://wa.me/{{ $item->phone_number }}"
                   data-type="{{ $item->type }}"
                   data-id="{{ $item->id }}"
                   data-user-id="{{ $item->user_id }}">
@@ -469,11 +469,12 @@
       document.getElementById('modalReportedBy').textContent = reporter;
 
       // Tambahkan logic untuk menyembunyikan tombol untuk pelapor
+      const reportedBySatpam = reporter && reporter.toLowerCase().includes('Satpam');
       const itemUserId = button.getAttribute('data-user-id');
       const currentUserId = "{{ Auth::id() }}"; // ID user yang sedang login
 
       // Tambahkan kondisi untuk menyembunyikan tombol jika user adalah pelapor
-      if (itemUserId === currentUserId) {
+      if (itemUserId === currentUserId === reportedBySatpam) {
         // Jika user adalah pelapor, sembunyikan tombol claim dan return
         modalClaimButton.classList.add('hidden');
         modalReturnButton.classList.add('hidden');

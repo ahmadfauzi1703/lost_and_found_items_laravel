@@ -38,35 +38,45 @@
           <form action="{{ route('register.submit') }}" method="POST">
             @csrf
             <!-- First Name -->
-            <input class="input-field" type="text" name="first_name" id="first_name" placeholder="Nama Depan Anda" value="{{ old('first_name') }}" required />
+            <input class="input-field @error('first_name') input-error @enderror" type="text" name="first_name" id="first_name" placeholder="Nama Depan Anda" value="{{ old('first_name') }}" required />
+            @error('first_name')
+            <span class="error-message">{{ $message }}</span>
+            @enderror
             <br />
 
             <!-- Last Name -->
-            <input class="input-field" type="text" name="last_name" id="last_name" placeholder="Nama Belakang Anda" value="{{ old('last_name') }}" required />
+            <input class="input-field @error('last_name') input-error @enderror" type="text" name="last_name" id="last_name" placeholder="Nama Belakang Anda" value="{{ old('last_name') }}" required />
+            @error('last_name')
+            <span class="error-message">{{ $message }}</span>
+            @enderror
             <br />
 
             <!-- Email -->
-            <input class="input-field" type="email" name="email" id="email" placeholder="Email Anda" value="{{ old('email') }}" required />
+            <input class="input-field @error('email') input-error @enderror" type="email" name="email" id="email" placeholder="Email Anda" value="{{ old('email') }}" required />
+            @error('email')
+            <span class="error-message">{{ $message }}</span>
+            @enderror
             <br />
 
             <!-- Phone -->
-            <input class="input-field" type="tel" name="phone" id="phone" placeholder="Nomor Telepon Contoh : +62822xxxx" value="{{ old('phone') }}" required />
+            <input class="input-field @error('phone') input-error @enderror" type="tel" name="phone" id="phone" placeholder="Nomor Telepon Contoh : +62822xxxx" value="{{ old('phone') }}" required />
+            @error('phone')
+            <span class="error-message">{{ $message }}</span>
+            @enderror
             <br />
 
             <!-- Password -->
-            <input class="input-field" type="password" name="password" id="password" placeholder="Password Anda" required />
+            <input class="input-field @error('password') input-error @enderror" type="password" name="password" id="password" placeholder="Password Anda" required />
+            @error('password')
+            <span class="error-message">{{ $message }}</span>
+            @enderror
             <br />
 
             <!-- Confirm Password -->
-            <input class="input-field" type="password" name="password_confirmation" id="confirm_password" placeholder="Konfirmasi Password" required />
-            <br />
-
-            <!-- Terms and Conditions -->
-            <div class="options">
-              <label>
-                <input type="checkbox" style="cursor: pointer" required /> Saya menyetujui persyaratan lost and found items
-              </label>
-            </div>
+            <input class="input-field @error('password_confirmation') input-error @enderror" type="password" name="password_confirmation" id="confirm_password" placeholder="Konfirmasi Password" required />
+            @error('password_confirmation')
+            <span class="error-message">{{ $message }}</span>
+            @enderror
             <br />
 
             <!-- Submit Button -->

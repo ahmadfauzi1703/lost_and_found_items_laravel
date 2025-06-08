@@ -338,7 +338,6 @@
 
 
     <!-- Footer Section -->
-
     <footer class="bg-[#124076]">
       <div class="mx-auto w-full max-w-screen-xl p-4 py-6 lg:py-8">
         <div class="md:flex md:justify-between">
@@ -364,7 +363,7 @@
             </div>
             <div>
               <h2
-                class="mb-6 text-sm font-semibold text-gray-900 uppercase dark:text-white">
+                class="mb-6 text-sm font-semibold text-white uppercase dark:text-white">
                 Lost and Found Items
               </h2>
               <ul class="text-white font-medium">
@@ -382,7 +381,7 @@
             </div>
             <div>
               <h2
-                class="mb-6 text-sm font-semibold text-gray-900 uppercase dark:text-white">
+                class="mb-6 text-sm font-semibold text-white uppercase dark:text-white">
                 Legal
               </h2>
               <ul class="text-white font-medium">
@@ -398,7 +397,7 @@
         </div>
         <hr class="my-6 border-white sm:mx-auto" />
         <div class="text-center sm:flex sm:items-center sm:justify-between">
-          <span class="text-sm text-white text-center">© 2024 <a href="/" class="hover:underline">Lost and Found Team</a>.
+          <span class="text-sm text-white text-center">© 2025 <a href="/" class="hover:underline">Lost and Found Team</a>.
             All Rights Reserved.
           </span>
         </div>

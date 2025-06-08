@@ -21,8 +21,8 @@ class Claim extends Model
         'claim_date',
         'notes',
         'status',
-        'where_found',   // Tambahkan field untuk kasus return
-        'item_photo'     // Tambahkan field untuk kasus return
+        'where_found',   
+        'item_photo'    
     ];
 
     public function item()

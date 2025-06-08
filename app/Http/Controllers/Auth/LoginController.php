@@ -39,6 +39,6 @@ class LoginController extends Controller
         }
 
         // Jika login gagal, kembali ke halaman login dengan pesan error
-        return redirect()->route('login')->withErrors(['email' => 'Email atau password salah.']);
+        return back()->with('message', 'Email atau password salah.');
     }
 }
