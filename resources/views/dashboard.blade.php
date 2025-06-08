@@ -469,12 +469,12 @@
       document.getElementById('modalReportedBy').textContent = reporter;
 
       // Tambahkan logic untuk menyembunyikan tombol untuk pelapor
-      const reportedBySatpam = reporter && reporter.toLowerCase().includes('Satpam');
+      const reportedBySatpam = reporter && reporter.toLowerCase().includes('satpam');
       const itemUserId = button.getAttribute('data-user-id');
       const currentUserId = "{{ Auth::id() }}"; // ID user yang sedang login
 
       // Tambahkan kondisi untuk menyembunyikan tombol jika user adalah pelapor
-      if (itemUserId === currentUserId === reportedBySatpam) {
+      if (itemUserId === currentUserId || reportedBySatpam) {
         // Jika user adalah pelapor, sembunyikan tombol claim dan return
         modalClaimButton.classList.add('hidden');
         modalReturnButton.classList.add('hidden');
