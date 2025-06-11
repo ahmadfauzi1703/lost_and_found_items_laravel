@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\ItemApiController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClaimApiController;
 use App\Http\Controllers\Api\ReturnApiController;
+use App\Http\Controllers\Api\NotificationApiController;
 
 
 Route::get('/user', function (Request $request) {
@@ -59,6 +60,16 @@ Route::prefix('v1')->group(function () {
                 'GET /api/v1/returns/{id}' => 'Detail pengembalian (auth required)',
                 'PUT /api/v1/returns/{id}' => 'Update pengembalian (auth required)',
                 'DELETE /api/v1/returns/{id}' => 'Hapus pengembalian (auth required)',
+
+                // Notification Endpoints
+
+                'GET /api/v1/notifications' => 'Daftar semua notifikasi (admin only)',
+                'GET /api/v1/notifications/my' => 'Daftar notifikasi milik user (auth required)',
+                'GET /api/v1/notifications/{id}' => 'Detail notifikasi (auth required)',
+                'PUT /api/v1/notifications/{id}/read' => 'Tandai notifikasi sebagai dibaca (auth required)',
+                'PUT /api/v1/notifications/read-all' => 'Tandai semua notifikasi sebagai dibaca (auth required)',
+                'DELETE /api/v1/notifications/{id}' => 'Hapus notifikasi (auth required)',
+
 
 
                 // Authentication Endpoints
@@ -174,3 +185,13 @@ Route::prefix('v1/returns')->middleware('auth:sanctum')->group(function () {
 
 Route::post('/v1/lost-items/{item}/return', [ItemApiController::class, 'returnLostItem'])
     ->middleware('auth:sanctum');
+
+// -- END POINT NOTIFICATIONS ----
+Route::prefix('v1/notifications')->middleware('auth:sanctum')->group(function () {
+    Route::get('/', [NotificationApiController::class, 'index']);
+    Route::get('/my', [NotificationApiController::class, 'myNotifications']);
+    Route::get('/{notification}', [NotificationApiController::class, 'show']);
+    Route::put('/{notification}/read', [NotificationApiController::class, 'markAsRead']);
+    Route::put('/read-all', [NotificationApiController::class, 'markAllAsRead']);
+    Route::delete('/{notification}', [NotificationApiController::class, 'destroy']);
+});
