@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use App\Http\Resources\UserResource;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
@@ -90,5 +91,62 @@ class AuthController extends Controller
             'access_token' => $token,
             // 'token_type' => 'Bearer',
         ], 201);
+    }
+
+    public function updateProfile(Request $request)
+    {
+        // Validate request data
+        $validator = Validator::make($request->all(), [
+            'first_name' => 'sometimes|string|max:255',
+            'last_name' => 'sometimes|string|max:255',
+            'nim' => 'sometimes|string|max:20|unique:users,nim,' . Auth::id(),
+            'email' => 'sometimes|string|email|max:255|unique:users,email,' . Auth::id(),
+            'phone_number' => 'sometimes|string|max:20',
+            'address' => 'sometimes|string|max:500',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Get authenticated user as Eloquent model
+        $user = User::find(Auth::id());
+
+        // Update fields that are present in the request
+        if ($request->has('first_name')) {
+            $user->first_name = $request->first_name;
+        }
+
+        if ($request->has('last_name')) {
+            $user->last_name = $request->last_name;
+        }
+
+        if ($request->has('nim')) {
+            $user->nim = $request->nim;
+        }
+
+        if ($request->has('email')) {
+            $user->email = $request->email;
+        }
+
+        if ($request->has('phone')) {
+            $user->phone_number = $request->phone_number;
+        }
+
+        if ($request->has('address')) {
+            $user->address = $request->address;
+        }
+
+        // Save the updated user
+        $user->save();
+
+        // Return the updated user data
+        return response()->json([
+            'message' => 'Profile updated successfully',
+            'user' => $user
+        ]);
     }
 }

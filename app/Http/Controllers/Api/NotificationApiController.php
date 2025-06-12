@@ -43,14 +43,21 @@ class NotificationApiController extends Controller
     /**
      * Menampilkan detail notifikasi
      */
-    public function show(Notification $notification)
+    public function show($id)
     {
-        // Pastikan user hanya bisa melihat notifikasinya sendiri
-        if ($notification->user_id !== Auth::id() && Auth::user()->role !== 'admin') {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
+        try {
+            // Cari notifikasi berdasarkan ID
+            $notification = Notification::findOrFail($id);
 
-        return response()->json($notification);
+            // Pastikan user hanya bisa melihat notifikasinya sendiri
+            if ($notification->user_id !== Auth::id() && Auth::user()->role !== 'admin') {
+                return response()->json(['error' => 'Unauthorized'], 403);
+            }
+
+            return response()->json($notification);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['error' => 'Notification not found'], 404);
+        }
     }
 
     /**
@@ -58,15 +65,25 @@ class NotificationApiController extends Controller
      */
     public function markAsRead(Notification $notification)
     {
-        // Pastikan user hanya bisa mengubah notifikasinya sendiri
-        if ($notification->user_id !== Auth::id()) {
-            return response()->json(['error' => 'Unauthorized'], 403);
+
+        // Cek apakah notifikasi ditemukan
+        if (!$notification || !$notification->exists) {
+            return response()->json(['error' => 'Notification not found'], 404);
         }
 
-        $notification->is_read = 1;
-        $notification->save();
+        // Proses normal jika user_id cocok
+        if ($notification->user_id == Auth::id()) {
+            $notification->is_read = 1;
+            $notification->save();
+            return response()->json(['message' => 'Notification marked as read']);
+        }
 
-        return response()->json(['message' => 'Notification marked as read']);
+        // Unauthorized jika user_id tidak cocok
+        return response()->json([
+            'error' => 'Unauthorized',
+            'auth_id' => Auth::id(),
+            'notification_user_id' => $notification->user_id
+        ], 403);
     }
 
     /**
@@ -84,14 +101,52 @@ class NotificationApiController extends Controller
     /**
      * Menghapus notifikasi
      */
-    public function destroy(Notification $notification)
-    {
-        // Pastikan user hanya bisa menghapus notifikasinya sendiri
-        if ($notification->user_id !== Auth::id() && Auth::user()->role !== 'admin') {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
 
-        $notification->delete();
-        return response()->json(['message' => 'Notification deleted']);
+    public function destroy($id)
+    {
+        try {
+            // Cari notifikasi berdasarkan ID
+            $notification = Notification::findOrFail($id);
+
+
+            // Untuk notifikasi sistem (user_id = null)
+            if ($notification->user_id === null) {
+                // Gunakan delete dan simpan hasil
+                $deleted = $notification->delete();
+
+                // Verifikasi penghapusan
+                $exists = Notification::find($id);
+
+                return response()->json([
+                    'message' => 'System notification deleted',
+                    'success' => $deleted,
+                    'still_exists' => $exists ? true : false
+                ]);
+            }
+
+            // Kode untuk notifikasi user normal
+            if ($notification->user_id != Auth::id() && Auth::user()->role != 'admin') {
+                return response()->json([
+                    'error' => 'Unauthorized',
+                    'auth_id' => Auth::id(),
+                    'notification_user_id' => $notification->user_id
+                ], 403);
+            }
+
+            // Hapus notifikasi user dengan delete biasa
+            $deleted = $notification->delete();
+            $exists = Notification::find($id);
+
+            return response()->json([
+                'message' => 'Notification deleted',
+                'success' => $deleted,
+                'still_exists' => $exists ? true : false
+            ]);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            // Khusus untuk notifikasi tidak ditemukan
+            return response()->json(['error' => 'Notification not found'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 }

@@ -62,10 +62,7 @@ Route::prefix('v1')->group(function () {
                 'DELETE /api/v1/returns/{id}' => 'Hapus pengembalian (auth required)',
 
                 // Notification Endpoints
-
-                'GET /api/v1/notifications' => 'Daftar semua notifikasi (admin only)',
                 'GET /api/v1/notifications/my' => 'Daftar notifikasi milik user (auth required)',
-                'GET /api/v1/notifications/{id}' => 'Detail notifikasi (auth required)',
                 'PUT /api/v1/notifications/{id}/read' => 'Tandai notifikasi sebagai dibaca (auth required)',
                 'PUT /api/v1/notifications/read-all' => 'Tandai semua notifikasi sebagai dibaca (auth required)',
                 'DELETE /api/v1/notifications/{id}' => 'Hapus notifikasi (auth required)',
@@ -105,6 +102,7 @@ Route::prefix('v1')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/user', [AuthController::class, 'user']);
+        Route::put('/user/profile', [AuthController::class, 'updateProfile']);
     });
 
     // Public endpoints
@@ -190,8 +188,8 @@ Route::post('/v1/lost-items/{item}/return', [ItemApiController::class, 'returnLo
 Route::prefix('v1/notifications')->middleware('auth:sanctum')->group(function () {
     Route::get('/', [NotificationApiController::class, 'index']);
     Route::get('/my', [NotificationApiController::class, 'myNotifications']);
-    Route::get('/{notification}', [NotificationApiController::class, 'show']);
-    Route::put('/{notification}/read', [NotificationApiController::class, 'markAsRead']);
+    Route::get('/{id}', [NotificationApiController::class, 'show']);
+    Route::put('/{id}/read', [NotificationApiController::class, 'markAsRead']);  // <-- ini routenya
     Route::put('/read-all', [NotificationApiController::class, 'markAllAsRead']);
-    Route::delete('/{notification}', [NotificationApiController::class, 'destroy']);
+    Route::delete('/{id}', [NotificationApiController::class, 'destroy']);
 });
