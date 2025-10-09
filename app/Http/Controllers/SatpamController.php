@@ -278,7 +278,7 @@ class SatpamController extends Controller
             }
 
             // Upload foto baru
-            $path = $request->file('profile_picture')->store('profile_pictures', 'public');
+            $path = $request->file('profile_picture')->store('profile-pictures', 'public');
             $user->profile_picture = $path;
         }
 

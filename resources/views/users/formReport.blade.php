@@ -99,6 +99,18 @@
             <div class="bg-white shadow-lg rounded-lg p-8 w-full max-w-4xl">
                 <form action="{{ route('report.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
+                    @if(session('error'))
+                        <div class="mb-4 p-3 bg-red-100 text-red-700 rounded">{{ session('error') }}</div>
+                    @endif
+                    @if($errors->any())
+                        <div class="mb-4 p-3 bg-red-100 text-red-700 rounded">
+                            <ul class="list-disc pl-5">
+                                @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
                     <!-- Type Section -->
                     <div class="mb-4">
                         <label class="block text-gray-700 text-sm font-bold mb-2">Apakah barang ini hilang atau ditemukan?</label>
@@ -119,12 +131,13 @@
                         <div>
                             <label class="block text-gray-700 text-sm font-bold mb-2">Mengambil foto barang tersebut</label>
                             <div class="border-dashed border-2 border-gray-300 rounded-lg p-6 flex items-center justify-center">
-                                <label class="cursor-pointer text-blue-500 hover:underline">
-                                    <!-- Tambahkan id="photo" -->
-                                    <input type="file" name="photo" id="photo" accept="image/*" class="hidden">
+                                <!-- make label target the input so clicking area opens file picker -->
+                                <label for="photo" class="cursor-pointer text-blue-500 hover:underline text-center">
                                     Click to Upload or Drag and Drop <br>
                                     <span class="text-sm text-gray-500">Max. File size: 15MB</span>
                                 </label>
+                                <!-- visible input positioned off-screen for accessibility but outside the label to avoid nested-click issues -->
+                                <input type="file" name="photo" id="photo" accept="image/*" class="sr-only" />
                             </div>
                             <!-- Tambahkan elemen img untuk preview gambar -->
                             <img id="photo-preview" src="#" alt="Photo Preview" class="hidden mt-4 w-32 h-32 object-cover rounded-lg" />

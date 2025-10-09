@@ -5,11 +5,23 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Item;
+use App\Models\User;
 
 class ItemSeeder extends Seeder
 {
     public function run(): void
     {
+        // Cari atau buat user berdasarkan email, lalu gunakan id mereka
+        $user1 = User::firstOrCreate(
+            ['email' => 'user1@example.com'],
+            ['first_name' => 'User', 'last_name' => 'One', 'password' => bcrypt('password'), 'role' => 'user']
+        );
+
+        $user2 = User::firstOrCreate(
+            ['email' => 'user2@example.com'],
+            ['first_name' => 'User', 'last_name' => 'Two', 'password' => bcrypt('password'), 'role' => 'user']
+        );
+
         // Seed Item dengan kategori hilang dan ditemukan
         Item::create([
             'type' => 'hilang',
@@ -23,7 +35,7 @@ class ItemSeeder extends Seeder
             'photo_path' => 'assets/img/fursuit.jpg',
             'created_at' => now(),
             'updated_at' => now(),
-            'user_id' => 1,
+            'user_id' => $user1->id,
         ]);
 
         Item::create([
@@ -38,7 +50,7 @@ class ItemSeeder extends Seeder
             'photo_path' => 'assets/img/fursuit.jpg',
             'created_at' => now(),
             'updated_at' => now(),
-            'user_id' => 2,
+            'user_id' => $user2->id,
         ]);
     }
 }

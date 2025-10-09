@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Notification;
+use Illuminate\Support\Facades\Log;
 
 
 class ItemController extends Controller
@@ -241,52 +242,91 @@ class ItemController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'type' => 'required|in:hilang,ditemukan',
-            'item_name' => 'required|string|max:255',
-            'category' => 'required|string|max:255',
-            'date_of_event' => 'required|date',
-            'description' => 'required|string',
-            'email' => 'required|email',
-            'phone_number' => 'required|string|max:15',
-            'location' => 'required|string',
-            'photo' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:3048',
-        ]);
+        try {
+            $validated = $request->validate([
+                'type' => 'required|in:hilang,ditemukan',
+                'item_name' => 'required|string|max:255',
+                'category' => 'required|string|max:255',
+                'date_of_event' => 'required|date',
+                'description' => 'required|string',
+                'email' => 'required|email',
+                'phone_number' => 'nullable|string|max:15',
+                'location' => 'required|string',
+                // max is in kilobytes; 15MB = 15360 KB
+                'photo' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:15360',
+            ]);
 
-        // Sisa kode tetap sama
-        $photoPath = null;
-        if ($request->hasFile('photo')) {
-            $photoPath = $request->file('photo')->store('items', 'public');
+            $photoPath = null;
+            if ($request->hasFile('photo') && $request->file('photo')->isValid()) {
+                try {
+                    $photo = $request->file('photo');
+                    Log::info('Processing photo upload', [
+                        'original_name' => $photo->getClientOriginalName(),
+                        'mime_type' => $photo->getMimeType(),
+                        'size' => $photo->getSize()
+                    ]);
+                    
+                    $photoPath = $photo->store('items', 'public');
+                    
+                    if (!$photoPath) {
+                        throw new \Exception('Failed to store the photo');
+                    }
+                    
+                    Log::info('Photo successfully stored', ['path' => $photoPath]);
+                } catch (\Exception $e) {
+                    Log::error('Error uploading photo: ' . $e->getMessage());
+                    return redirect()->back()
+                        ->withInput()
+                        ->with('error', 'Failed to upload photo. Please try again.');
+                }
+            }
+
+            // Dapatkan user yang sedang login
+            $user = Auth::user();
+
+            // Buat nama pelapor berdasarkan informasi user
+            $reporter = '';
+            if (!empty($user->first_name) || !empty($user->last_name)) {
+                // Jika ada first_name atau last_name, gunakan keduanya
+                $reporter = trim($user->first_name . ' ' . $user->last_name);
+            } else {
+                // Jika tidak ada, gunakan name saja
+                $reporter = $user->name;
+            }
+
+            // Simpan data item ke database
+            $item = Item::create([
+                'type' => $request->type,
+                'item_name' => $request->item_name,
+                'category' => $request->category,
+                'date_of_event' => $request->date_of_event,
+                'description' => $request->description,
+                'email' => $request->email,
+                'phone_number' => $request->phone_number,
+                'location' => $request->location,
+                'photo_path' => $photoPath,
+                'user_id' => Auth::id(),
+                'status' => 'pending',
+                'report_by' => $reporter // Tambahkan field report_by dengan nilai nama user
+            ]);
+
+            Notification::create([
+                'user_id' => Auth::id(),
+                'message' => 'Laporan barang ' . ($request->type == 'hilang' ? 'hilang' : 'ditemukan') .
+                    ' (' . $request->item_name . ') telah berhasil dibuat dan sedang menunggu approval admin.',
+                'created_at' => now(),
+                'is_read' => 0
+            ]);
+
+            return redirect()->route('dashboard')
+                ->with('success', 'Laporan telah berhasil dikirimkan, dan sedang menunggu approval admin');
+
+        } catch (\Exception $e) {
+            Log::error('Error creating item report: ' . $e->getMessage());
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Failed to create report. Please try again.');
         }
-
-        // Dapatkan user yang sedang login
-        $user = Auth::user();
-
-        // Buat nama pelapor berdasarkan informasi user
-        $reporter = '';
-        if (!empty($user->first_name) || !empty($user->last_name)) {
-            // Jika ada first_name atau last_name, gunakan keduanya
-            $reporter = trim($user->first_name . ' ' . $user->last_name);
-        } else {
-            // Jika tidak ada, gunakan name saja
-            $reporter = $user->name;
-        }
-
-        // Simpan data item ke database
-        Item::create([
-            'type' => $request->type,
-            'item_name' => $request->item_name,
-            'category' => $request->category,
-            'date_of_event' => $request->date_of_event,
-            'description' => $request->description,
-            'email' => $request->email,
-            'phone_number' => $request->phone_number,
-            'location' => $request->location,
-            'photo_path' => $photoPath,
-            'user_id' => Auth::id(),
-            'status' => 'pending',
-            'report_by' => $reporter // Tambahkan field report_by dengan nilai nama user
-        ]);
 
         Notification::create([
             'user_id' => Auth::id(),
