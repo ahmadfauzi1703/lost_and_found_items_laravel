@@ -16,7 +16,7 @@
     <div class="w-[15rem] bg-[#124076] text-white">
       <img
         class="h-[5rem] m-auto mt-[1rem]"
-        src="{{ asset('assets/img/lostnfoundlogowhite.png') }}" />
+        src="{{ asset('assets/img/logo-unpam.png') }}" />
       <ul class="mt-6 space-y-2">
         <li>
           <a href="{{ route('admin_dashboard') }}" class="block px-4 py-2 hover:bg-[#4973b3]"><i class='bx bxs-dashboard'></i> Dashboard</a>
