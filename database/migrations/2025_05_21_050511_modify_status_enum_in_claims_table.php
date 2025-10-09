@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('claims', function (Blueprint $table) {
+        Schema::table('klaim', function (Blueprint $table) {
             // Hapus kolom status yang ada
             $table->dropColumn('status');
         });
 
-        Schema::table('claims', function (Blueprint $table) {
+        Schema::table('klaim', function (Blueprint $table) {
             // Buat ulang kolom status dengan nilai ENUM yang diperbarui
             $table->enum('status', ['pending', 'approved', 'rejected', 'Claimed'])
                 ->default('Claimed')
@@ -29,12 +29,12 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('claims', function (Blueprint $table) {
+        Schema::table('klaim', function (Blueprint $table) {
             // Hapus kolom status yang dimodifikasi
             $table->dropColumn('status');
         });
 
-        Schema::table('claims', function (Blueprint $table) {
+        Schema::table('klaim', function (Blueprint $table) {
             // Kembalikan ke definisi awal
             $table->enum('status', ['pending', 'approved', 'rejected'])
                 ->default('pending')

@@ -14,6 +14,13 @@ class User extends Authenticatable
     use HasFactory, Notifiable, HasApiTokens;
 
     /**
+     * Nama tabel yang digunakan oleh model.
+     *
+     * @var string
+     */
+    protected $table = 'pengguna';
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var list<string>

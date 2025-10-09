@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('items', function (Blueprint $table) {
+        Schema::create('barang', function (Blueprint $table) {
             $table->id();
             $table->enum('type', ['hilang', 'ditemukan']);
             $table->string('item_name');
@@ -24,8 +24,8 @@ return new class extends Migration
             $table->string('photo_path')->nullable();
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->timestamps();
-            $table->unsignedBigInteger('user_id');  // Assuming you have a users table
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->unsignedBigInteger('user_id');  // Relasi ke tabel pengguna
+            $table->foreign('user_id')->references('id')->on('pengguna')->onDelete('cascade');
         });
     }
 
@@ -35,6 +35,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('items');
+        Schema::dropIfExists('barang');
     }
 };

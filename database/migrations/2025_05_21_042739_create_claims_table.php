@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('claims', function (Blueprint $table) {
+        Schema::create('klaim', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('item_id')->constrained()->onDelete('cascade');
+            $table->foreignId('item_id')->constrained('barang')->onDelete('cascade');
             $table->string('claimer_name');
             $table->string('claimer_email');
             $table->string('claimer_phone');
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('claims');
+        Schema::dropIfExists('klaim');
     }
 };

@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('claims', function (Blueprint $table) {
+        Schema::table('klaim', function (Blueprint $table) {
             // Tambahkan kolom claimer_id setelah kolom item_id
             $table->unsignedBigInteger('claimer_id')->after('item_id')->nullable();
 
             // Tambahkan foreign key jika diperlukan
-            $table->foreign('claimer_id')->references('id')->on('users')->onDelete('set null');
+            $table->foreign('claimer_id')->references('id')->on('pengguna')->onDelete('set null');
         });
     }
 
@@ -25,7 +25,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('claims', function (Blueprint $table) {
+        Schema::table('klaim', function (Blueprint $table) {
             // Hapus foreign key terlebih dahulu
             $table->dropForeign(['claimer_id']);
 

@@ -432,7 +432,7 @@ class ItemController extends Controller
     public function processClaim(Request $request)
     {
         $validated = $request->validate([
-            'item_id' => 'required|exists:items,id',
+            'item_id' => 'required|exists:barang,id',
             'ownership_proof' => 'required|string',
             'claimer_phone' => 'required|string',
             'notes' => 'nullable|string',
@@ -482,7 +482,7 @@ class ItemController extends Controller
     public function processReturn(Request $request)
     {
         $validated = $request->validate([
-            'item_id' => 'required|exists:items,id',
+            'item_id' => 'required|exists:barang,id',
             'where_found' => 'required|string',
             'returner_phone' => 'required|string',
             'notes' => 'nullable|string',
@@ -537,7 +537,7 @@ class ItemController extends Controller
     public function updateReturnStatus(Request $request)
     {
         $validated = $request->validate([
-            'return_id' => 'required|exists:returns,id',
+            'return_id' => 'required|exists:pengembalian,id',
             'status' => 'required|in:approved,rejected,completed',
         ]);
 
@@ -567,7 +567,7 @@ class ItemController extends Controller
     public function updateClaimStatus(Request $request)
     {
         $validated = $request->validate([
-            'claim_id' => 'required|exists:claims,id',
+            'claim_id' => 'required|exists:klaim,id',
             'status' => 'required|in:approved,rejected',
         ]);
 

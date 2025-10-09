@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('claims', function (Blueprint $table) {
+        Schema::table('klaim', function (Blueprint $table) {
             $table->string('claimer_nim')->nullable()->after('claimer_name');
         });
     }
@@ -21,7 +21,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('claims', function (Blueprint $table) {
+        Schema::table('klaim', function (Blueprint $table) {
             $table->dropColumn('claimer_nim');
         });
     }

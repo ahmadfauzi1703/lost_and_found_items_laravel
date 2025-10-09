@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('notifications', function (Blueprint $table) {
+        Schema::create('notifikasi', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->text('message');
             $table->timestamp('created_at')->useCurrent();
             $table->tinyInteger('is_read')->default(0); // Default 0, artinya belum dibaca
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('pengguna')->onDelete('cascade');
         });
     }
 
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('notifications');
+        Schema::dropIfExists('notifikasi');
     }
 };

@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('remember_tokens', function (Blueprint $table) {
+        Schema::create('token_pengingat', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->string('token', 64);
             $table->dateTime('expires_at');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('pengguna')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('remember_tokens');
+        Schema::dropIfExists('token_pengingat');
     }
 };

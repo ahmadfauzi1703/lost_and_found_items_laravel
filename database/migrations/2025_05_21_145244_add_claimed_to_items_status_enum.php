@@ -13,7 +13,7 @@ return new class extends Migration
     public function up(): void
     {
         // Dapatkan definisi ENUM saat ini
-        $enumValues = DB::select("SHOW COLUMNS FROM items WHERE Field = 'status'")[0]->Type;
+        $enumValues = DB::select("SHOW COLUMNS FROM barang WHERE Field = 'status'")[0]->Type;
 
         // Ekstrak nilai-nilai ENUM saat ini
         preg_match('/^enum\((.*)\)$/', $enumValues, $matches);
@@ -25,7 +25,7 @@ return new class extends Migration
             $newEnumDefinition = "'" . implode("','", $currentValues) . "'";
 
             // Terapkan perubahan ke tabel items
-            DB::statement("ALTER TABLE items MODIFY COLUMN status ENUM($newEnumDefinition)");
+            DB::statement("ALTER TABLE barang MODIFY COLUMN status ENUM($newEnumDefinition)");
         }
     }
 
@@ -35,7 +35,7 @@ return new class extends Migration
     public function down(): void
     {
         // Dapatkan definisi ENUM saat ini
-        $enumValues = DB::select("SHOW COLUMNS FROM items WHERE Field = 'status'")[0]->Type;
+        $enumValues = DB::select("SHOW COLUMNS FROM barang WHERE Field = 'status'")[0]->Type;
 
         // Ekstrak nilai-nilai ENUM saat ini
         preg_match('/^enum\((.*)\)$/', $enumValues, $matches);
@@ -49,6 +49,6 @@ return new class extends Migration
         $newEnumDefinition = "'" . implode("','", $newValues) . "'";
 
         // Terapkan perubahan ke tabel items
-        DB::statement("ALTER TABLE items MODIFY COLUMN status ENUM($newEnumDefinition)");
+        DB::statement("ALTER TABLE barang MODIFY COLUMN status ENUM($newEnumDefinition)");
     }
 };

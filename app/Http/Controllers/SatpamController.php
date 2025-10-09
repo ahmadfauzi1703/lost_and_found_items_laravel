@@ -38,7 +38,7 @@ class SatpamController extends Controller
         $claimedItemsCount = \App\Models\Claim::whereIn('status', ['approved', 'Claimed'])->count();
 
         // Data untuk chart laporan bulanan
-        $monthlyReports = DB::table('items')
+        $monthlyReports = DB::table('barang')
             ->selectRaw('MONTH(created_at) as month, COUNT(*) as count')
             ->whereYear('created_at', date('Y')) // Filter untuk tahun ini
             ->groupBy('month')
@@ -189,7 +189,7 @@ class SatpamController extends Controller
     {
         // Validasi request
         $validated = $request->validate([
-            'item_id' => 'required|exists:items,id',
+            'item_id' => 'required|exists:barang,id',
             'claimer_name' => 'required|string|max:255',
             'claimer_nim' => 'nullable|string|max:20',
             'claimer_email' => 'required|email|max:255',
@@ -251,7 +251,7 @@ class SatpamController extends Controller
         $request->validate([
             'first_name' => 'nullable|string|max:255',
             'last_name' => 'nullable|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'email' => 'required|string|email|max:255|unique:pengguna,email,' . $user->id,
             'phone' => 'nullable|string|max:15',
             'address' => 'nullable|string|max:255',
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',

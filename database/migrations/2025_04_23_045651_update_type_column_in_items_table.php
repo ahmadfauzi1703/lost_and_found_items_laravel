@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('items', function (Blueprint $table) {
+        Schema::table('barang', function (Blueprint $table) {
             // Mengubah kolom 'type' menjadi enum baru dengan tambahan nilai
             $table->enum('type', ['hilang', 'ditemukan', 'Elektronik', 'Handphone', 'Aksesoris', 'Pakaian', 'Dokumen', 'Lainnya'])->change();
         });
@@ -22,7 +22,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('items', function (Blueprint $table) {
+        Schema::table('barang', function (Blueprint $table) {
             // Mengembalikan kolom 'type' ke nilai enum sebelumnya jika migrasi dibatalkan
             $table->enum('type', ['hilang', 'ditemukan'])->change();
         });

@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('returns', function (Blueprint $table) {
+        Schema::create('pengembalian', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('item_id');
             $table->unsignedBigInteger('returner_id')->nullable();
@@ -27,8 +27,8 @@ return new class extends Migration
             $table->timestamps();
 
             // Foreign keys
-            $table->foreign('item_id')->references('id')->on('items')->onDelete('cascade');
-            $table->foreign('returner_id')->references('id')->on('users')->onDelete('set null');
+            $table->foreign('item_id')->references('id')->on('barang')->onDelete('cascade');
+            $table->foreign('returner_id')->references('id')->on('pengguna')->onDelete('set null');
         });
     }
 
@@ -37,6 +37,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('returns');
+        Schema::dropIfExists('pengembalian');
     }
 };

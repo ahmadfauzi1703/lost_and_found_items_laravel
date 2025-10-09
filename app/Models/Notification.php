@@ -9,6 +9,13 @@ class Notification extends Model
 {
     use HasFactory;
 
+    /**
+     * Nama tabel yang dipakai model.
+     *
+     * @var string
+     */
+    protected $table = 'notifikasi';
+
     // Disable timestamps karena tabel hanya punya created_at
     public $timestamps = false;
 

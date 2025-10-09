@@ -58,7 +58,7 @@ class AuthController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
+            'email' => 'required|string|email|max:255|unique:pengguna',
             'password' => 'required|string|min:8|confirmed',
             'phone' => 'nullable|string|max:15',
             // 'first_name' => 'nullable|string|max:255', // Opsional
@@ -99,8 +99,8 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'first_name' => 'sometimes|string|max:255',
             'last_name' => 'sometimes|string|max:255',
-            'nim' => 'sometimes|string|max:20|unique:users,nim,' . Auth::id(),
-            'email' => 'sometimes|string|email|max:255|unique:users,email,' . Auth::id(),
+            'nim' => 'sometimes|string|max:20|unique:pengguna,nim,' . Auth::id(),
+            'email' => 'sometimes|string|email|max:255|unique:pengguna,email,' . Auth::id(),
             'phone_number' => 'sometimes|string|max:20',
             'address' => 'sometimes|string|max:500',
         ]);

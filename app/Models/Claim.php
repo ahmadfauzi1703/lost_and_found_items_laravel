@@ -9,6 +9,13 @@ class Claim extends Model
 {
     use HasFactory;
 
+    /**
+     * Nama tabel basis data.
+     *
+     * @var string
+     */
+    protected $table = 'klaim';
+
     protected $fillable = [
         'item_id',
         'type',

@@ -14,7 +14,7 @@ class ItemReturn extends Model
      *
      * @var string
      */
-    protected $table = 'returns';
+    protected $table = 'pengembalian';
 
     /**
      * The attributes that are mass assignable.
