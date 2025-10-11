@@ -109,7 +109,7 @@
             <span data-modal-target="default-modal-profile" data-modal-toggle="default-modal-profile" class="absolute mt-[6rem] text-white p-[1] border-2 border-[#124076] bg-[#124076] rounded-md cursor-pointer">✎</span>
 
             <!-- Modal untuk Edit Profile -->
-            <div id="default-modal-profile" tabindex="-1" aria-hidden="true" class="hidden fixed top-0 right-0 left-0 z-50 flex justify-center items-center w-full h-[calc(100%-1rem)] max-h-full md:inset-0 overflow-y-auto overflow-x-hidden">
+            <div id="default-modal-profile" tabindex="-1" aria-hidden="true" class="hidden fixed top-0 right-0 left-0 z-50  justify-center items-center w-full h-[calc(100%-1rem)] max-h-full md:inset-0 overflow-y-auto overflow-x-hidden">
               <div class="relative p-4 w-full max-w-2xl max-h-full mx-0">
                 <!-- Modal content -->
                 <div class="relative bg-white rounded-lg shadow">

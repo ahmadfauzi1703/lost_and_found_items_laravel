@@ -177,7 +177,7 @@
   </footer>
 
   <!-- Modal -->
-  <div id="editModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center hidden z-50">
+  <div id="editModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 hidden items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-lg p-6 w-1/3">
       <h2 class="text-2xl font-semibold mb-4">Edit Found Item</h2>
       <form method="POST" action="admin_update_item.php">
@@ -209,11 +209,15 @@
       document.getElementById('editItemName').value = item.item_name;
       document.getElementById('editCategory').value = item.category;
       document.getElementById('editDescription').value = item.description;
-      document.getElementById('editModal').classList.remove('hidden');
+      const modal = document.getElementById('editModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
     }
 
     function closeEditModal() {
-      document.getElementById('editModal').classList.add('hidden');
+      const modal = document.getElementById('editModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
     }
   </script>
 </body>

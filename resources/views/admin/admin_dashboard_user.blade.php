@@ -148,7 +148,7 @@
     </div>
   </div>
   <!-- Modal -->
-  <div id="editModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center hidden">
+  <div id="editModal" class="fixed inset-0 bg-gray-800 bg-opacity-50  items-center justify-center hidden">
     <div class="bg-white rounded-lg shadow-lg p-6 w-1/3">
       <h2 class="text-2xl font-semibold mb-4">Edit User Role</h2>
       <form method="POST" action="{{ route('admin.users.update', $user->id) }}">
