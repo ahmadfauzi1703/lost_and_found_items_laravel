@@ -18,7 +18,7 @@
     <div class="w-[15rem] bg-[#124076] text-white">
       <img
         class="h-[5rem] m-auto mt-[1rem]"
-        src="{{ asset('assets/img/logo-unpam.png') }}" />
+        src="{{ asset('assets/img/logo-arka-white.png') }}" />
       <ul class="mt-6 space-y-2">
         <li>
           <a href="{{ route('admin_dashboard') }}" class="block px-4 py-2 bg-[#1E5CB8]"><i class='bx bxs-dashboard'></i> Dashboard</a>
@@ -156,7 +156,7 @@
     </div>
   </div>
   <footer class="bg-gray-800 text-white text-center py-4 fixed bottom-0 w-full -z-50">
-    Dibuat dengan 💙 oleh © 2025 Lost and Found items Team
+    Dibuat dengan 💙 oleh © 2025 Sipanang Team
   </footer>
 </body>
 

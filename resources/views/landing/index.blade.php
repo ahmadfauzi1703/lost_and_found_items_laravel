@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome | Lost and Found Items</title>
+  <title>Welcome | Sipanang</title>
   <!-- CSS -->
   <link rel="stylesheet" href="{{ asset('css/style.css') }}" />
   <!-- Boxicons CSS -->
@@ -24,7 +24,8 @@
   <header>
     <nav>
       <div class="logo">
-        <img src="Assets/img/lostnfoundlogo.png" height="70px" />
+        <img src="Assets/img/logo-arka.png" height="70px" />
+        <span class="logo-text">SIPANANG</span>
       </div>
       <ul id="menuList">
         <li><a class="login-btn" href="{{ route('login') }}">Log in</a></li>
@@ -55,7 +56,7 @@
     <div class="main-content">
       <div class="main">
         <h3>
-          Bagaimana Layanan <span>Lost and Found Items</span> Membantu Anda
+          Bagaimana Layanan <span>SiPanang </span> Membantu Anda
         </h3>
         <p>Bagaimana cara kerja nya?</p>
       </div>
@@ -81,7 +82,7 @@
     <div class="feedback-section">
       <div class="feedback-main">
         <h3>
-          Apa Kata Mereka Tentang Layanan <span style="color: #004274;">Lost and Found Items</span> Ini?
+          Apa Kata Mereka Tentang Layanan <span style="color: #004274;">Sipanang</span> Ini?
         </h3>
         <p>Bagaimana tanggapan mereka?</p>
       </div>
@@ -183,18 +184,18 @@
     <div class="faq-section">
       <div class="faq-main">
         <h3>Pertanyaan yang <span style="color: #004274;">Sering Diajukan</span></h3>
-        <p>Lost and Found Items FaQ</p>
+        <p>Sipanang FaQ</p>
       </div>
       <div class="faq-container">
         <!-- Pertanyaan 1 -->
         <div class="faq-item">
           <div class="faq-question" onclick="toggleFaq(this)">
-            <h4>Apa itu Lost and Found Items?</h4>
+            <h4>Apa itu Sipanang?</h4>
             <span class="toggle-icon">+</span>
           </div>
           <div class="faq-answer">
             <p>
-              Lost and Found Items adalah layanan yang membantu mahasiswa mahasiwi Telkom University menemukan barang yang hilang atau melaporkan barang yang ditemukan.
+              Sipanang adalah Singkatan dari (Sistem Pengaduan Barang Hilang)  yaitu layanan yang membantu Sistem yang memungkinkan civitas akademika melaporkan dan mencari barang hilang secara online. Sistem ini mencakup fitur verifikasi, notifikasi, dan dashboard keamanan.
             </p>
           </div>
         </div>
@@ -215,12 +216,12 @@
         <!-- Pertanyaan 3 -->
         <div class="faq-item">
           <div class="faq-question" onclick="toggleFaq(this)">
-            <h4>Apakah ada biaya untuk menggunakan layanan Lost and Found?</h4>
+            <h4>Apakah ada biaya untuk menggunakan layanan Sipanang?</h4>
             <span class="toggle-icon">+</span>
           </div>
           <div class="faq-answer">
             <p>
-              Layanan Lost and Found kami tidak dikenakan biaya. Kami menyediakan layanan ini secara gratis untuk membantu Anda mengembalikan barang yang hilang atau menemukan barang yang terlewat.
+              Sipanang  tidak dikenakan biaya. Kami menyediakan layanan ini secara gratis untuk membantu Anda mengembalikan barang yang hilang atau menemukan barang yang terlewat.
             </p>
           </div>
         </div>
@@ -241,12 +242,12 @@
         <!-- Pertanyaan 3 -->
         <div class="faq-item">
           <div class="faq-question" onclick="toggleFaq(this)">
-            <h4>Bagaimana cara menghindari penyalahgunaan sistem Lost and Found Items?</h4>
+            <h4>Bagaimana cara menghindari penyalahgunaan sistem Sipanang?</h4>
             <span class="toggle-icon">+</span>
           </div>
           <div class="faq-answer">
             <p>
-              Untuk menghindari penyalahgunaan sistem Lost and Found, kami meminta semua pengguna untuk memberikan deskripsi barang yang seakurat mungkin saat melaporkan barang yang hilang atau ditemukan.
+              Untuk menghindari penyalahgunaan sistem sipanang, kami meminta semua pengguna untuk memberikan deskripsi barang yang seakurat mungkin saat melaporkan barang yang hilang atau ditemukan.
             </p>
           </div>
         </div>
@@ -280,7 +281,7 @@
     <div class="footer">
       <div class="footer-main">
         <div class="fotter-img">
-          <a href="#"><img src="Assets/img/lostnfoundlogowhite.png" height="85px" /></a>
+          <a href="#"><img src="Assets/img/logo-arka.png" height="85px" /></a>
         </div>
       </div>
       <div class="footer-section">
@@ -288,11 +289,11 @@
           <h3>About</h3>
           <ul>
             <a href="about-us-non-log.html">
-              <li>About Lost and Found Items</li>
+              <li>About Sipanang</li>
             </a>
             <!-- <a><li>Feedback</li></a> -->
             <a href="terms-condition.html">
-              <li>Terms and Condition Lost And Found Items</li>
+              <li>Terms and Condition Sipanang</li>
             </a>
             <!-- <a><li>Feedback</li></a> -->
             <a href="terms-condition.html">
@@ -301,13 +302,13 @@
           </ul>
         </div>
         <div class="footer-content">
-          <h3>Lost and Found Items</h3>
+          <h3>Sipanang</h3>
           <ul>
             <a href="non-log-dasboard.php">
-              <li>Lost Items</li>
+              <li>sipanang</li>
             </a>
             <a href="non-log-dasboard.php">
-              <li>Found Items</li>
+              <li>sipanang</li>
             </a>
           </ul>
         </div>

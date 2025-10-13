@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Items Found - Lost and Found</title>
+  <title>Items Found - Sipanang</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- BX BX ICONS -->
   <link href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
@@ -17,7 +17,7 @@
     <div class="w-[15rem] flex-shrink-0 bg-[#124076] text-white">
       <img
         class="h-[5rem] m-auto mt-[1rem]"
-        src="{{ asset('assets/img/logo-unpam.png') }}" />
+        src="{{ asset('assets/img/logo-arka-white.png') }}" />
       <ul class="mt-6 space-y-2">
         <li>
           <a href="{{ route('admin_dashboard') }}" class="block px-4 py-2 hover:bg-[#4973b3]"><i class='bx bxs-dashboard'></i> Dashboard</a>
@@ -173,7 +173,7 @@
   </div>
 
   <footer class="bg-gray-800 text-white text-center py-4 fixed bottom-0 w-full -z-50">
-    Dibuat dengan 💙 oleh © 2025 Lost and Found items Team
+    Dibuat dengan 💙 oleh © 2025 Sipanang Team
   </footer>
 
   <!-- Modal -->

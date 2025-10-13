@@ -94,10 +94,10 @@
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
                                                 <span class="px-2 py-1 rounded text-white text-xs font-medium
-                                    @if($claim->status == 'Claimed') bg-green-500
-                                    @elseif($claim->status == 'pending') bg-yellow-500
-                                    @elseif($claim->status == 'rejected') bg-red-500
-                                    @else bg-blue-500
+                                    @if($claim->status == 'Claimed') 'bg-green-500'
+                                    @elseif($claim->status == 'pending') 'bg-yellow-500'
+                                    @elseif($claim->status == 'rejected')'bg-red-500'
+                                    @else 'bg-blue-500'
                                     @endif">
                                                     {{ $claim->status }}
                                                 </span>

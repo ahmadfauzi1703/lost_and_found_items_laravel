@@ -25,7 +25,7 @@
             <!-- Logo -->
             <div>
                 <a href="{{ route('dashboard') }}">
-                    <img class="mb-3 mt-3 h-[4rem] sm:h-20 cursor-pointer" src="{{ asset('Assets/img/lostnfoundlogo.png') }}" alt="Logo">
+                    <img class="mb-3 mt-3 h-[4rem] sm:h-20 cursor-pointer" src="{{ asset('Assets/img/logo-arka.png') }}" alt="Logo">
                 </a>
             </div>
 
@@ -223,21 +223,21 @@
             <div class="md:flex md:justify-between">
                 <div class="mb-6 md:mb-0">
                     <a href="#" class="flex items-center">
-                        <img src="{{ asset('Assets/img/lostnfoundlogowhite.png') }}" class="h-28 me-3" alt="Lost and Found Logo" />
+                        <img src="{{ asset('Assets/img/logo-arka-white.png') }}" class="h-28 me-3" alt="Logo" />
                     </a>
                 </div>
                 <div class="grid grid-cols-2 gap-8 sm:gap-6 sm:grid-cols-3">
                     <div>
                         <h2 class="mb-6 text-sm font-semibold text-white uppercase">About</h2>
                         <ul class="text-white font-medium">
-                            <li class="mb-4"><a href="{{ route('about-us') }}" class="hover:underline">About Lost and Found Items</a></li>
+                            <li class="mb-4"><a href="{{ route('about-us') }}" class="hover:underline">About Sipanang</a></li>
                         </ul>
                     </div>
                     <div>
-                        <h2 class="mb-6 text-sm font-semibold text-white uppercase">Lost and Found Items</h2>
+                        <h2 class="mb-6 text-sm font-semibold text-white uppercase">Sipanang</h2>
                         <ul class="text-white font-medium">
-                            <li class="mb-4"><a href="#" class="hover:underline">Lost Items</a></li>
-                            <li><a href="#" class="hover:underline">Found Items</a></li>
+                            <li class="mb-4"><a href="#" class="hover:underline">Kehilangan Barang</a></li>
+                            <li><a href="#" class="hover:underline">Temukan Barang</a></li>
                         </ul>
                     </div>
                     <div>
@@ -251,7 +251,7 @@
             </div>
             <hr class="my-6 border-white sm:mx-auto" />
             <div class="text-center">
-                <span class="text-sm text-white">© 2025 <a href="#" class="hover:underline">Lost and Found Team</a>. All Rights Reserved.</span>
+                <span class="text-sm text-white">© 2025 <a href="#" class="hover:underline">Sipanang Team</a>. All Rights Reserved.</span>
             </div>
         </div>
     </footer>

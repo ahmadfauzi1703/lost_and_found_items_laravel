@@ -36,7 +36,7 @@
         <nav class="flex justify-between items-center w-[90%] xl:w-[70%] mx-auto">
             <!-- Logo -->
             <div>
-                <img class="mb-3 mt-3 h-[4rem] sm:h-20 cursor-pointer" src="Assets/img/lostnfoundlogo.png" alt="Logo">
+                <img class="mb-3 mt-3 h-[4rem] sm:h-20 cursor-pointer" src="Assets/img/logo-arka.png" alt="Logo">
             </div>
 
             <!-- Kontainer Notifikasi dan Profile -->
@@ -227,7 +227,7 @@
                 <div class="mb-6 md:mb-0">
                     <a href="#" class="flex items-center">
                         <img
-                            src="Assets/img/lostnfoundlogowhite.png"
+                            src="Assets/img/logo-arka.png"
                             class="h-28 me-3"
                             alt="FlowBite Logo" />
                     </a>
@@ -240,30 +240,30 @@
                         </h2>
                         <ul class="text-white font-medium">
                             <li class="mb-4">
-                                <a href="https://flowbite.com/" class="hover:underline">About Lost and Found Items</a>
+                                <a href="https://flowbite.com/" class="hover:underline">About Sipanang </a>
                             </li>
                         </ul>
                     </div>
                     <div>
                         <h2
                             class="mb-6 text-sm font-semibold text-gray-900 uppercase dark:text-white">
-                            Lost and Found Items
+                            sipanang
                         </h2>
                         <ul class="text-white font-medium">
                             <li class="mb-4">
                                 <a
-                                    href="https://github.com/themesberg/flowbite"
-                                    class="hover:underline">Lost Items</a>
+                                    href="#"
+                                    class="hover:underline">Kehilangan Barang</a>
                             </li>
                             <li>
                                 <a
-                                    href="https://discord.gg/4eeurUVvTy"
-                                    class="hover:underline">Found Items</a>
+                                    href="#"
+                                    class="hover:underline">Ditemukan Barang</a>
                             </li>
                             <li>
                                 <a
-                                    href="https://discord.gg/4eeurUVvTy"
-                                    class="hover:underline">Information about Lost and Found Items</a>
+                                    href="#"
+                                    class="hover:underline">Information Sipanang</a>
                             </li>
                         </ul>
                     </div>
@@ -277,7 +277,7 @@
                                 <a href="#" class="hover:underline">Feedback</a>
                             </li>
                             <li>
-                                <a href="#" class="hover:underline">Terms &amp; Conditions Lost and Found Items</a>
+                                <a href="#" class="hover:underline ">Terms &amp; Conditions Sipanang</a>
                             </li>
                         </ul>
                     </div>
@@ -285,7 +285,7 @@
             </div>
             <hr class="my-6 border-white sm:mx-auto" />
             <div class="text-center sm:flex sm:items-center sm:justify-between">
-                <span class="text-sm text-white text-center">© 2024 <a href="/" class="hover:underline">Lost and Found Team</a>.
+                <span class="text-sm text-white text-center">© 2024 <a href="/" class="hover:underline">Sipanang Team</a>.
                     All Rights Reserved.
                 </span>
             </div>
@@ -345,7 +345,7 @@
     <!-- Maps Pin -->
     <script>
         // Koordinat Telkom University, Bandung
-        const telkomUniversityCoords = [-6.973250, 107.630339];
+        const telkomUniversityCoords = [-6.345828682831265, 106.6915418084527];
 
         // Inisialisasi peta
         const map = L.map('map').setView(telkomUniversityCoords, 16); // Zoom level 16 untuk lebih detail

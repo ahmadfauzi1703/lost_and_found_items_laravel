@@ -36,7 +36,7 @@
       <nav class="flex justify-between items-center w-[90%] xl:w-[70%] mx-auto">
         <!-- Logo -->
         <div>
-          <img class="mb-3 mt-3 h-[4rem] sm:h-20 cursor-pointer" src="Assets/img/lostnfoundlogo.png" alt="Logo">
+          <img class="mb-3 mt-3 h-[4rem] sm:h-20 cursor-pointer" src="Assets/img/logo-arka.png" alt="Logo">
         </div>
 
         <!-- Notification and Profile Section -->
@@ -344,7 +344,7 @@
           <div class="mb-6 md:mb-0">
             <a href="#" class="flex items-center">
               <img
-                src="Assets/img/lostnfoundlogowhite.png"
+                src="Assets/img/logo-arka-white.png"
                 class="h-28 me-3"
                 alt="FlowBite Logo" />
             </a>
@@ -357,7 +357,7 @@
               </h2>
               <ul class="text-white font-medium">
                 <li class="mb-4">
-                  <a href="about-us-non-log.html" class="hover:underline">About Lost and Found Items</a>
+                  <a href="about-us-non-log.html" class="hover:underline">About Sipanang</a>
                 </li>
               </ul>
             </div>
@@ -370,12 +370,12 @@
                 <li class="mb-4">
                   <a
                     href="#"
-                    class="hover:underline">Lost Items</a>
+                    class="hover:underline">Kehilangan Barang</a>
                 </li>
                 <li>
                   <a
                     href="#"
-                    class="hover:underline">Found Items</a>
+                    class="hover:underline">Temukan Barang</a>
                 </li>
               </ul>
             </div>
@@ -389,7 +389,7 @@
                   <a href="about-us.php" class="hover:underline">Feedback</a>
                 </li>
                 <li>
-                  <a href="terms-condition.html" class="hover:underline">Terms &amp; Conditions Lost and Found Items</a>
+                  <a href="terms-condition.html" class="hover:underline">Terms &amp; Conditions Sipanang</a>
                 </li>
               </ul>
             </div>
@@ -397,7 +397,7 @@
         </div>
         <hr class="my-6 border-white sm:mx-auto" />
         <div class="text-center sm:flex sm:items-center sm:justify-between">
-          <span class="text-sm text-white text-center">© 2025 <a href="/" class="hover:underline">Lost and Found Team</a>.
+          <span class="text-sm text-white text-center">© 2025 <a href="/" class="hover:underline">Sipanang Team</a>.
             All Rights Reserved.
           </span>
         </div>

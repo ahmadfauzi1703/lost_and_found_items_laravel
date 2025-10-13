@@ -29,7 +29,16 @@ nav {
 }
 
 .logo {
-  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-text {
+  font-weight: 900;
+  font-size: 1.4rem;
+  color: #599ce4;
+  
 }
 
 nav ul {

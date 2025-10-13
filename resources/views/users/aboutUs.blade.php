@@ -31,7 +31,7 @@
     <nav class="flex justify-between items-center w-[90%] xl:w-[70%] mx-auto">
       <!-- Logo -->
       <div>
-        <img class="mb-3 mt-3 h-[4rem] sm:h-20 cursor-pointer" src="Assets/img/lostnfoundlogo.png" alt="Logo">
+        <img class="mb-3 mt-3 h-[4rem] sm:h-20 cursor-pointer" src="Assets/img/logo-arka.png" alt="Logo">
       </div>
 
       <!-- Notification and Profile Section -->
@@ -104,7 +104,7 @@
       </div>
       <div class="p-8">
         <p class="text-gray-600">
-          Selamat datang di Lost & Found Items, mitra terpercaya Anda dalam menyatukan kembali mahasiswa dengan barang mereka yang hilang. Didirikan pada tahun 2024, misi kami adalah untuk menciptakan platform yang mulus dan efisien yang membantu individu dan komunitas di sekitar Telkom University untuk menemukan kembali barang yang hilang dengan cepat dan mudah.
+          SIPANANG (Sistem Pengaduan Barang Hilang) adalah sebuah sistem inovatif yang dikembangkan untuk memudahkan civitas akademika Universitas Arka Indonesia dalam melaporkan dan mencari barang yang hilang secara online. Sistem ini dirancang sebagai solusi digital yang efisien dan transparan untuk mempercepat proses pelaporan, pencarian, serta pengembalian barang hilang di lingkungan kampus.
         </p>
       </div>
     </section>
@@ -168,7 +168,7 @@
         <div class="mb-6 md:mb-0">
           <a href="#" class="flex items-center">
             <img
-              src="Assets/img/lostnfoundlogowhite.png"
+              src="Assets/img/logo-arka-white.png"
               class="h-28 me-3"
               alt="FlowBite Logo" />
           </a>
@@ -181,25 +181,25 @@
             </h2>
             <ul class="text-white font-medium">
               <li class="mb-4">
-                <a href="about-us-non-log.html" class="hover:underline">About Lost and Found Items</a>
+                <a href="about-us-non-log.html" class="hover:underline">About Sipanang</a>
               </li>
             </ul>
           </div>
           <div>
             <h2
               class="mb-6 text-sm font-semibold text-white uppercase dark:text-white">
-              Lost and Found Items
+              Sipanang
             </h2>
             <ul class="text-white font-medium">
               <li class="mb-4">
                 <a
                   href="#"
-                  class="hover:underline">Lost Items</a>
+                  class="hover:underline">Kehilangan Barang</a>
               </li>
               <li>
                 <a
                   href="#"
-                  class="hover:underline">Found Items</a>
+                  class="hover:underline">Temukan Barang</a>
               </li>
             </ul>
           </div>
@@ -213,7 +213,7 @@
                 <a href="about-us.php" class="hover:underline">Feedback</a>
               </li>
               <li>
-                <a href="terms-condition.html" class="hover:underline">Terms &amp; Conditions Lost and Found Items</a>
+                <a href="terms-condition.html" class="hover:underline">Terms &amp; Conditions Sipanang</a>
               </li>
             </ul>
           </div>
@@ -221,7 +221,7 @@
       </div>
       <hr class="my-6 border-white sm:mx-auto" />
       <div class="text-center sm:flex sm:items-center sm:justify-between">
-        <span class="text-sm text-white text-center">© 2025 <a href="/" class="hover:underline">Lost and Found Team</a>.
+        <span class="text-sm text-white text-center">© 2025 <a href="/" class="hover:underline">Sipanang Team</a>.
           All Rights Reserved.
         </span>
       </div>
@@ -287,7 +287,7 @@
 
       // Email tujuan - ganti dengan email yang sebenarnya
       const email = 'your-email@example.com'; // GANTI DENGAN EMAIL ANDA
-      const subject = 'Feedback Lost and Found Items';
+      const subject = 'Feedback dari Pengguna SIPANANG';
       const body = `Rating: ${rating} bintang\n\nFeedback:\n${feedback}\n\nKomentar dan Saran:\n${comments}\n\nDikirim oleh: ${document.querySelector('#menuDropdownButton span').textContent.trim()}`;
 
       // Opsi 1: Menggunakan mailto (akan membuka email client default)

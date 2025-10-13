@@ -23,9 +23,10 @@
     <div class="sign-in section">
       <div class="logo-img">
         <img
-          src="Assets/img/lostnnfoundtransprnt.png"
+          src="Assets/img/logo-arka.png" 
           height="80px"
           alt="Logo" />
+        <span class="logo-text">Sipanang</span>
       </div>
       <!-- Bagian kanan -->
       <div class="login-content">

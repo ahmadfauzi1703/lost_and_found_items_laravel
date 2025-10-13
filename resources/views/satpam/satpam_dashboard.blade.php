@@ -47,7 +47,7 @@
         <div class="w-[15rem] bg-[#393646] text-white">
             <img
                 class="h-[6rem] m-auto mt-[1rem]"
-                src="{{ asset('assets/img/laflogoputih.png') }}" />
+                src="{{ asset('assets/img/logo-arka.png') }}" />
             <ul class="mt-6 space-y-2">
                 <li>
                     <a href="" class="block px-4 py-2 bg-[#5C5470]"><i class='bx bxs-dashboard'></i> Dashboard</a>

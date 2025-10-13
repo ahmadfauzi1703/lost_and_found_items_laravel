@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Notification;
 use Illuminate\Support\Facades\Log;
+use App\Services\TelegramNotifier;
 
 
 class ItemController extends Controller
@@ -317,6 +318,14 @@ class ItemController extends Controller
                 'created_at' => now(),
                 'is_read' => 0
             ]);
+
+            // TelegramNotifier::notifyNewReport(
+            //     $item->type,
+            //     $item->item_name,
+            //     $item->category,
+            //     $reporter,
+            //     route('dashboard')
+            // );
 
             return redirect()->route('dashboard')
                 ->with('success', 'Laporan telah berhasil dikirimkan, dan sedang menunggu approval admin');
