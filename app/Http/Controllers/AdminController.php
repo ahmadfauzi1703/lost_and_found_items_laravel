@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Item;
+use App\Models\Claim;
 
 class AdminController extends Controller
 {
@@ -33,6 +34,15 @@ class AdminController extends Controller
         // Mengambil item terbaru untuk ditampilkan di dashboard
         $items = Item::orderBy('created_at', 'desc')->limit(3)->get();
 
+        // Hitung total item dengan status claimed
+        $claimedItemsCount = Item::where('status', 'Claimed')->count();
+
+        // Ambil klaim terbaru beserta relasi item
+        $recentClaims = Claim::with('item')
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+
 
         return view('admin.admin_dashboard', compact(
             'userCount',
@@ -40,7 +50,9 @@ class AdminController extends Controller
             'totalReports',
             'lostItemsCount',
             'foundItemsCount',
-            'items'
+            'items',
+            'claimedItemsCount',
+            'recentClaims'
         ));
     }
 
@@ -129,6 +141,41 @@ class AdminController extends Controller
         return view('admin.admin_dashboard_approval', compact('pendingItems'));
     }
 
+    public function claims(Request $request)
+    {
+        $statusFilter = $request->get('status');
+        $searchTerm = $request->get('search');
+
+        $query = Claim::with('item')->orderBy('created_at', 'desc');
+
+        if ($statusFilter && $statusFilter !== 'all') {
+            $query->where('status', $statusFilter);
+        }
+
+        if ($searchTerm) {
+            $like = '%' . $searchTerm . '%';
+            $query->where(function ($q) use ($like) {
+                $q->where('claimer_name', 'like', $like)
+                    ->orWhere('claimer_email', 'like', $like)
+                    ->orWhere('ownership_proof', 'like', $like)
+                    ->orWhereHas('item', function ($itemQuery) use ($like) {
+                        $itemQuery->where('item_name', 'like', $like)
+                            ->orWhere('category', 'like', $like);
+                    });
+            });
+        }
+
+        $claims = $query->paginate(10)->withQueryString();
+
+        $statusSummary = [
+            'pending' => Claim::where('status', 'pending')->count(),
+            'approved' => Claim::where('status', 'approved')->count(),
+            'rejected' => Claim::where('status', 'rejected')->count(),
+        ];
+
+        return view('admin.admin_dashboard_claims', compact('claims', 'statusSummary', 'statusFilter', 'searchTerm'));
+    }
+
     public function approveItem($id)
     {
         $item = Item::findOrFail($id);
@@ -186,5 +233,38 @@ class AdminController extends Controller
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Gagal menghapus item: ' . $e->getMessage());
         }
+    }
+
+    public function updateClaimStatus(Request $request, Claim $claim)
+    {
+        $validated = $request->validate([
+            'status' => 'required|in:approved,rejected,pending',
+            'notes' => 'nullable|string|max:500',
+        ]);
+
+        $claim->status = $validated['status'];
+        if (array_key_exists('notes', $validated)) {
+            $claim->notes = $validated['notes'];
+        }
+        $claim->save();
+
+        if ($claim->item) {
+            if ($validated['status'] === 'approved') {
+                $claim->item->status = 'Claimed';
+                $claim->item->save();
+            } elseif (in_array($validated['status'], ['rejected', 'pending'], true) && $claim->item->status === 'Claimed') {
+                // Kembalikan ke status approved agar item tetap dapat dilihat jika klaim belum sah
+                $claim->item->status = 'approved';
+                $claim->item->save();
+            }
+        }
+
+        $messageStatus = match ($validated['status']) {
+            'approved' => 'diapprove',
+            'rejected' => 'ditolak',
+            default => 'diperbarui',
+        };
+
+        return redirect()->back()->with('success', "Status klaim berhasil {$messageStatus}.");
     }
 }

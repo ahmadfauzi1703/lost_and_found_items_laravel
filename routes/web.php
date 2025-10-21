@@ -43,6 +43,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/found', [AdminController::class, 'found'])->name('admin_dashboard_found');
     Route::get('/admin/user', [AdminController::class, 'user'])->name('admin_dashboard_user');
     Route::get('/admin/approval', [AdminController::class, 'approval'])->name('admin_dashboard_approval');
+    Route::get('/admin/claims', [AdminController::class, 'claims'])->name('admin_dashboard_claims');
+    Route::post('/admin/claims/{claim}/status', [AdminController::class, 'updateClaimStatus'])->name('admin.claims.update-status');
 
     // Admin CRUD
     Route::get('/admin/users/{user}/edit', [AdminController::class, 'edit'])->name('admin.users.edit');
@@ -92,6 +94,10 @@ Route::middleware(['auth', 'role:satpam'])->group(function () {
     Route::post('/satpam/claims', [App\Http\Controllers\SatpamController::class, 'storeClaim'])
         ->middleware(['auth', 'role:satpam'])
         ->name('satpam.claims.store');
+
+    Route::get('/satpam/claims/review', [App\Http\Controllers\SatpamController::class, 'reviewClaims'])
+        ->middleware(['auth', 'role:satpam'])
+        ->name('satpam.dashboard.claims');
 
     Route::get('/satpam/claims/history', [App\Http\Controllers\SatpamController::class, 'viewHistory'])
         ->middleware(['auth', 'role:satpam'])

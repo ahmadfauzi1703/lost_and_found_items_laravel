@@ -29,6 +29,9 @@
                     <a href="{{ route('satpam.dashboard.createClaim') }}" class="block px-4 py-2 bg-[#5C5470]"><i class='bx bx-clipboard'></i> Create Claim Items</a>
                 </li>
                 <li>
+                    <a href="{{ route('satpam.dashboard.claims') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-user-check'></i> Claim Overview</a>
+                </li>
+                <li>
                     <a href="{{ route('satpam.dashboard.viewHistory') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-history'></i> Item Claim History</a>
                 </li>
                 <li>

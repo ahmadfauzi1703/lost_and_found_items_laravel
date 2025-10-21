@@ -32,6 +32,9 @@
                     <a href="{{ route('satpam.dashboard.createClaim') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-clipboard'></i> Create Claim Items</a>
                 </li>
                 <li>
+                    <a href="{{ route('satpam.dashboard.claims') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-user-check'></i> Claim Overview</a>
+                </li>
+                <li>
                     <a href="{{ route('satpam.dashboard.viewHistory') }}" class="block px-4 py-2 bg-[#5C5470]"><i class='bx bx-history'></i> Item Claim History</a>
                 </li>
                 <li>
@@ -64,6 +67,7 @@
                                             <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Item Picture</th>
                                             <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Item Name</th>
                                             <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Pengklaim</th>
+                                            <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Barang Bukti</th>
                                             <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Tanggal Klaim</th>
                                             <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Status</th>
                                             <!-- <th scope="col" class="px-6 py-3 text-end text-xs font-medium text-white uppercase">Actions</th> -->
@@ -83,23 +87,62 @@
                                                 @endif
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">{{ $claim->item->item_name ?? 'Barang tidak ditemukan' }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                                            <td class="px-6 py-4 text-sm text-gray-800 align-top">
                                                 <p class="font-medium">{{ $claim->claimer_name }}</p>
                                                 <p class="text-xs text-gray-500">NIM: {{ $claim->claimer_nim }}</p>
                                                 <p class="text-xs text-gray-500">{{ $claim->claimer_email }}</p>
                                                 <p class="text-xs text-gray-500">{{ $claim->claimer_phone }}</p>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                                                {{ \Carbon\Carbon::parse($claim->claim_date)->format('d M Y') }}
+                                            <td class="px-6 py-4 text-sm text-gray-800 align-top">
+                                                <div>
+                                                    <p class="text-xs text-gray-500">Deskripsi Bukti</p>
+                                                    <p class="text-sm font-medium">{{ $claim->ownership_proof ?? 'Tidak ada deskripsi' }}</p>
+                                                </div>
+                                                @php
+                                                    $proofPath = $claim->proof_document;
+                                                    $proofUrl = $proofPath ? asset('storage/'.$proofPath) : null;
+                                                    $extension = $proofPath ? strtolower(pathinfo($proofPath, PATHINFO_EXTENSION)) : null;
+                                                    $isImage = in_array($extension, ['jpg','jpeg','png','gif','bmp','webp']);
+                                                @endphp
+                                                <div class="mt-2">
+                                                    @if($proofUrl)
+                                                        @if($isImage)
+                                                            <button
+                                                                type="button"
+                                                                class="outline-none"
+                                                                data-proof-url="{{ $proofUrl }}"
+                                                                data-proof-title="Bukti {{ $claim->item->item_name ?? 'Barang' }}"
+                                                                data-proof-description="{{ $claim->ownership_proof ?? '' }}">
+                                                                <img src="{{ $proofUrl }}" alt="Bukti {{ $claim->item->item_name ?? 'Barang' }}" class="h-16 w-16 object-cover rounded border shadow">
+                                                            </button>
+                                                        @else
+                                                            <a href="{{ $proofUrl }}" target="_blank" class="text-blue-600 text-sm underline">Lihat Dokumen</a>
+                                                        @endif
+                                                    @else
+                                                        <span class="text-xs text-gray-400">Tidak ada file bukti</span>
+                                                    @endif
+                                                </div>
+                                                @if(!empty($claim->notes))
+                                                <div class="mt-2">
+                                                    <p class="text-xs text-gray-500">Catatan</p>
+                                                    <p class="text-sm">{{ $claim->notes }}</p>
+                                                </div>
+                                                @endif
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                                                <span class="px-2 py-1 rounded text-white text-xs font-medium
-                                    @if($claim->status == 'Claimed') 'bg-green-500'
-                                    @elseif($claim->status == 'pending') 'bg-yellow-500'
-                                    @elseif($claim->status == 'rejected')'bg-red-500'
-                                    @else 'bg-blue-500'
-                                    @endif">
-                                                    {{ $claim->status }}
+                                                {{ $claim->claim_date ? \Carbon\Carbon::parse($claim->claim_date)->format('d M Y') : '-' }}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                                                @php
+                                                    $statusClass = match (strtolower($claim->status)) {
+                                                        'claimed' => 'bg-green-500',
+                                                        'pending' => 'bg-yellow-500',
+                                                        'rejected' => 'bg-red-500',
+                                                        default => 'bg-blue-500',
+                                                    };
+                                                @endphp
+                                                <span class="px-2 py-1 rounded text-white text-xs font-medium {{ $statusClass }}">
+                                                    {{ ucfirst($claim->status) }}
                                                 </span>
                                             </td>
                                             <!-- <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
@@ -128,6 +171,85 @@
     <footer class="bg-[#6D5D6E] text-white text-center py-4 w-full mt-auto">
         Dibuat dengan 💙 oleh © 2025 Lost and Found items Team
     </footer>
+    <!-- Modal Preview Bukti -->
+    <div id="proofModal" class="hidden fixed inset-0 z-50">
+        <div data-proof-overlay class="absolute inset-0 bg-black bg-opacity-60"></div>
+        <div class="relative z-10 flex items-center justify-center min-h-screen px-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-3xl w-full overflow-hidden">
+                <div class="flex justify-between items-center px-4 py-3 border-b">
+                    <h3 id="proofModalTitle" class="text-lg font-semibold">Barang Bukti</h3>
+                    <button type="button" data-proof-close class="text-gray-500 hover:text-gray-700 text-2xl leading-none">&times;</button>
+                </div>
+                <div class="p-4">
+                    <img id="proofModalImage" src="" alt="Barang Bukti" class="w-full max-h-[70vh] object-contain rounded">
+                    <p id="proofModalDescription" class="mt-3 text-sm text-gray-700"></p>
+                </div>
+                <div class="flex justify-end px-4 py-3 border-t">
+                    <button type="button" data-proof-close class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                        Tutup
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const proofModal = document.getElementById('proofModal');
+        if (!proofModal) return;
+
+        const modalImage = document.getElementById('proofModalImage');
+        const modalTitle = document.getElementById('proofModalTitle');
+        const modalDescription = document.getElementById('proofModalDescription');
+        const overlay = proofModal.querySelector('[data-proof-overlay]');
+        const closeButtons = proofModal.querySelectorAll('[data-proof-close]');
+        const triggers = document.querySelectorAll('[data-proof-url]');
+
+        const openModal = (trigger) => {
+            const url = trigger.dataset.proofUrl || '';
+            const title = trigger.dataset.proofTitle || 'Barang Bukti';
+            const description = trigger.dataset.proofDescription || '';
+
+            modalImage.src = url;
+            modalImage.alt = title;
+            modalTitle.textContent = title;
+
+            const trimmedDesc = description.trim();
+            if (trimmedDesc.length > 0) {
+                modalDescription.textContent = trimmedDesc;
+                modalDescription.classList.remove('hidden');
+            } else {
+                modalDescription.textContent = '';
+                modalDescription.classList.add('hidden');
+            }
+
+            proofModal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+        };
+
+        const closeModal = () => {
+            proofModal.classList.add('hidden');
+            modalImage.src = '';
+            document.body.classList.remove('overflow-hidden');
+        };
+
+        triggers.forEach(trigger => {
+            trigger.addEventListener('click', () => openModal(trigger));
+        });
+
+        closeButtons.forEach(button => button.addEventListener('click', closeModal));
+        if (overlay) {
+            overlay.addEventListener('click', closeModal);
+        }
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && !proofModal.classList.contains('hidden')) {
+                closeModal();
+            }
+        });
+    });
+</script>
+
 </html>
+

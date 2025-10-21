@@ -234,6 +234,37 @@ class SatpamController extends Controller
         return view('satpam.satpam_dashboard_viewHistory', compact('claims'));
     }
 
+    public function reviewClaims(Request $request)
+    {
+        $statusFilter = $request->get('status', 'pending');
+        $search = $request->get('search');
+
+        $query = Claim::with('item')->orderBy('created_at', 'desc');
+
+        if ($statusFilter && $statusFilter !== 'all') {
+            $query->where('status', $statusFilter);
+        }
+
+        if ($search) {
+            $like = '%' . $search . '%';
+            $query->where(function ($q) use ($like) {
+                $q->where('claimer_name', 'like', $like)
+                    ->orWhere('claimer_email', 'like', $like)
+                    ->orWhereHas('item', function ($itemQuery) use ($like) {
+                        $itemQuery->where('item_name', 'like', $like);
+                    });
+            });
+        }
+
+        $claims = $query->paginate(10)->withQueryString();
+
+        return view('satpam.satpam_dashboard_claims', [
+            'claims' => $claims,
+            'statusFilter' => $statusFilter,
+            'searchTerm' => $search,
+        ]);
+    }
+
     public function profile()
     {
         // Ambil data user yang sedang login

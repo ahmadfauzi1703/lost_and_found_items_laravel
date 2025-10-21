@@ -33,6 +33,9 @@
         <li>
           <a href="{{ route('admin_dashboard_user') }}" class="block px-4 py-2 bg-[#1E5CB8]"><i class='bx bxs-user-circle'></i> Users</a>
         </li>
+        <li>
+          <a href="{{ route('admin_dashboard_claims') }}" class="block px-4 py-2 hover:bg-[#4973b3]"><i class='bx bx-clipboard'></i> Claim Verification</a>
+        </li>
       </ul>
       <!-- Logout Button -->
       <div class="mt-6">
