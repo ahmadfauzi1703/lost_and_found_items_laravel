@@ -70,7 +70,6 @@ Route::prefix('v1')->group(function () {
 
 
                 // Authentication Endpoints
-                'POST /api/v1/register' => 'Register user',
                 'POST /api/v1/login' => 'Login user',
                 'POST /api/v1/logout' => 'Logout user (auth required)',
             ]
@@ -97,7 +96,6 @@ Route::prefix('v1')->group(function () {
     })->where('path', '.*');
 
     // Authentication
-    Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);

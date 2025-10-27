@@ -83,8 +83,7 @@
 
           <div class="sign-up btn">
             <p>
-              Tidak memiliki akun?
-              <a href="{{ route('register') }}" style="cursor: pointer">Daftar di sini</a>
+              Tidak memiliki akun? Silakan hubungi administrator untuk membuat akun.
             </p>
           </div>
         </div>

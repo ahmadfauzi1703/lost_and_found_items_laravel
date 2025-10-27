@@ -32,7 +32,7 @@
       </div>
       <ul id="menuList">
         <li><a class="login-btn" href="{{ route('login') }}">Log in</a></li>
-        <li><a class="sign-up btn" href="{{ route('register') }}">Sign Up</a></li>
+        <li><span class="sign-up btn" style="cursor: default;">Hubungi Admin</span></li>
       </ul>
       <div class="menu-icon">
         <i class="bx bx-menu" onclick="toggleMenu()"></i>
@@ -143,10 +143,10 @@
         </div>
         <div class="report-section">
           <div class="report-btn">
-            <a href="{{ route('register') }}"><button type="submit">Saya Telah Kehilangan</button></a>
+            <a href="{{ route('login') }}"><button type="submit">Saya Telah Kehilangan</button></a>
           </div>
           <div class="report-btn">
-            <a href="{{ route('register') }}"><button type="submit">Saya Telah Menemukan</button></a>
+            <a href="{{ route('login') }}"><button type="submit">Saya Telah Menemukan</button></a>
           </div>
         </div>
       </div>
@@ -292,7 +292,7 @@
     function showLoginModal() {
       Swal.fire({
         title: 'Silahkan Login untuk Mengakses Detail',
-        text: 'Anda harus login untuk melihat detail laporan ini. Silakan masuk atau daftar untuk melanjutkan.',
+        text: 'Anda harus login untuk melihat detail laporan ini. Silakan masuk atau hubungi admin untuk melanjutkan.',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Login',

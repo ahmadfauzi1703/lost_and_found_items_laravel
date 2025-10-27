@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SatpamController;
 use App\Http\Controllers\UserController;
@@ -25,11 +24,6 @@ Route::post('/login', [LoginController::class, 'login'])->name('login.submit'); 
 // Route untuk logout
 Route::post('/logout', [LogoutController::class, 'logout'])->name('logout');
 
-// Route untuk halaman registrasi
-Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');  // Halaman registrasi
-Route::post('/register', [RegisterController::class, 'register'])->name('register.submit');  // Proses registrasi
-
-
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # ADMIN SECTION
@@ -47,6 +41,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/admin/claims/{claim}/status', [AdminController::class, 'updateClaimStatus'])->name('admin.claims.update-status');
 
     // Admin CRUD
+    Route::post('/admin/users', [AdminController::class, 'store'])->name('admin.users.store');
     Route::get('/admin/users/{user}/edit', [AdminController::class, 'edit'])->name('admin.users.edit');
     Route::put('/admin/users/{user}', [AdminController::class, 'update'])->name('admin.users.update');
     Route::delete('/admin/users/{user}', [AdminController::class, 'destroy'])->name('admin.users.destroy');

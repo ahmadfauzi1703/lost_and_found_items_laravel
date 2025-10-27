@@ -29,7 +29,7 @@
       </div>
       <ul id="menuList">
         <li><a class="login-btn" href="{{ route('login') }}">Log in</a></li>
-        <li><a class="sign-up btn" href="{{ route('register') }}">Sign Up</a></li>
+        <li><span class="sign-up btn" style="cursor: default;">Hubungi Admin</span></li>
       </ul>
       <div class="menu-icon">
         <i class="bx bx-menu" onclick="toggleMenu()"></i>

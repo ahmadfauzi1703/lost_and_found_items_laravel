@@ -49,29 +49,157 @@
     <!-- Main Content -->
     <div class="flex-1 p-3">
       <div class="bg-white rounded-lg shadow-lg p-6">
-        <h2 class="text-2xl font-semibold mb-4">Users Management</h2>
+        <h2 class="text-2xl font-semibold mb-4">Manajemen Pengguna</h2>
+
+        @if(session('success'))
+        <div class="mb-4 rounded-lg bg-green-100 px-4 py-3 text-green-800">
+          {{ session('success') }}
+        </div>
+        @endif
+
+        @if($errors->any())
+        <div class="mb-4 rounded-lg bg-red-100 px-4 py-3 text-red-800">
+          <ul class="list-disc list-inside space-y-1">
+            @foreach($errors->all() as $error)
+            <li>{{ $error }}</li>
+            @endforeach
+          </ul>
+        </div>
+        @endif
+
+        <div class="mb-6 rounded-lg border border-gray-200 bg-gray-50 p-6">
+          <h3 class="text-xl font-semibold mb-4">Tambah Pengguna Baru</h3>
+          <form method="POST" action="{{ route('admin.users.store') }}" class="grid gap-4 md:grid-cols-2">
+            @csrf
+            <div>
+              <label for="first_name" class="block text-sm font-medium text-gray-700 mb-1">Nama Depan</label>
+              <input
+                id="first_name"
+                name="first_name"
+                type="text"
+                value="{{ old('first_name') }}"
+                required
+                class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500" />
+            </div>
+
+            <div>
+              <label for="last_name" class="block text-sm font-medium text-gray-700 mb-1">Nama Belakang</label>
+              <input
+                id="last_name"
+                name="last_name"
+                type="text"
+                value="{{ old('last_name') }}"
+                required
+                class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500" />
+            </div>
+
+            <div>
+              <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                value="{{ old('email') }}"
+                required
+                class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500" />
+            </div>
+
+            <div>
+              <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Nomor Telepon</label>
+              <input
+                id="phone"
+                name="phone"
+                type="tel"
+                value="{{ old('phone') }}"
+                placeholder="+628xxxxxxxxxx"
+                class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500" />
+            </div>
+
+            <div>
+              <label for="nim" class="block text-sm font-medium text-gray-700 mb-1">NIM</label>
+              <input
+                id="nim"
+                name="nim"
+                type="text"
+                value="{{ old('nim') }}"
+                class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500" />
+            </div>
+
+            <div>
+              <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Alamat</label>
+              <input
+                id="address"
+                name="address"
+                type="text"
+                value="{{ old('address') }}"
+                class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500" />
+            </div>
+
+            <div>
+              <label for="role" class="block text-sm font-medium text-gray-700 mb-1">Peran</label>
+              <select
+                id="role"
+                name="role"
+                class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                <option value="user" {{ old('role', 'user') === 'user' ? 'selected' : '' }}>User</option>
+                <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>Admin</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Kata Sandi</label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                required
+                autocomplete="new-password"
+                class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500" />
+            </div>
+
+            <div>
+              <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-1">Konfirmasi Kata Sandi</label>
+              <input
+                id="password_confirmation"
+                name="password_confirmation"
+                type="password"
+                required
+                autocomplete="new-password"
+                class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500" />
+            </div>
+
+            <div class="md:col-span-2 flex justify-end">
+              <button
+                type="submit"
+                class="rounded-lg bg-blue-600 px-5 py-2 text-white hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1">
+                Simpan Pengguna
+              </button>
+            </div>
+          </form>
+        </div>
+
         <div class="flex justify-between mb-4">
           <form method="GET" action="{{ route('admin_dashboard_user') }}" class="flex space-x-4">
-            <!-- Search by Name -->
+            <!-- Cari berdasarkan nama -->
             <input
               type="text"
               name="search"
               value="{{ request('search') }}"
               class="p-2 bg-gray-100 rounded-lg border border-gray-300"
-              placeholder="Search Users by Name" />
+              placeholder="Cari pengguna berdasarkan nama" />
 
             <!-- Filter by Role -->
             <select name="role" class="p-2 bg-gray-100 rounded-lg border border-gray-300 w-48">
-              <option value="">All Roles</option>
+              <option value="">Semua Peran</option>
               <option value="user" {{ request('role') == 'user' ? 'selected' : '' }}>User</option>
               <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin</option>
               <option value="satpam" {{ request('role') == 'satpam' ? 'selected' : '' }}>Satpam</option>
             </select>
 
-            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500">Filter</button>
+            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500">Terapkan</button>
 
             @if(request('search') || request('role'))
-            <a href="{{ route('admin_dashboard_user') }}" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600">Clear</a>
+            <a href="{{ route('admin_dashboard_user') }}" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600">Reset</a>
             @endif
           </form>
           <!-- Filter Info Section -->
@@ -88,7 +216,7 @@
               <span class="font-medium">Role: "{{ ucfirst(request('role')) }}"</span>
               @endif
 
-              ({{ $users->count() }} user ditemukan)
+              ({{ $users->count() }} pengguna ditemukan)
             </p>
           </div>
           @endif
@@ -101,10 +229,10 @@
                 <table class="min-w-full divide-y divide-gray-200">
                   <thead class="bg-[#124076]">
                     <tr>
-                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Name</th>
+                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Nama</th>
                       <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Email</th>
-                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Role</th>
-                      <th scope="col" class="px-6 py-3 text-end text-xs font-medium text-white uppercase">Actions</th>
+                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Peran</th>
+                      <th scope="col" class="px-6 py-3 text-end text-xs font-medium text-white uppercase">Aksi</th>
                     </tr>
                   </thead>
                   <tbody class="divide-y divide-gray-200">
@@ -124,21 +252,21 @@
                         <button
                           onclick="openEditModal('{{ $user->id }}', '{{ $user->first_name }}', '{{ $user->role }}')"
                           class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-blue-600 hover:text-blue-800 focus:outline-hidden">
-                          Edit
+                          Ubah
                         </button>
 
                         <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="inline delete-form">
                           @csrf
                           @method('DELETE')
                           <button type="submit" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-red-600 hover:text-red-800 focus:outline-hidden ml-2">
-                            Delete
+                            Hapus
                           </button>
                         </form>
                       </td>
                     </tr>
                     @empty
                     <tr class="bg-white">
-                      <td colspan="4" class="px-6 py-4 text-sm text-gray-800 text-center">No users found</td>
+                      <td colspan="4" class="px-6 py-4 text-sm text-gray-800 text-center">Tidak ada pengguna</td>
                     </tr>
                     @endforelse
                   </tbody>
@@ -153,7 +281,7 @@
   <!-- Modal -->
   <div id="editModal" class="fixed inset-0 bg-gray-800 bg-opacity-50  items-center justify-center hidden">
     <div class="bg-white rounded-lg shadow-lg p-6 w-1/3">
-      <h2 class="text-2xl font-semibold mb-4">Edit User Role</h2>
+      <h2 class="text-2xl font-semibold mb-4">Ubah Peran Pengguna</h2>
       <form method="POST" action="{{ route('admin.users.update', $user->id) }}">
         @csrf
         @method('PUT') <!-- Menandakan bahwa ini adalah request PUT -->
@@ -162,13 +290,13 @@
 
         <!-- Name -->
         <div class="mb-4">
-          <label for="editUserName" class="block text-sm font-medium">Name</label>
+          <label for="editUserName" class="block text-sm font-medium">Nama</label>
           <input type="text" id="editUserName" name="name" class="p-2 w-full border border-gray-300 rounded-lg" readonly>
         </div>
 
         <!-- Role -->
         <div class="mb-4">
-          <label for="editRole" class="block text-sm font-medium">Role</label>
+          <label for="editRole" class="block text-sm font-medium">Peran</label>
           <select id="editRole" name="role" class="p-2 w-full border border-gray-300 rounded-lg">
             <option value="user">User</option>
             <option value="admin">Admin</option>
@@ -178,8 +306,8 @@
 
         <!-- Action Buttons -->
         <div class="flex justify-end space-x-4">
-          <button type="button" onclick="closeEditModal()" class="px-4 py-2 bg-gray-300 rounded-lg">Cancel</button>
-          <button type="submit" id="saveEditBtn" class="px-4 py-2 bg-blue-600 text-white rounded-lg">Save</button>
+          <button type="button" onclick="closeEditModal()" class="px-4 py-2 bg-gray-300 rounded-lg">Batal</button>
+          <button type="submit" id="saveEditBtn" class="px-4 py-2 bg-blue-600 text-white rounded-lg">Simpan</button>
         </div>
       </form>
 

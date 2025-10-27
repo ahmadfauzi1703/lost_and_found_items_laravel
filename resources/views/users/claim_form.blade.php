@@ -81,7 +81,7 @@
             @else
             <div class="flex items-center gap-6">
                 <a href="{{ route('login') }}" class="text-[#124076] hover:text-blue-800">Login</a>
-                <a href="{{ route('register') }}" class="bg-[#124076] text-white px-4 py-2 rounded hover:bg-blue-800">Register</a>
+                <span class="bg-[#124076] text-white px-4 py-2 rounded">Hubungi Admin</span>
             </div>
             @endif
         </nav>

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use App\Models\User;
 use App\Models\Item;
 use App\Models\Claim;
@@ -196,6 +198,32 @@ class AdminController extends Controller
 
 
     // CRUD
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'first_name' => ['required', 'string', 'max:50'],
+            'last_name' => ['required', 'string', 'max:50'],
+            'email' => ['required', 'email', 'max:255', 'unique:pengguna,email'],
+            'phone' => ['nullable', 'string', 'max:20'],
+            'nim' => ['nullable', 'string', 'max:15'],
+            'address' => ['nullable', 'string', 'max:255'],
+            'role' => ['required', Rule::in(['user', 'admin', 'satpam'])],
+            'password' => ['required', 'string', 'min:6', 'confirmed'],
+        ]);
+
+        User::create([
+            'first_name' => $validated['first_name'],
+            'last_name' => $validated['last_name'],
+            'email' => $validated['email'],
+            'phone' => $validated['phone'] ?? null,
+            'nim' => $validated['nim'] ?? null,
+            'address' => $validated['address'] ?? null,
+            'role' => $validated['role'],
+            'password' => Hash::make($validated['password']),
+        ]);
+
+        return redirect()->route('admin_dashboard_user')->with('success', 'Pengguna berhasil ditambahkan.');
+    }
 
     public function edit(User $user)
     {
@@ -213,14 +241,14 @@ class AdminController extends Controller
         $user->role = $request->role;
         $user->save();  // Simpan perubahan
 
-        return redirect()->route('admin_dashboard_user')->with('success', 'User role updated successfully!');
+        return redirect()->route('admin_dashboard_user')->with('success', 'Peran pengguna berhasil diperbarui!');
     }
 
     public function destroy(User $user)
     {
         $user->delete();  // Menghapus user
 
-        return redirect()->route('admin_dashboard_user')->with('success', 'User deleted successfully');
+        return redirect()->route('admin_dashboard_user')->with('success', 'Pengguna berhasil dihapus.');
     }
 
     public function destroyItems(Item $item)
