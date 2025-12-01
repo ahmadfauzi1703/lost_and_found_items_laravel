@@ -6,6 +6,7 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -17,16 +18,23 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
+            'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         ]);
 
         // Konfigurasi CORS untuk API
         $middleware->group('api', [
             EnsureFrontendRequestsAreStateful::class,
             \Illuminate\Http\Middleware\HandleCors::class, // CORS bawaan Laravel 12
+            'throttle:critical',
         ]);
 
         // Tambahkan CORS middleware untuk web routes juga (opsional)
         $middleware->prependToGroup('web', \Illuminate\Http\Middleware\HandleCors::class);
+
+        // Rate limit krusial: maksimal 5 request/menit per IP
+        RateLimiter::for('critical', function (Request $request) {
+            return Limit::perMinute(5)->by($request->ip());
+        });
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->reportable(function (Throwable $exception) {
