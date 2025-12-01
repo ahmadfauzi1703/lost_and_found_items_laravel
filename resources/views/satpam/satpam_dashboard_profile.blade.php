@@ -2,42 +2,44 @@
 <html lang="en">
 
 <head>
+  @include('partials.pwa')
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Profile Satpam - Lost and Found</title>
+    <title>Profile Staff Kampus - Lost and Found</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- BX BX ICONS -->
     <link href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 </head>
 
 <body class="bg-gray-100 flex flex-col min-h-screen">
+    {{-- Profil staff kampus dengan detail akun dan modal edit data diri --}}
     <!-- Sidebar -->
     <div class="flex flex-grow">
         <div class="w-[15rem] bg-[#393646] text-white sticky top-0 h-screen overflow-y-auto">
             <img
                 class="h-[6rem] m-auto mt-[1rem]"
-                src="{{ asset('assets/img/laflogoputih.png') }}" />
+                src="{{ asset('assets/img/logo-arka-white.png') }}" />
             <ul class="mt-6 space-y-2">
                 <li>
-                    <a href="{{ route('satpam_dashboard') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bxs-dashboard'></i> Dashboard</a>
+                    <a href="{{ route('satpam_dashboard') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bxs-dashboard'></i> Dasbor</a>
                 </li>
                 <li>
-                    <a href="{{ route('satpam.dashboard.create') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-box'></i> Add Items</a>
+                    <a href="{{ route('satpam.dashboard.create') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-box'></i> Tambah Barang</a>
                 </li>
                 <li>
-                    <a href="{{ route('satpam.dashboard.view') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-list-ul'></i> List Item</a>
+                    <a href="{{ route('satpam.dashboard.view') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-list-ul'></i> Daftar Barang</a>
                 </li>
                 <li>
-                    <a href="{{ route('satpam.dashboard.createClaim') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-clipboard'></i> Create Claim Items</a>
+                    <a href="{{ route('satpam.dashboard.createClaim') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-clipboard'></i> Buat Klaim Barang</a>
                 </li>
                 <li>
-                    <a href="{{ route('satpam.dashboard.claims') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-user-check'></i> Claim Overview</a>
+                    <a href="{{ route('satpam.dashboard.claims') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-user-check'></i> Ringkasan Klaim</a>
                 </li>
                 <li>
-                    <a href="{{ route('satpam.dashboard.viewHistory') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-history'></i> Item Claim History</a>
+                    <a href="{{ route('satpam.dashboard.viewHistory') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-history'></i> Riwayat Klaim Barang</a>
                 </li>
                 <li>
-                    <a href="{{ route('satpam.dashboard.profile') }}" class="block px-4 py-2 bg-[#5C5470]"><i class='bx bx-user'></i> Satpam Profile</a>
+                    <a href="{{ route('satpam.dashboard.profile') }}" class="block px-4 py-2 bg-[#5C5470]"><i class='bx bx-user'></i> Profil Staff Kampus</a>
                 </li>
             </ul>
             <!-- Logout Button -->
@@ -52,7 +54,7 @@
         <!-- Main Content -->
         <div class="flex-1 p-3">
             <div class="bg-white rounded-lg shadow-lg p-6">
-                <h2 class="text-2xl font-semibold mb-6">Profile Satpam</h2>
+                <h2 class="text-2xl font-semibold mb-6">Profile Staff Kampus</h2>
 
                 <!-- Flash Message for Success -->
                 @if (session('success'))
@@ -95,7 +97,7 @@
 
                                 <div class="flex flex-col md:flex-row">
                                     <div class="md:w-1/3 font-medium text-gray-600">Role</div>
-                                    <div class="md:w-2/3">Satpam</div>
+                                    <div class="md:w-2/3">Staff Kampus</div>
                                 </div>
 
                                 <div class="flex flex-col md:flex-row">
@@ -226,11 +228,11 @@
     </div>
 
     <footer class="bg-[#6D5D6E] text-white text-center py-4 w-full mt-auto">
-        Dibuat dengan 💙 oleh © 2025 Lost and Found items Team
+        Dibuat dengan 💙 oleh © 2025 Sipanang
     </footer>
 
     <script>
-        // Modal functionality
+        // Modal edit profil staff kampus
         const editProfileBtn = document.getElementById('editProfileBtn');
         const editProfileModal = document.getElementById('editProfileModal');
         const cancelEditBtn = document.getElementById('cancelEditBtn');

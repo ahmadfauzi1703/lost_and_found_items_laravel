@@ -2,6 +2,7 @@
 <html>
 
 <head>
+  @include('partials.pwa')
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- Tailwind CSS -->
@@ -22,7 +23,6 @@
     <link
         href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css"
         rel="stylesheet" />
-    <!-- Tambahkan di bagian <head> -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <title>Form Report</title>
@@ -31,6 +31,7 @@
 <!-- Header Section -->
 
 <body class="font-[Lato] h-screen">
+    {{-- Form pelaporan barang hilang/ditemukan oleh pengguna dengan dukungan peta lokasi --}}
     <header class="bg-white">
         <!-- Header -->
         <nav class="flex justify-between items-center w-[90%] xl:w-[70%] mx-auto">
@@ -49,7 +50,7 @@
                     </button>
 
                     <!-- Dropdown Notifikasi -->
-                    <div id="notification-dropdown" class="absolute top-full mt-2 right-0 w-80 bg-white shadow-lg rounded-lg hidden z-20">
+                    <div id="notification-dropdown" class="absolute top-full mt-2 right-0 w-80 bg-white shadow-lg rounded-lg hidden z-40">
                         <ul class="divide-y divide-gray-200">
                             <li class="p-4 text-center text-gray-500">Tidak ada pemberitahuan baru</li>
                         </ul>
@@ -70,7 +71,7 @@
 
                     <!-- Dropdown Menu -->
                     <div id="menuDropdown"
-                        class="hidden absolute top-full mt-2 right-0 bg-white divide-y divide-gray-100 rounded-lg shadow-md w-44">
+                        class="hidden absolute top-full mt-2 right-0 bg-white divide-y divide-gray-100 rounded-lg shadow-md w-44 z-50">
                         <ul class="py-1 text-sm text-gray-700">
                             <li><a href="{{ route('dashboard') }}" class="block px-4 py-2 hover:bg-gray-100">Home</a></li>
                             <li><a href="{{ route('profile') }}" class="block px-4 py-2 hover:bg-gray-100">Profile</a></li>

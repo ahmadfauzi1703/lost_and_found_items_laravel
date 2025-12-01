@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+  @include('partials.pwa')
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Log-in</title>
@@ -19,6 +20,7 @@
 </head>
 
 <body>
+  {{-- Halaman login pengguna ke sistem Sipanang --}}
   <section>
     <div class="sign-in section">
       <div class="logo-img">
@@ -73,7 +75,7 @@
 
             <div class="options">
               <label><input type="checkbox" name="remember_me" style="cursor: pointer" />remember me</label>
-              <a href="forgot_password.html">Lupa Password?</a>
+              <a href="{{ route('password.request') }}">Lupa Password?</a>
             </div>
 
             <button class="btn-submit" type="submit" style="cursor: pointer">

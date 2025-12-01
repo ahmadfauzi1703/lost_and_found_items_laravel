@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+  @include('partials.pwa')
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Create Claim - Lost and Found</title>
@@ -11,31 +12,32 @@
 </head>
 
 <body class="bg-gray-100 flex flex-col min-h-screen">
+    {{-- Form staff kampus untuk mencatat klaim barang sebelum diverifikasi admin --}}
     <!-- Sidebar -->
     <div class="flex flex-grow">
         <div class="w-[15rem] bg-[#393646] text-white sticky top-0 h-screen overflow-y-auto z-20">
-            <img class="h-[6rem] m-auto mt-[1rem]" src="{{ asset('assets/img/laflogoputih.png') }}" />
+            <img class="h-[6rem] m-auto mt-[1rem]" src="{{ asset('assets/img/logo-arka-white.png') }}" />
             <ul class="mt-6 space-y-2">
                 <li>
-                    <a href="{{ route('satpam_dashboard') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bxs-dashboard'></i> Dashboard</a>
+                    <a href="{{ route('satpam_dashboard') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bxs-dashboard'></i> Dasbor</a>
                 </li>
                 <li>
-                    <a href="{{ route('satpam.dashboard.create') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-box'></i> Add Items</a>
+                    <a href="{{ route('satpam.dashboard.create') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-box'></i> Tambah Barang</a>
                 </li>
                 <li>
-                    <a href="{{ route('satpam.dashboard.view') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-list-ul'></i> List Item</a>
+                    <a href="{{ route('satpam.dashboard.view') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-list-ul'></i> Daftar Barang</a>
                 </li>
                 <li>
-                    <a href="{{ route('satpam.dashboard.createClaim') }}" class="block px-4 py-2 bg-[#5C5470]"><i class='bx bx-clipboard'></i> Create Claim Items</a>
+                    <a href="{{ route('satpam.dashboard.createClaim') }}" class="block px-4 py-2 bg-[#5C5470]"><i class='bx bx-clipboard'></i> Buat Klaim Barang</a>
                 </li>
                 <li>
-                    <a href="{{ route('satpam.dashboard.claims') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-user-check'></i> Claim Overview</a>
+                    <a href="{{ route('satpam.dashboard.claims') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-user-check'></i> Ringkasan Klaim</a>
                 </li>
                 <li>
-                    <a href="{{ route('satpam.dashboard.viewHistory') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-history'></i> Item Claim History</a>
+                    <a href="{{ route('satpam.dashboard.viewHistory') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-history'></i> Riwayat Klaim Barang</a>
                 </li>
                 <li>
-                    <a href="{{ route('satpam.dashboard.profile') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-user'></i> Satpam Profile</a>
+                    <a href="{{ route('satpam.dashboard.profile') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-user'></i> Profil Staff Kampus</a>
                 </li>
             </ul>
             <!-- Logout Button -->
@@ -50,7 +52,7 @@
         <!-- Main Content -->
         <div class="flex-1 p-3">
             <div class="bg-white rounded-lg shadow-lg p-6">
-                <h2 class="text-2xl font-semibold mb-4">Create Claim Items</h2>
+                <h2 class="text-2xl font-semibold mb-4">Buat Klaim Barang</h2>
 
                 <!-- Flash Message for Success/Error -->
                 @if (session('success'))
@@ -60,6 +62,7 @@
                 @endif
 
                 <!-- Form untuk claim barang -->
+                {{-- Input detail pengklaim dan bukti kepemilikan --}}
                 <form method="POST" action="{{ route('satpam.claims.store') }}" enctype="multipart/form-data">
                     @csrf
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -139,7 +142,7 @@
 
     <!-- Footer -->
     <footer class="bg-[#6D5D6E] text-white text-center py-4 w-full mt-auto">
-        Dibuat dengan 💙 oleh © 2025 Lost and Found items Team
+        Dibuat dengan 💙 oleh © 2025 Sipanang
     </footer>
 </body>
 

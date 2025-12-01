@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+  @include('partials.pwa')
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sign-Up</title>
@@ -19,6 +20,7 @@
 </head>
 
 <body>
+  {{-- Halaman pendaftaran akun baru Sipanang --}}
   <section>
     <div class="sign-in section">
       <div class="logo-img">

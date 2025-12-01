@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+  @include('partials.pwa')
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Dashboard</title>
@@ -13,6 +14,7 @@
 </head>
 
 <body class="bg-gray-100">
+  {{-- Halaman ringkasan admin untuk melihat statistik laporan, aktivitas, dan bukti klaim --}}
   <!-- Sidebar -->
   <div class="flex h-screen">
     <div class="w-[15rem] bg-[#124076] text-white">
@@ -24,19 +26,19 @@
           <a href="{{ route('admin_dashboard') }}" class="block px-4 py-2 bg-[#1E5CB8]"><i class='bx bxs-dashboard'></i> Dashboard</a>
         </li>
         <li>
-          <a href="{{ route('admin_dashboard_approval') }}" class="block px-4 py-2 hover:bg-[#4973b3]"><i class='bx bxs-check-circle'></i> Approval</a>
+          <a href="{{ route('admin_dashboard_approval') }}" class="block px-4 py-2 hover:bg-[#4973b3]"><i class='bx bxs-check-circle'></i> Persetujuan </a>
         </li>
         <li>
-          <a href="{{ route('admin_dashboard_lost') }}" class="block px-4 py-2 hover:bg-[#4973b3]"><i class='bx bxs-box'></i> Items Lost</a>
+          <a href="{{ route('admin_dashboard_lost') }}" class="block px-4 py-2 hover:bg-[#4973b3]"><i class='bx bxs-box'></i> Barang Temuan</a>
         </li>
         <li>
-          <a href="{{ route('admin_dashboard_found') }}" class="block px-4 py-2 hover:bg-[#4973b3]"><i class='bx bxs-box'></i> Items Found</a>
+          <a href="{{ route('admin_dashboard_found') }}" class="block px-4 py-2 hover:bg-[#4973b3]"><i class='bx bxs-box'></i> Barang Hilang</a>
         </li>
         <li>
-          <a href="{{ route('admin_dashboard_user') }}" class="block px-4 py-2 hover:bg-[#4973b3]"><i class='bx bxs-user-circle'></i> Users</a>
+          <a href="{{ route('admin_dashboard_user') }}" class="block px-4 py-2 hover:bg-[#4973b3]"><i class='bx bxs-user-circle'></i> Pengguna</a>
         </li>
         <li>
-          <a href="{{ route('admin_dashboard_claims') }}" class="block px-4 py-2 hover:bg-[#4973b3]"><i class='bx bx-clipboard'></i> Claim Verification</a>
+          <a href="{{ route('admin_dashboard_claims') }}" class="block px-4 py-2 hover:bg-[#4973b3]"><i class='bx bx-clipboard'></i> Validasi klaim</a>
         </li>
       </ul>
       <!-- Logout Button -->
@@ -52,12 +54,13 @@
     <div class="flex-1 p-3">
       <div class="bg-white rounded-lg shadow-lg p-6">
         <h2 class="text-2xl font-semibold mb-4">Dashboard</h2>
+        {{-- Kartu metrik singkat untuk memantau status laporan dan pengguna --}}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <!-- Unaproved Report -->
           <div class="bg-white p-4 rounded-lg shadow-md flex items-center border-l-4 border-t-4 border-yellow-600">
             <i class='bx bx-doughnut-chart text-4xl text-yellow-600 mr-4'></i>
             <div>
-              <h3 class="text-lg font-semibold">Unaproved Report</h3>
+              <h3 class="text-lg font-semibold">Laporan Pending</h3>
               <p class="text-xl font-bold">{{ $unapprovedCount }}</p> <!-- Ganti angka 0 dengan variabel userCount -->
             </div>
           </div>
@@ -65,7 +68,7 @@
           <div class="bg-white p-4 rounded-lg shadow-md flex items-center border-l-4 border-t-4 border-green-600">
             <i class='bx bxs-group text-3xl text-green-600 mr-4'></i>
             <div>
-              <h3 class="text-lg font-semibold">Total Report</h3>
+              <h3 class="text-lg font-semibold">Total Laporan</h3>
               <p class="text-xl font-bold">{{ $totalReports }}</p> <!-- Ganti angka 0 dengan variabel userCount -->
             </div>
           </div>
@@ -73,7 +76,7 @@
           <div class="bg-white p-4 rounded-lg shadow-md flex items-center border-l-4 border-t-4 border-[#124076]">
             <i class='bx bxs-group text-3xl text-blue-800 mr-4'></i>
             <div>
-              <h3 class="text-lg font-semibold">Total Users</h3>
+              <h3 class="text-lg font-semibold">Total Pengguna</h3>
               <p class="text-xl font-bold">{{ $userCount }}</p> <!-- Ganti angka 0 dengan variabel userCount -->
             </div>
           </div>
@@ -81,7 +84,7 @@
           <div class="bg-white p-4 rounded-lg shadow-md flex items-center border-l-4 border-t-4 border-red-600">
             <i class='bx bxs-help-circle text-3xl text-red-600 mr-4'></i>
             <div>
-              <h3 class="text-lg font-semibold">Lost Items Report</h3>
+              <h3 class="text-lg font-semibold">Laporan Barang Hilang</h3>
               <p class="text-xl font-bold">{{ $lostItemsCount }}</p>
             </div>
           </div>
@@ -89,7 +92,7 @@
           <div class="bg-white p-4 rounded-lg shadow-md flex items-center border-l-4 border-t-4 border-green-600">
             <i class='bx bxs-check-circle text-3xl text-green-600 mr-4'></i>
             <div>
-              <h3 class="text-lg font-semibold">Found Items Report</h3>
+              <h3 class="text-lg font-semibold">Laporan Barang Ditemukan</h3>
               <p class="text-xl font-bold">{{ $foundItemsCount }}</p>
             </div>
           </div>
@@ -97,7 +100,7 @@
           <div class="bg-white p-4 rounded-lg shadow-md flex items-center border-l-4 border-t-4 border-green-600">
             <i class='bx  bx-box text-3xl text-green-600 mr-4'></i>
             <div>
-              <h3 class="text-lg font-semibold">Claimed Items</h3>
+              <h3 class="text-lg font-semibold">Data Barang Diklaim</h3>
               <p class="text-xl font-bold">{{ $claimedItemsCount }}</p>
             </div>
           </div>
@@ -105,8 +108,9 @@
       </div>
 
       <div class="mt-6 bg-white rounded-lg shadow-lg p-6">
-        <h2 class="text-2xl font-semibold mb-4">Recent Activity</h2>
+        <h2 class="text-2xl font-semibold mb-4">Riwayat Aktivitas</h2>
 
+        {{-- Tabel laporan terbaru untuk ditinjau admin --}}
         <div class="flex flex-col">
           <div class="-m-1.5 overflow-x-auto">
             <div class="p-1.5 min-w-full inline-block align-middle">
@@ -114,14 +118,14 @@
                 <table class="min-w-full divide-y divide-gray-200">
                   <thead class=" bg-[#124076]">
                     <tr>
-                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Item Name</th>
-                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Category</th>
-                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Date of Events</th>
-                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Description</th>
-                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Location</th>
-                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Email Report</th>
-                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Phone</th>
-                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Item Picture</th>
+                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Nama Barang</th>
+                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Kategori</th>
+                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Tanggal Kejadian</th>
+                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Deskripsi</th>
+                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Lokasi</th>
+                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Data Email</th>
+                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Nomor Kontak</th>
+                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Gambar Barang</th>
                     </tr>
                   </thead>
                   <tbody class="divide-y divide-gray-200">
@@ -146,7 +150,7 @@
 
                     @if(count($items) === 0)
                     <tr class="bg-white">
-                      <td colspan="8" class="px-6 py-4 text-sm text-gray-800 text-center">No items found</td>
+                      <td colspan="8" class="px-6 py-4 text-sm text-gray-800 text-center">Tidak ada barang Hilang</td>
                     </tr>
                     @endif
                   </tbody>
@@ -158,15 +162,16 @@
       </div>
 
       <div class="mt-6 bg-white rounded-lg shadow-lg p-6">
-        <h2 class="text-2xl font-semibold mb-4">Recent Claim Evidence</h2>
+        <h2 class="text-2xl font-semibold mb-4">Bukti Klaim Terbaru</h2>
         <div class="flex flex-col">
           <div class="-m-1.5 overflow-x-auto">
             <div class="p-1.5 min-w-full inline-block align-middle">
               <div class="overflow-hidden">
+                {{-- Tabel bukti klaim terbaru beserta kontrol preview --}}
                 <table class="min-w-full divide-y divide-gray-200">
                   <thead class=" bg-[#124076]">
                     <tr>
-                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Item</th>
+                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Barang</th>
                       <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Pengklaim</th>
                       <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Bukti</th>
                       <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Status</th>
@@ -252,6 +257,7 @@
   </footer>
 
   <!-- Modal Preview Bukti -->
+  {{-- Modal preview bukti klaim agar admin dapat melihat detail gambar/dokumen --}}
   <div id="proofModal" class="hidden fixed inset-0 z-50">
     <div data-proof-overlay class="absolute inset-0 bg-black bg-opacity-60"></div>
     <div class="relative z-10 flex items-center justify-center min-h-screen px-4">

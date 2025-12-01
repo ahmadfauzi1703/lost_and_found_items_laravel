@@ -2,38 +2,40 @@
 <html lang="en">
 
 <head>
+  @include('partials.pwa')
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Satpam | Claim Overview</title>
+    <title>Staff Kampus | Ringkasan Klaim</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 </head>
 
 <body class="bg-gray-100 flex flex-col min-h-screen">
+    {{-- Ringkasan klaim untuk staff kampus sebelum diteruskan ke admin --}}
     <div class="flex flex-grow">
         <div class="w-[15rem] bg-[#393646] text-white sticky top-0 h-screen overflow-y-auto">
-            <img class="h-[6rem] m-auto mt-[1rem]" src="{{ asset('assets/img/laflogoputih.png') }}" alt="Logo" />
+            <img class="h-[6rem] m-auto mt-[1rem]" src="{{ asset('assets/img/logo-arka-white.png') }}" alt="Logo" />
             <ul class="mt-6 space-y-2">
                 <li>
-                    <a href="{{ route('satpam_dashboard') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bxs-dashboard'></i> Dashboard</a>
+                    <a href="{{ route('satpam_dashboard') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bxs-dashboard'></i> Dasbor</a>
                 </li>
                 <li>
-                    <a href="{{ route('satpam.dashboard.create') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-box'></i> Add Items</a>
+                    <a href="{{ route('satpam.dashboard.create') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-box'></i> Tambah Barang</a>
                 </li>
                 <li>
-                    <a href="{{ route('satpam.dashboard.view') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-list-ul'></i> List Item</a>
+                    <a href="{{ route('satpam.dashboard.view') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-list-ul'></i> Daftar Barang</a>
                 </li>
                 <li>
-                    <a href="{{ route('satpam.dashboard.createClaim') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-clipboard'></i> Create Claim Items</a>
+                    <a href="{{ route('satpam.dashboard.createClaim') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-clipboard'></i> Buat Klaim Barang</a>
                 </li>
                 <li>
-                    <a href="{{ route('satpam.dashboard.claims') }}" class="block px-4 py-2 bg-[#5C5470]"><i class='bx bx-user-check'></i> Claim Overview</a>
+                    <a href="{{ route('satpam.dashboard.claims') }}" class="block px-4 py-2 bg-[#5C5470]"><i class='bx bx-user-check'></i> Ringkasan Klaim</a>
                 </li>
                 <li>
-                    <a href="{{ route('satpam.dashboard.viewHistory') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-history'></i> Item Claim History</a>
+                    <a href="{{ route('satpam.dashboard.viewHistory') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-history'></i> Riwayat Klaim Barang</a>
                 </li>
                 <li>
-                    <a href="{{ route('satpam.dashboard.profile') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-user'></i> Satpam Profile</a>
+                    <a href="{{ route('satpam.dashboard.profile') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-user'></i> Profil Staff Kampus</a>
                 </li>
             </ul>
             <div class="mt-6">
@@ -48,7 +50,7 @@
             <div class="bg-white rounded-lg shadow-lg p-6">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
-                        <h1 class="text-2xl font-semibold text-gray-900">Claim Overview</h1>
+                        <h1 class="text-2xl font-semibold text-gray-900">Ringkasan Klaim</h1>
                         <p class="text-sm text-gray-500">Pantau siapa yang mengajukan klaim dan bukti yang disertakan sebelum diserahkan ke Admin.</p>
                     </div>
                     <div class="bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-700">
@@ -56,6 +58,7 @@
                     </div>
                 </div>
 
+                {{-- Filter klaim yang diajukan pengguna --}}
                 <form method="GET" action="{{ route('satpam.dashboard.claims') }}" class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-3 bg-gray-50 p-4 rounded-lg border border-gray-200">
                     <div>
                         <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Cari klaim</label>
@@ -76,6 +79,7 @@
                 </form>
 
                 <div class="mt-6 overflow-x-auto">
+                    {{-- Daftar klaim dengan bukti dan status verifikasi staff kampus --}}
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-[#393646] text-white">
                             <tr>
@@ -163,7 +167,7 @@
     </div>
 
     <footer class="bg-[#6D5D6E] text-white text-center py-4 w-full mt-auto">
-        Dibuat dengan dY'T oleh Ac 2025 Lost and Found items Team
+        Dibuat dengan dY'T oleh Ac 2025 Sipanang
     </footer>
 </body>
 

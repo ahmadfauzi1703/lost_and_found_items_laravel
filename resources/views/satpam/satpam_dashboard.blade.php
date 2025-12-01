@@ -2,9 +2,10 @@
 <html lang="en">
 
 <head>
+  @include('partials.pwa')
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Satpam Dashboard</title>
+    <title>Staff Kampus Dashboard</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon" />
@@ -15,6 +16,7 @@
 </head>
 
 <body class="bg-gray-100">
+    {{-- Dashboard staff kampus untuk ringkasan laporan, statistik, dan notifikasi flash --}}
     <!-- Flash Message -->
     @if(session('success'))
     <div id="flash-message" class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 flex items-center">
@@ -47,29 +49,29 @@
         <div class="w-[15rem] bg-[#393646] text-white">
             <img
                 class="h-[6rem] m-auto mt-[1rem]"
-                src="{{ asset('assets/img/logo-arka.png') }}" />
+                src="{{ asset('assets/img/logo-arka-white.png') }}" />
             <ul class="mt-6 space-y-2">
                 <li>
-                    <a href="" class="block px-4 py-2 bg-[#5C5470]"><i class='bx bxs-dashboard'></i> Dashboard</a>
+                    <a href="" class="block px-4 py-2 bg-[#5C5470]"><i class='bx bxs-dashboard'></i> Dasbor</a>
                 </li>
                 <li>
-                    <a href="{{ route('satpam.dashboard.create') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx  bx-box'></i> Add Items</a>
+                    <a href="{{ route('satpam.dashboard.create') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx  bx-box'></i> Tambah Barang</a>
                 </li>
                 </li>
                 <li>
-                    <a href="{{ route('satpam.dashboard.view') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-list-ul'></i> List Item</a>
+                    <a href="{{ route('satpam.dashboard.view') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-list-ul'></i> Daftar Barang</a>
                 </li>
                 <li>
-                    <a href="{{ route('satpam.dashboard.createClaim') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-clipboard'></i> Create Claim Items</a>
+                    <a href="{{ route('satpam.dashboard.createClaim') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-clipboard'></i> Buat Klaim Barang</a>
                 </li>
                 <li>
-                    <a href="{{ route('satpam.dashboard.claims') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-user-check'></i> Claim Overview</a>
+                    <a href="{{ route('satpam.dashboard.claims') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-user-check'></i> Ringkasan Klaim</a>
                 </li>
                 <li>
-                    <a href="{{ route('satpam.dashboard.viewHistory') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-history'></i> Item Claim History</a>
+                    <a href="{{ route('satpam.dashboard.viewHistory') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-history'></i> Riwayat Klaim Barang</a>
                 </li>
                 <li>
-                    <a href="{{ route('satpam.dashboard.profile') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-user'></i> Satpam Profile</a>
+                    <a href="{{ route('satpam.dashboard.profile') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-user'></i> Profil Staff Kampus</a>
                 </li>
             </ul>
             <!-- Logout Button -->
@@ -84,13 +86,13 @@
         <!-- Main Content -->
         <div class="flex-1 p-3">
             <div class="bg-white rounded-lg shadow-lg p-6">
-                <h2 class="text-2xl font-semibold mb-4">Dashboard</h2>
+                <h2 class="text-2xl font-semibold mb-4">Dasbor</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     <!-- Claimed Items -->
                     <div class="bg-white p-4 rounded-lg shadow-md flex items-center border-l-4 border-t-4 border-green-600">
                         <i class='bx bx-doughnut-chart text-4xl text-green-600 mr-4'></i>
                         <div>
-                            <h3 class="text-lg font-semibold">Claimed Items</h3>
+                            <h3 class="text-lg font-semibold">Barang Diklaim</h3>
                             <p class="text-xl font-bold">{{ $claimedItemsCount }}</p>
                         </div>
                     </div>
@@ -98,7 +100,7 @@
                     <div class="bg-white p-4 rounded-lg shadow-md flex items-center border-l-4 border-t-4 border-green-600">
                         <i class='bx bxs-group text-3xl text-green-600 mr-4'></i>
                         <div>
-                            <h3 class="text-lg font-semibold">Registred Items</h3>
+                            <h3 class="text-lg font-semibold">Barang Terdaftar</h3>
                             <p class="text-xl font-bold">{{ $totalReports }}</p> <!-- Ganti angka 0 dengan variabel userCount -->
                         </div>
                     </div>
@@ -106,7 +108,7 @@
                     <div class="bg-white p-4 rounded-lg shadow-md flex items-center border-l-4 border-t-4 border-[#124076]">
                         <i class='bx bxs-group text-3xl text-blue-800 mr-4'></i>
                         <div>
-                            <h3 class="text-lg font-semibold">Total Users</h3>
+                            <h3 class="text-lg font-semibold">Total Pengguna</h3>
                             <p class="text-xl font-bold">{{ $userCount }}</p> <!-- Ganti angka 0 dengan variabel userCount -->
                         </div>
                     </div>
@@ -114,7 +116,7 @@
                     <div class="bg-white p-4 rounded-lg shadow-md flex items-center border-l-4 border-t-4 border-red-600">
                         <i class='bx bxs-help-circle text-3xl text-red-600 mr-4'></i>
                         <div>
-                            <h3 class="text-lg font-semibold">Lost Items Report</h3>
+                            <h3 class="text-lg font-semibold">Laporan Barang Hilang</h3>
                             <p class="text-xl font-bold">{{ $lostItemsCount }}</p>
                         </div>
                     </div>
@@ -122,7 +124,7 @@
                     <div class="bg-white p-4 rounded-lg shadow-md flex items-center border-l-4 border-t-4 border-green-600">
                         <i class='bx bxs-check-circle text-3xl text-green-600 mr-4'></i>
                         <div>
-                            <h3 class="text-lg font-semibold">Found Items Report</h3>
+                            <h3 class="text-lg font-semibold">Laporan Barang Ditemukan</h3>
                             <p class="text-xl font-bold">{{ $foundItemsCount }}</p>
                         </div>
                     </div>
@@ -130,7 +132,7 @@
             </div>
 
             <div class="mt-6 bg-white rounded-lg shadow-lg p-6">
-                <h2 class="text-2xl font-semibold mb-4">Activity Report</h2>
+                <h2 class="text-2xl font-semibold mb-4">Laporan Aktivitas</h2>
 
                 <!-- Ubah dari flex menjadi flex-col (kolom) -->
                 <div class="flex flex-col gap-4">
@@ -159,7 +161,7 @@
     </div>
     <!-- Dengan ini -->
     <footer class="bg-[#6D5D6E] text-white text-center py-4 fixed bottom-0 w-full">
-        Dibuat dengan 💙 oleh © 2025 Lost and Found items Team
+        Dibuat dengan 💙 oleh © 2025 Sipanang
     </footer>
 
 

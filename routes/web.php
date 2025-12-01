@@ -6,6 +6,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SatpamController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\ProfileController;
 
@@ -20,6 +21,13 @@ Route::get('/landing-items', [ItemController::class, 'index'])->name('landing.it
 // Route untuk halaman login
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');  // Halaman login
 Route::post('/login', [LoginController::class, 'login'])->name('login.submit');    // Proses login
+
+Route::middleware('guest')->group(function () {
+    Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+    Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+    Route::get('/reset-password/{token}', [ForgotPasswordController::class, 'showResetForm'])->name('password.reset');
+    Route::post('/reset-password', [ForgotPasswordController::class, 'resetPassword'])->name('password.update');
+});
 
 // Route untuk logout
 Route::post('/logout', [LogoutController::class, 'logout'])->name('logout');
@@ -65,7 +73,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------
 
-# SATPAM SECTION
+# STAFF KAMPUS SECTION
 Route::middleware(['auth', 'role:satpam'])->group(function () {
     Route::get('/satpam/dashboard', [SatpamController::class, 'index'])->name('satpam_dashboard');
     // Route satpam dashboard view
@@ -73,7 +81,7 @@ Route::middleware(['auth', 'role:satpam'])->group(function () {
         ->middleware(['auth', 'role:satpam'])
         ->name('satpam.dashboard.view');
 
-    // Functional Satpam
+    // Functional Staff Kampus
     Route::get('/satpam/item/create', [SatpamController::class, 'create'])->name('satpam.dashboard.create');
     Route::post('/satpam/item/store', [SatpamController::class, 'store'])->name('satpam.dashboard.store');
 

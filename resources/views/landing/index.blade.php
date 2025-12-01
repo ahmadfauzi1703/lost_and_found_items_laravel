@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+  @include('partials.pwa')
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Welcome | Sipanang</title>
@@ -20,6 +21,7 @@
 </head>
 
 <body>
+  {{-- Landing page publik Sipanang yang menampilkan promo layanan dan CTA daftar laporan --}}
   <!-- Header Section -->
   <header>
     <nav>

@@ -184,7 +184,7 @@ class AdminController extends Controller
         $item->status = 'approved';
         $item->save();
 
-        return redirect()->back()->with('success', 'Item has been approved');
+        return redirect()->back()->with('success', 'Barang berhasil disetujui');
     }
 
     public function rejectItem($id)
@@ -193,7 +193,7 @@ class AdminController extends Controller
         $item->status = 'rejected';
         $item->save();
 
-        return redirect()->back()->with('success', 'Item has been rejected');
+        return redirect()->back()->with('success', 'Barang ditolak');
     }
 
 

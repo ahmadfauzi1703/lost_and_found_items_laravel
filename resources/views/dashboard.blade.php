@@ -2,8 +2,16 @@
 <html>
 
 <head>
+  @include('partials.pwa')
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- PWA  -->
+<meta name="theme-color" content="#6777ef"/>
+<link rel="apple-touch-icon" href="{{ asset('logo.png') }}">
+<link rel="manifest" href="{{ asset('/manifest.json') }}">
+
+
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Google Icons -->
@@ -29,6 +37,7 @@
 <!-- Header Section -->
 
 <body class="font-[Lato] h-screen">
+  {{-- Dashboard pengguna untuk mencari laporan dan membuka detail item --}}
   <header class="bg-white">
     <!-- Header -->
     <nav class="flex justify-between items-center w-[90%] xl:w-[70%] mx-auto">
@@ -47,7 +56,7 @@
           </button>
 
           <!-- Dropdown Notifikasi -->
-          <div id="notification-dropdown" class="absolute top-full mt-2 right-0 w-80 bg-white shadow-lg rounded-lg hidden z-20">
+          <div id="notification-dropdown" class="absolute top-full mt-2 right-0 w-80 bg-white shadow-lg rounded-lg hidden z-40">
             <!-- <div class="p-2 border-b border-gray-200 flex justify-between items-center">
               <h3 class="font-semibold">Notifikasi</h3>
               <button id="mark-all-read" class="text-xs text-blue-600 hover:underline">Tandai semua dibaca</button>
@@ -72,7 +81,7 @@
 
           <!-- Dropdown Menu -->
           <div id="menuDropdown"
-            class="hidden absolute top-full mt-2 right-0 bg-white divide-y divide-gray-100 rounded-lg shadow-md w-44">
+            class="hidden absolute top-full mt-2 right-0 bg-white divide-y divide-gray-100 rounded-lg shadow-md w-44 z-50">
             <ul class="py-1 text-sm text-gray-700">
               <li><a href="{{ route('dashboard') }}" class="block px-4 py-2 hover:bg-gray-100">Home</a></li>
               <li><a href="{{ route('profile') }}" class="block px-4 py-2 hover:bg-gray-100">Profile</a></li>
@@ -104,6 +113,7 @@
   <!-- Search Section -->
   <section class="bg-[#91B0D3] h-[15rem] flex flex-col items-center justify-center">
     <!-- Dropdown Buttons and Search -->
+    {{-- Form filter kategori dan pencarian laporan --}}
     <div class="w-full max-w-4xl px-4">
       <form class="flex flex-col sm:flex-row items-center gap-4 w-full" method="GET" action="{{ route('dashboard') }}">
         <!-- Dropdown (Select) -->
@@ -168,6 +178,7 @@
         </div>
 
         <!-- Pembungkus dengan opsi scroll -->
+        {{-- Grid kartu laporan yang bisa dibuka detailnya --}}
         <div class="overflow-y-auto h-[44rem] scrollbar-thin scrollbar-thumb-[#124076] scrollbar-track-[#e5e7eb] scrollbar-rounded">
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             @foreach ($items as $item)
@@ -198,7 +209,7 @@
                   data-location="{{ $item->location }}"
                   data-description="{{ $item->description }}"
                   data-image="{{ asset($imagePath) }}"
-                  data-reporter="{{ $item->report_by ?: ($item->user ? 'Satpam: ' . $item->user->name : 'Unknown') }}"
+                  data-reporter="{{ $item->report_by ?: ($item->user ? 'Staff Kampus: ' . $item->user->name : 'Unknown') }}"
                   data-whatsapp="https://wa.me/{{ $item->phone_number }}"
                   data-type="{{ $item->type }}"
                   data-id="{{ $item->id }}"
@@ -216,6 +227,7 @@
 
 
   <!-- Modal -->
+  {{-- Modal detail item dengan tombol kontak dan klaim/kembalikan --}}
   <div id="itemModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
     <div class="flex justify-center items-center h-full">
       <div class="bg-white p-6 rounded-lg max-w-2xl w-full relative">
@@ -469,12 +481,12 @@
       document.getElementById('modalReportedBy').textContent = reporter;
 
       // Tambahkan logic untuk menyembunyikan tombol untuk pelapor
-      const reportedBySatpam = reporter && reporter.toLowerCase().includes('satpam');
+      const reportedByStaff = reporter && (reporter.toLowerCase().includes('satpam') || reporter.toLowerCase().includes('staff'));
       const itemUserId = button.getAttribute('data-user-id');
       const currentUserId = "{{ Auth::id() }}"; // ID user yang sedang login
 
       // Tambahkan kondisi untuk menyembunyikan tombol jika user adalah pelapor
-      if (itemUserId === currentUserId || reportedBySatpam) {
+      if (itemUserId === currentUserId || reportedByStaff) {
         // Jika user adalah pelapor, sembunyikan tombol claim dan return
         modalClaimButton.classList.add('hidden');
         modalReturnButton.classList.add('hidden');

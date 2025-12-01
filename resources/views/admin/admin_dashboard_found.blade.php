@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+  @include('partials.pwa')
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Items Found - Sipanang</title>
@@ -11,6 +12,7 @@
 </head>
 
 <body class="bg-gray-100 flex flex-col min-h-screen">
+  {{-- Halaman admin untuk mengelola laporan barang ditemukan dan memfilter daftar --}}
   <!-- Main container -->
   <div class="flex flex-1">
     <!-- Sidebar -->
@@ -23,19 +25,19 @@
           <a href="{{ route('admin_dashboard') }}" class="block px-4 py-2 hover:bg-[#4973b3]"><i class='bx bxs-dashboard'></i> Dashboard</a>
         </li>
         <li>
-          <a href="{{ route('admin_dashboard_approval') }}" class="block px-4 py-2 hover:bg-[#4973b3]"><i class='bx bxs-check-circle'></i> Approval</a>
+          <a href="{{ route('admin_dashboard_approval') }}" class="block px-4 py-2 hover:bg-[#4973b3]"><i class='bx bxs-check-circle'></i> Persetujuan</a>
         </li>
         <li>
-          <a href="{{ route('admin_dashboard_lost') }}" class="block px-4 py-2 hover:bg-[#4973b3]"><i class='bx bxs-box'></i> Items Lost</a>
+          <a href="{{ route('admin_dashboard_lost') }}" class="block px-4 py-2 hover:bg-[#4973b3]"><i class='bx bxs-box'></i> Barang Hilang</a>
         </li>
         <li>
-          <a href="{{ route('admin_dashboard_found') }}" class="block px-4 py-2 bg-[#1E5CB8]"><i class='bx bxs-box'></i> Items Found</a>
+          <a href="{{ route('admin_dashboard_found') }}" class="block px-4 py-2 bg-[#1E5CB8]"><i class='bx bxs-box'></i> Barang Temuan</a>
         </li>
         <li>
-          <a href="{{ route('admin_dashboard_user') }}" class="block px-4 py-2 hover:bg-[#4973b3]"><i class='bx bxs-user-circle'></i> Users</a>
+          <a href="{{ route('admin_dashboard_user') }}" class="block px-4 py-2 hover:bg-[#4973b3]"><i class='bx bxs-user-circle'></i> Pengguna</a>
         </li>
         <li>
-          <a href="{{ route('admin_dashboard_claims') }}" class="block px-4 py-2 hover:bg-[#4973b3]"><i class='bx bx-clipboard'></i> Claim Verification</a>
+          <a href="{{ route('admin_dashboard_claims') }}" class="block px-4 py-2 hover:bg-[#4973b3]"><i class='bx bx-clipboard'></i> Validasi klaim</a>
         </li>
       </ul>
 
@@ -53,6 +55,7 @@
       <div class="bg-white rounded-lg shadow-lg p-6">
         <h2 class="text-2xl font-semibold mb-4">Found Items Reports</h2>
         <div class="flex justify-between mb-4">
+          {{-- Filter kategori/pencarian untuk menyaring daftar laporan ditemukan --}}
           <form method="GET" action="{{ route('admin_dashboard_found') }}" class="flex space-x-4">
             <select name="category" class="p-2 bg-gray-100 rounded-lg border border-gray-300">
               <option value="">All Categories</option>
@@ -100,6 +103,7 @@
         </div>
 
         <!-- Table dengan max-height dan overflow untuk scroll di tabel saja -->
+        {{-- Tabel data laporan ditemukan berikut aksi hapus --}}
         <div class="flex flex-col">
           <div class="overflow-x-auto">
             <div class="inline-block min-w-full align-middle">
@@ -107,16 +111,16 @@
                 <table class="min-w-full divide-y divide-gray-200">
                   <thead class="bg-[#124076] sticky top-0"> <!-- Sticky header -->
                     <tr>
-                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Item Name</th>
-                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Category</th>
-                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Date of Events</th>
-                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Description</th>
-                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Location</th>
-                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Email Report</th>
-                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Phone</th>
-                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Item Picture</th>
+                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Nama Barang</th>
+                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Kategori</th>
+                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Tanggal Kejadian</th>
+                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Deskripsi</th>
+                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Lokasi</th>
+                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Email</th>
+                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Nomor Kontak</th>
+                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Gambar Barang</th>
                       <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-white uppercase">Status</th>
-                      <th scope="col" class="px-6 py-3 text-end text-xs font-medium text-white uppercase">Actions</th>
+                      <th scope="col" class="px-6 py-3 text-end text-xs font-medium text-white uppercase">Aksi</th>
                     </tr>
                   </thead>
 
@@ -180,6 +184,7 @@
   </footer>
 
   <!-- Modal -->
+  {{-- Modal edit item (draft) bila diperlukan admin --}}
   <div id="editModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 hidden items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-lg p-6 w-1/3">
       <h2 class="text-2xl font-semibold mb-4">Edit Found Item</h2>

@@ -2,9 +2,10 @@
 <html lang="en">
 
 <head>
+  @include('partials.pwa')
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Search Page | Lost and Found Items</title>
+  <title>Search Page | Sipanang</title>
   <!-- CSS -->
   <link rel="stylesheet" href="{{ asset('css/index2.css') }}" />
   <!-- Boxicons CSS -->
@@ -24,11 +25,12 @@
 </head>
 
 <body>
+  {{-- Halaman pencarian publik untuk melihat daftar laporan barang hilang/ditemukan --}}
   <!-- Header Section -->
   <header>
     <nav>
       <div class="logo">
-        <img src="Assets/img/lostnfoundlogo.png" height="70px" />
+        <img src="Assets/img/logo-arka.png" height="70px" />
       </div>
       <ul id="menuList">
         <li><a class="login-btn" href="{{ route('login') }}">Log in</a></li>
@@ -115,7 +117,7 @@
           @endforeach
         </div>
         @else
-        <p>No reports found. Try different filters or keywords.</p>
+        <p>Laporan tidak ditemukan. Silakan gunakan filter/kata kunci lainnya..</p>
         @endif
       </div>
 
@@ -159,7 +161,7 @@
     <div class="footer">
       <div class="footer-main">
         <div class="fotter-img">
-          <a href="#"><img src="Assets/img/lostnfoundlogowhite.png" height="85px" /></a>
+          <a href="#"><img src="Assets/img/logo-arka-white.png" height="85px" /></a>
         </div>
       </div>
       <div class="footer-section">
@@ -167,10 +169,10 @@
           <h3>About</h3>
           <ul>
             <a href="about-us-non-log.html">
-              <li>About Lost and Found Items</li>
+              <li>About Sipanang</li>
             </a>
             <a href="terms-condition.html">
-              <li>Terms and Condition Lost And Found Items</li>
+              <li>Terms and Condition Sipanang</li>
             </a>
             <a href="terms-condition.html">
               <li>FaQ</li>
@@ -178,13 +180,13 @@
           </ul>
         </div>
         <div class="footer-content">
-          <h3>Lost and Found Items</h3>
+          <h3>Sipanang</h3>
           <ul>
             <a href="non-log-dasboard.php">
-              <li>Lost Items</li>
+              <li>Kehilangan Barang</li>
             </a>
             <a href="non-log-dasboard.php">
-              <li>Found Items</li>
+              <li>Menemukan Barang</li>
             </a>
           </ul>
         </div>

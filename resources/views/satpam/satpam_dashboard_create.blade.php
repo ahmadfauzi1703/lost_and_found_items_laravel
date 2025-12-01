@@ -2,46 +2,47 @@
 <html lang="en">
 
 <head>
+  @include('partials.pwa')
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tambah Barang - Lost and Found</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- BX BX ICONS -->
     <link href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
-    <!-- Tambahkan di bagian <head> -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 
 <body class="bg-gray-100 flex flex-col min-h-screen">
+    {{-- Form staff kampus untuk menambahkan laporan barang hilang/ditemukan beserta pin lokasi --}}
     <!-- Sidebar -->
     <div class="flex flex-grow">
         <div class="w-[15rem] bg-[#393646] text-white sticky top-0 h-screen overflow-y-auto">
             <img
                 class="h-[6rem] m-auto mt-[1rem]"
-                src="{{ asset('assets/img/laflogoputih.png') }}" />
+                src="{{ asset('assets/img/logo-arka-white.png') }}" />
             <ul class="mt-6 space-y-2">
                 <li>
-                    <a href="{{ route('satpam_dashboard') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bxs-dashboard'></i> Dashboard</a>
+                    <a href="{{ route('satpam_dashboard') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bxs-dashboard'></i> Dasbor</a>
                 </li>
                 <li>
-                    <a href="{{ route('satpam.dashboard.create') }}" class="block px-4 py-2 bg-[#5C5470]"><i class='bx bx-box'></i> Add Items</a>
+                    <a href="{{ route('satpam.dashboard.create') }}" class="block px-4 py-2 bg-[#5C5470]"><i class='bx bx-box'></i> Tambah Barang</a>
                 </li>
                 </li>
                 <li>
-                    <a href="{{ route('satpam.dashboard.view') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-list-ul'></i> List Item</a>
+                    <a href="{{ route('satpam.dashboard.view') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-list-ul'></i> Daftar Barang</a>
                 </li>
                 <li>
-                    <a href="{{ route('satpam.dashboard.createClaim') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-clipboard'></i> Create Claim Items</a>
+                    <a href="{{ route('satpam.dashboard.createClaim') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-clipboard'></i> Buat Klaim Barang</a>
                 </li>
                 <li>
-                    <a href="{{ route('satpam.dashboard.claims') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-user-check'></i> Claim Overview</a>
+                    <a href="{{ route('satpam.dashboard.claims') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-user-check'></i> Ringkasan Klaim</a>
                 </li>
                 <li>
-                    <a href="{{ route('satpam.dashboard.viewHistory') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-history'></i> Item Claim History</a>
+                    <a href="{{ route('satpam.dashboard.viewHistory') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-history'></i> Riwayat Klaim Barang</a>
                 </li>
                 <li>
-                    <a href="{{ route('satpam.dashboard.profile') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-user'></i> Satpam Profile</a>
+                    <a href="{{ route('satpam.dashboard.profile') }}" class="block px-4 py-2 hover:bg-[#5C5470]"><i class='bx bx-user'></i> Profil Staff Kampus</a>
                 </li>
             </ul>
             <!-- Logout Button -->
@@ -78,11 +79,10 @@
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                            <select name="type" class="w-full p-2 border border-gray-300 rounded" required>
-                                <option value="">-- Pilih Status --</option>
-                                <option value="hilang" {{ old('type') == 'hilang' ? 'selected' : '' }}>Barang Hilang</option>
-                                <option value="ditemukan" {{ old('type') == 'ditemukan' ? 'selected' : '' }}>Barang Ditemukan</option>
-                            </select>
+                            <div class="w-full p-2 border border-gray-300 rounded bg-gray-100 text-gray-700">
+                                Barang Ditemukan (staff kampus hanya melaporkan temuan)
+                            </div>
+                            <input type="hidden" name="type" value="ditemukan">
                         </div>
 
                         <div>
@@ -147,11 +147,12 @@
         </div>
     </div>
     <footer class="bg-[#6D5D6E] text-white text-center py-4 w-full mt-auto">
-        Dibuat dengan 💙 oleh © 2025 Lost and Found items Team
+        Dibuat dengan 💙 oleh © 2025 Sipanang
     </footer>
 
     <!-- Maps Pin -->
     <script>
+        // Inisialisasi peta Leaflet dan simpan koordinat lokasi ke input tersembunyi
         // Koordinat Telkom University, Bandung
         const telkomUniversityCoords = [-6.973250, 107.630339];
 

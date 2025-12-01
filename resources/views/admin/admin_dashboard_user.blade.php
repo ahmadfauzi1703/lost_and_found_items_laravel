@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+  @include('partials.pwa')
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Users - Sipanang</title>
@@ -11,6 +12,7 @@
 </head>
 
 <body class="bg-gray-100">
+  {{-- Halaman admin untuk menambah, memfilter, dan mengelola peran pengguna --}}
   <!-- Sidebar -->
   <div class="flex h-screen">
     <div class="w-[15rem] bg-[#124076] text-white">
@@ -22,19 +24,19 @@
           <a href="{{ route('admin_dashboard') }}" class="block px-4 py-2 hover:bg-[#4973b3]"><i class='bx bxs-dashboard'></i> Dashboard</a>
         </li>
         <li>
-          <a href="{{ route('admin_dashboard_approval') }}" class="block px-4 py-2 hover:bg-[#4973b3]"><i class='bx bxs-check-circle'></i> Approval</a>
+          <a href="{{ route('admin_dashboard_approval') }}" class="block px-4 py-2 hover:bg-[#4973b3]"><i class='bx bxs-check-circle'></i> Persetujuan</a>
         </li>
         <li>
-          <a href="{{ route('admin_dashboard_lost') }}" class="block px-4 py-2 hover:bg-[#4973b3]"><i class='bx bxs-box'></i> Items Lost</a>
+          <a href="{{ route('admin_dashboard_lost') }}" class="block px-4 py-2 hover:bg-[#4973b3]"><i class='bx bxs-box'></i> Barang Hilang</a>
         </li>
         <li>
-          <a href="{{ route('admin_dashboard_found') }}" class="block px-4 py-2 hover:bg-[#4973b3]"><i class='bx bxs-box'></i> Items Found</a>
+          <a href="{{ route('admin_dashboard_found') }}" class="block px-4 py-2 hover:bg-[#4973b3]"><i class='bx bxs-box'></i> Barang Temuan</a>
         </li>
         <li>
-          <a href="{{ route('admin_dashboard_user') }}" class="block px-4 py-2 bg-[#1E5CB8]"><i class='bx bxs-user-circle'></i> Users</a>
+          <a href="{{ route('admin_dashboard_user') }}" class="block px-4 py-2 bg-[#1E5CB8]"><i class='bx bxs-user-circle'></i> Pengguna</a>
         </li>
         <li>
-          <a href="{{ route('admin_dashboard_claims') }}" class="block px-4 py-2 hover:bg-[#4973b3]"><i class='bx bx-clipboard'></i> Claim Verification</a>
+          <a href="{{ route('admin_dashboard_claims') }}" class="block px-4 py-2 hover:bg-[#4973b3]"><i class='bx bx-clipboard'></i> Validasi klaim </a>
         </li>
       </ul>
       <!-- Logout Button -->
@@ -68,6 +70,7 @@
         @endif
 
         <div class="mb-6 rounded-lg border border-gray-200 bg-gray-50 p-6">
+          {{-- Form pembuatan akun baru untuk admin --}}
           <h3 class="text-xl font-semibold mb-4">Tambah Pengguna Baru</h3>
           <form method="POST" action="{{ route('admin.users.store') }}" class="grid gap-4 md:grid-cols-2">
             @csrf
@@ -179,6 +182,7 @@
         </div>
 
         <div class="flex justify-between mb-4">
+          {{-- Filter pengguna berdasarkan nama atau peran --}}
           <form method="GET" action="{{ route('admin_dashboard_user') }}" class="flex space-x-4">
             <!-- Cari berdasarkan nama -->
             <input
@@ -193,7 +197,7 @@
               <option value="">Semua Peran</option>
               <option value="user" {{ request('role') == 'user' ? 'selected' : '' }}>User</option>
               <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin</option>
-              <option value="satpam" {{ request('role') == 'satpam' ? 'selected' : '' }}>Satpam</option>
+              <option value="satpam" {{ request('role') == 'satpam' ? 'selected' : '' }}>Staff Kampus</option>
             </select>
 
             <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500">Terapkan</button>
@@ -213,7 +217,7 @@
 
               @if(request('role'))
               @if(request('search')) | @endif
-              <span class="font-medium">Role: "{{ ucfirst(request('role')) }}"</span>
+              <span class="font-medium">Role: "{{ request('role') === 'satpam' ? 'Staff Kampus' : ucfirst(request('role')) }}"</span>
               @endif
 
               ({{ $users->count() }} pengguna ditemukan)
@@ -226,6 +230,7 @@
           <div class="-m-1.5 overflow-x-auto">
             <div class="p-1.5 min-w-full inline-block align-middle">
               <div class="overflow-hidden">
+                {{-- Daftar pengguna dengan aksi ubah peran atau hapus --}}
                 <table class="min-w-full divide-y divide-gray-200">
                   <thead class="bg-[#124076]">
                     <tr>
@@ -245,7 +250,7 @@
                       {{ $user->role == 'admin' ? 'bg-green-100 text-green-800' : 
                          ($user->role == 'satpam' ? 'bg-blue-100 text-blue-800' : 
                          'bg-gray-100 text-gray-800') }}">
-                          {{ ucfirst($user->role) }}
+                          {{ $user->role == 'satpam' ? 'Staff Kampus' : ucfirst($user->role) }}
                         </span>
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
@@ -300,7 +305,7 @@
           <select id="editRole" name="role" class="p-2 w-full border border-gray-300 rounded-lg">
             <option value="user">User</option>
             <option value="admin">Admin</option>
-            <option value="satpam">Satpam</option>
+            <option value="satpam">Staff Kampus</option>
           </select>
         </div>
 

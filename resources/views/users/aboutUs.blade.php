@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+  @include('partials.pwa')
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>about-us</title>
@@ -26,6 +27,7 @@
 </head>
 
 <body class="font-[Lato] h-screen">
+  {{-- Halaman About Us beserta form umpan balik pengguna --}}
   <header class="bg-white">
     <!-- Header Navigation -->
     <nav class="flex justify-between items-center w-[90%] xl:w-[70%] mx-auto">
@@ -43,7 +45,7 @@
         </button>
 
         <!-- Notification Dropdown -->
-        <div id="notification-dropdown" class="absolute top-full mt-2 right-0 w-80 bg-white shadow-lg rounded-lg hidden z-20">
+          <div id="notification-dropdown" class="absolute top-full mt-2 right-0 w-80 bg-white shadow-lg rounded-lg hidden z-40">
           <!-- <div class="p-2 border-b border-gray-200 flex justify-between items-center">
               <h3 class="font-semibold">Notifikasi</h3>
               <button id="mark-all-read" class="text-xs text-blue-600 hover:underline">Tandai semua dibaca</button>
@@ -66,7 +68,7 @@
           </button>
 
           <!-- Profile Dropdown Menu -->
-          <div id="menuDropdown" class="hidden absolute top-full mt-2 right-0 bg-white divide-y divide-gray-100 rounded-lg shadow-md w-44">
+          <div id="menuDropdown" class="hidden absolute top-full mt-2 right-0 bg-white divide-y divide-gray-100 rounded-lg shadow-md w-44 z-50">
             <ul class="py-1 text-sm text-gray-700">
               <li><a href="{{ route('dashboard') }}" class="block px-4 py-2 hover:bg-gray-100">Home</a></li>
               <li><a href="{{ route('profile') }}" class="block px-4 py-2 hover:bg-gray-100">Profile</a></li>

@@ -85,7 +85,7 @@ class SatpamController extends Controller
     {
         // Validasi input berdasarkan struktur database
         $validated = $request->validate([
-            'type' => 'required|in:hilang,ditemukan',
+            'type' => 'nullable|in:ditemukan', // staff kampus hanya boleh melaporkan temuan
             'item_name' => 'required|string|max:255',
             'category' => 'required|string|max:255',
             'date_of_event' => 'required|date',
@@ -108,14 +108,17 @@ class SatpamController extends Controller
             unset($validated['photo']);
         }
 
-        // Tambahkan data satpam yang menginput
+        // Paksa tipe laporan ke "ditemukan" agar staff kampus hanya melaporkan barang temuan
+        $validated['type'] = 'ditemukan';
+
+        // Tambahkan data staff kampus yang menginput
         $validated['user_id'] = Auth::id();
-        $validated['status'] = 'approved'; // Langsung approve karena diinput oleh satpam
+        $validated['status'] = 'approved'; // Langsung approve karena diinput oleh staff kampus
 
         // Set report_by jika tidak diisi
         if (empty($validated['report_by'])) {
-            // Default: Gunakan nama satpam yang login
-            $validated['report_by'] = 'Satpam' . Auth::user()->name;
+            // Default: Gunakan nama staff kampus yang login
+            $validated['report_by'] = 'Staff Kampus: ' . Auth::user()->name;
         }
 
         // Simpan item
@@ -127,8 +130,8 @@ class SatpamController extends Controller
 
     public function viewItems()
     {
-        // Ambil item yang dilaporkan oleh satpam saja
-        // Ini menggunakan where untuk mencari report_by yang dimulai dengan "Satpam:"
+        // Ambil item yang dilaporkan oleh staff kampus
+        // Ini menggunakan report_by yang sekarang diprefix dengan "Staff Kampus"
         $items = Item::all();
 
         return view('satpam.satpam_dashboard_view', compact('items'));
@@ -140,7 +143,7 @@ class SatpamController extends Controller
         $validated = $request->validate([
             'item_name' => 'required|string|max:255',
             'category' => 'required|string|max:100',
-            'type' => 'required|in:hilang,ditemukan',
+            'type' => 'nullable|in:ditemukan', // staff kampus hanya boleh melaporkan temuan
             'date_of_event' => 'required|date',
             'description' => 'nullable|string',
             'location' => 'nullable|string',
@@ -163,6 +166,9 @@ class SatpamController extends Controller
             $photoPath = $request->file('photo')->store('items', 'public');
             $validated['photo_path'] = $photoPath;
         }
+
+        // Paksa tipe tetap "ditemukan"
+        $validated['type'] = 'ditemukan';
 
         // Update item
         $item->update($validated);

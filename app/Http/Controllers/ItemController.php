@@ -458,7 +458,7 @@ class ItemController extends Controller
         $claim->ownership_proof = $validated['ownership_proof'];
         $claim->notes = $validated['notes'] ?? null;
         $claim->claim_date = now();
-        $claim->status = 'pending'; // Admin/satpam akan memverifikasi klaim
+        $claim->status = 'pending'; // Admin/staff kampus akan memverifikasi klaim
 
         // Upload bukti dokumen jika ada
         if ($request->hasFile('proof_document')) {
