@@ -96,7 +96,7 @@ Route::prefix('v1')->group(function () {
     })->where('path', '.*');
 
     // Authentication
-    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:critical');
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/user', [AuthController::class, 'user']);
@@ -118,8 +118,8 @@ Route::prefix('v1')->group(function () {
         Route::delete('/items/{item}', [ItemApiController::class, 'destroy']);
 
         // Claims
-        Route::post('/items/{item}/claim', [ItemApiController::class, 'claim']);
-        Route::post('/items/{item}/return', [ItemApiController::class, 'returnItem']);
+        Route::post('/items/{item}/claim', [ItemApiController::class, 'claim'])->middleware('throttle:critical');
+        Route::post('/items/{item}/return', [ItemApiController::class, 'returnItem'])->middleware('throttle:critical');
     });
 });
 
@@ -138,7 +138,7 @@ Route::prefix('v1/lost-items')->group(function () {
         Route::post('/', [ItemApiController::class, 'storeLostItem']);
         Route::put('/{id}', [ItemApiController::class, 'updateLostItem']);
         Route::delete('/{id}', [ItemApiController::class, 'destroyLostItem']);
-        Route::post('/{item}/claim', [ItemApiController::class, 'claimLostItem']);
+        Route::post('/{item}/claim', [ItemApiController::class, 'claimLostItem'])->middleware('throttle:critical');
     });
 });
 
@@ -155,7 +155,7 @@ Route::prefix('v1/found-items')->group(function () {
         Route::post('/', [ItemApiController::class, 'storeFoundItem']);
         Route::put('/{id}', [ItemApiController::class, 'updateFoundItem']);
         Route::delete('/{id}', [ItemApiController::class, 'destroyFoundItem']);
-        Route::post('/{item}/claim', [ItemApiController::class, 'claimFoundItem']);
+        Route::post('/{item}/claim', [ItemApiController::class, 'claimFoundItem'])->middleware('throttle:critical');
     });
 });
 
@@ -180,7 +180,7 @@ Route::prefix('v1/returns')->middleware('auth:sanctum')->group(function () {
 });
 
 Route::post('/v1/lost-items/{item}/return', [ItemApiController::class, 'returnLostItem'])
-    ->middleware('auth:sanctum');
+    ->middleware(['auth:sanctum', 'throttle:critical']);
 
 // -- END POINT NOTIFICATIONS ----
 Route::prefix('v1/notifications')->middleware('auth:sanctum')->group(function () {

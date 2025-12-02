@@ -6,8 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Item;
 use App\Http\Resources\ItemResource;
 use App\Http\Resources\ItemCollection;
+use App\Models\Claim;
+use App\Models\ItemReturn;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class ItemApiController extends Controller
@@ -245,43 +248,59 @@ class ItemApiController extends Controller
      */
     public function claim(Request $request, Item $item)
     {
-        // Verify that item is "found" type
-        if ($item->type !== 'ditemukan') {
-            return response()->json(['message' => 'Cannot claim this type of item'], 400);
-        }
+        return DB::transaction(function () use ($request, $item) {
+            $lockedItem = Item::whereKey($item->id)->lockForUpdate()->firstOrFail();
 
-        $validated = $request->validate([
-            'ownership_proof' => 'required|string',
-            'claimer_phone' => 'required|string',
-            'notes' => 'nullable|string',
-            'proof_document' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
-        ]);
+            // Verify that item is "found" type
+            if ($lockedItem->type !== 'ditemukan') {
+                return response()->json(['message' => 'Cannot claim this type of item'], 400);
+            }
 
-        $user = Auth::user();
+            $validated = $request->validate([
+                'ownership_proof' => 'required|string',
+                'claimer_phone' => 'required|string',
+                'notes' => 'nullable|string',
+                'proof_document' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            ]);
 
-        $claim = new \App\Models\Claim();
-        $claim->item_id = $item->id;
-        $claim->claimer_name = $user->name;
-        $claim->claimer_email = $user->email;
-        $claim->claimer_phone = $validated['claimer_phone'];
-        $claim->ownership_proof = $validated['ownership_proof'];
-        $claim->notes = $validated['notes'] ?? null;
-        $claim->claim_date = now();
-        $claim->status = 'pending'; // Pending verification
-        $claim->type = 'claim';
+            // Prevent double claim on the same item (race-safe)
+            $hasActiveClaim = Claim::where('item_id', $lockedItem->id)
+                ->whereIn('status', ['pending', 'approved', 'Claimed'])
+                ->lockForUpdate()
+                ->exists();
 
-        // Upload proof document if provided
-        if ($request->hasFile('proof_document')) {
-            $filePath = $request->file('proof_document')->store('claim_proofs', 'public');
-            $claim->proof_document = $filePath;
-        }
+            if ($hasActiveClaim) {
+                return response()->json([
+                    'message' => 'Item already has an active claim',
+                ], 409);
+            }
 
-        $claim->save();
+            $user = Auth::user();
 
-        return response()->json([
-            'message' => 'Claim submitted successfully',
-            'claim_id' => $claim->id
-        ], 201);
+            $claim = new Claim();
+            $claim->item_id = $lockedItem->id;
+            $claim->claimer_name = $user->name;
+            $claim->claimer_email = $user->email;
+            $claim->claimer_phone = $validated['claimer_phone'];
+            $claim->ownership_proof = $validated['ownership_proof'];
+            $claim->notes = $validated['notes'] ?? null;
+            $claim->claim_date = now();
+            $claim->status = 'pending'; // Pending verification
+            $claim->type = 'claim';
+
+            // Upload proof document if provided
+            if ($request->hasFile('proof_document')) {
+                $filePath = $request->file('proof_document')->store('claim_proofs', 'public');
+                $claim->proof_document = $filePath;
+            }
+
+            $claim->save();
+
+            return response()->json([
+                'message' => 'Claim submitted successfully',
+                'claim_id' => $claim->id
+            ], 201);
+        });
     }
 
     /**
@@ -293,55 +312,72 @@ class ItemApiController extends Controller
      */
     public function returnItem(Request $request, Item $item)
     {
-        // Verify that item is "lost" type
-        if ($item->type !== 'hilang') {
-            return response()->json(['message' => 'Cannot return this type of item'], 400);
-        }
+        return DB::transaction(function () use ($request, $item) {
+            $lockedItem = Item::whereKey($item->id)->lockForUpdate()->firstOrFail();
 
-        $validated = $request->validate([
-            'where_found' => 'required|string',
-            'returner_phone' => 'required|string',
-            'notes' => 'nullable|string',
-            'item_photo' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
-        ]);
+            // Verify that item is "lost" type
+            if ($lockedItem->type !== 'hilang') {
+                return response()->json(['message' => 'Cannot return this type of item'], 400);
+            }
 
-        $user = Auth::user();
+            $validated = $request->validate([
+                'where_found' => 'required|string',
+                'returner_phone' => 'required|string',
+                'notes' => 'nullable|string',
+                'item_photo' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
+            ]);
 
-        // Create claimer name
-        $claimer_name = '';
-        if (!empty($user->first_name) || !empty($user->last_name)) {
-            $claimer_name = trim($user->first_name . ' ' . $user->last_name);
-        } else if (!empty($user->name)) {
-            $claimer_name = $user->name;
-        } else {
-            $claimer_name = 'User_' . $user->id;
-        }
+            // Prevent double return submissions on same item
+            $hasActiveReturn = Claim::where('item_id', $lockedItem->id)
+                ->where('type', 'return')
+                ->whereIn('status', ['pending', 'approved', 'Claimed'])
+                ->lockForUpdate()
+                ->exists();
 
-        // Create return (using claim model with type 'return')
-        $return = new \App\Models\Claim();
-        $return->type = 'return';
-        $return->item_id = $item->id;
-        $return->claimer_name = $claimer_name;
-        $return->claimer_email = $user->email;
-        $return->claimer_phone = $validated['returner_phone'];
-        $return->where_found = $validated['where_found'];
-        $return->ownership_proof = 'Dikembalikan langsung oleh penemu';
-        $return->notes = $validated['notes'] ?? null;
-        $return->claim_date = now();
-        $return->status = 'pending';
+            if ($hasActiveReturn) {
+                return response()->json([
+                    'message' => 'Item already has an active return request',
+                ], 409);
+            }
 
-        // Upload item photo if provided
-        if ($request->hasFile('item_photo')) {
-            $filePath = $request->file('item_photo')->store('return_photos', 'public');
-            $return->item_photo = $filePath;
-        }
+            $user = Auth::user();
 
-        $return->save();
+            // Create claimer name
+            $claimer_name = '';
+            if (!empty($user->first_name) || !empty($user->last_name)) {
+                $claimer_name = trim($user->first_name . ' ' . $user->last_name);
+            } else if (!empty($user->name)) {
+                $claimer_name = $user->name;
+            } else {
+                $claimer_name = 'User_' . $user->id;
+            }
 
-        return response()->json([
-            'message' => 'Return request submitted successfully',
-            'return_id' => $return->id
-        ], 201);
+            // Create return (using claim model with type 'return')
+            $return = new Claim();
+            $return->type = 'return';
+            $return->item_id = $lockedItem->id;
+            $return->claimer_name = $claimer_name;
+            $return->claimer_email = $user->email;
+            $return->claimer_phone = $validated['returner_phone'];
+            $return->where_found = $validated['where_found'];
+            $return->ownership_proof = 'Dikembalikan langsung oleh penemu';
+            $return->notes = $validated['notes'] ?? null;
+            $return->claim_date = now();
+            $return->status = 'pending';
+
+            // Upload item photo if provided
+            if ($request->hasFile('item_photo')) {
+                $filePath = $request->file('item_photo')->store('return_photos', 'public');
+                $return->item_photo = $filePath;
+            }
+
+            $return->save();
+
+            return response()->json([
+                'message' => 'Return request submitted successfully',
+                'return_id' => $return->id
+            ], 201);
+        });
     }
 
 
@@ -575,81 +611,93 @@ class ItemApiController extends Controller
     public function returnLostItem(Request $request, $item)
     {
         try {
-            // Find the item
-            $lostItem = Item::findOrFail($item);
+            return DB::transaction(function () use ($request, $item) {
+                $lostItem = Item::where('id', $item)->lockForUpdate()->firstOrFail();
 
-            // Check if the item is lost type and approved
-            if ($lostItem->type !== 'hilang') {
-                return response()->json([
-                    'message' => 'This item cannot be returned. Only lost items can be returned.',
-                    'error' => 'INVALID_ITEM_TYPE'
-                ], 422);
-            }
+                // Check if the item is lost type and approved
+                if ($lostItem->type !== 'hilang') {
+                    return response()->json([
+                        'message' => 'This item cannot be returned. Only lost items can be returned.',
+                        'error' => 'INVALID_ITEM_TYPE'
+                    ], 422);
+                }
 
-            if ($lostItem->status !== 'approved') {
-                return response()->json([
-                    'message' => 'This item cannot be returned. Only approved items can be returned.',
-                    'error' => 'INVALID_ITEM_STATUS'
-                ], 422);
-            }
+                if ($lostItem->status !== 'approved') {
+                    return response()->json([
+                        'message' => 'This item cannot be returned. Only approved items can be returned.',
+                        'error' => 'INVALID_ITEM_STATUS'
+                    ], 422);
+                }
 
-            // Validate request
-            $validated = $request->validate([
-                'where_found' => 'required|string',
-                'returner_phone' => 'required|string|max:20',
-                'notes' => 'nullable|string',
-                'item_photo' => 'nullable|image|max:5120', // 5MB max
-            ]);
-
-            // Get authenticated user
-            $user = Auth::user();
-
-            // Create return record
-            $return = new \App\Models\ItemReturn();
-            $return->item_id = $lostItem->id;
-            $return->returner_id = $user->id;
-
-            // Set returner name
-            if (!empty($user->first_name) || !empty($user->last_name)) {
-                $return->returner_name = trim($user->first_name . ' ' . $user->last_name);
-            } else {
-                $return->returner_name = $user->name;
-            }
-
-            $return->returner_email = $user->email;
-            $return->returner_phone = $validated['returner_phone'];
-            $return->where_found = $validated['where_found'];
-            $return->notes = $validated['notes'] ?? null;
-            $return->return_date = now();
-            $return->status = 'pending';
-
-            // Upload item photo if provided
-            if ($request->hasFile('item_photo')) {
-                $filePath = $request->file('item_photo')->store('return_photos', 'public');
-                $return->item_photo = $filePath;
-            }
-
-            $return->save();
-
-            // Create notification for the original reporter
-            if ($lostItem->user_id) {
-                \App\Models\Notification::create([
-                    'user_id' => $lostItem->user_id,
-                    'message' => "Someone has returned your lost item: {$lostItem->item_name}",
-                    'is_read' => 0
+                $validated = $request->validate([
+                    'where_found' => 'required|string',
+                    'returner_phone' => 'required|string|max:20',
+                    'notes' => 'nullable|string',
+                    'item_photo' => 'nullable|image|max:5120', // 5MB max
                 ]);
-            }
 
-            return response()->json([
-                'message' => 'Return request submitted successfully',
-                'return_id' => $return->id,
-                'status' => 'pending',
-                'item' => [
-                    'id' => $lostItem->id,
-                    'name' => $lostItem->item_name,
-                    'category' => $lostItem->category
-                ]
-            ], 201);
+                // Prevent double return submissions on same item
+                $hasActiveReturn = ItemReturn::where('item_id', $lostItem->id)
+                    ->whereIn('status', ['pending', 'approved', 'completed'])
+                    ->lockForUpdate()
+                    ->exists();
+
+                if ($hasActiveReturn) {
+                    return response()->json([
+                        'message' => 'Item already has an active return request',
+                    ], 409);
+                }
+
+                // Get authenticated user
+                $user = Auth::user();
+
+                // Create return record
+                $return = new ItemReturn();
+                $return->item_id = $lostItem->id;
+                $return->returner_id = $user->id;
+
+                // Set returner name
+                if (!empty($user->first_name) || !empty($user->last_name)) {
+                    $return->returner_name = trim($user->first_name . ' ' . $user->last_name);
+                } else {
+                    $return->returner_name = $user->name;
+                }
+
+                $return->returner_email = $user->email;
+                $return->returner_phone = $validated['returner_phone'];
+                $return->where_found = $validated['where_found'];
+                $return->notes = $validated['notes'] ?? null;
+                $return->return_date = now();
+                $return->status = 'pending';
+
+                // Upload item photo if provided
+                if ($request->hasFile('item_photo')) {
+                    $filePath = $request->file('item_photo')->store('return_photos', 'public');
+                    $return->item_photo = $filePath;
+                }
+
+                $return->save();
+
+                // Create notification for the original reporter
+                if ($lostItem->user_id) {
+                    \App\Models\Notification::create([
+                        'user_id' => $lostItem->user_id,
+                        'message' => "Someone has returned your lost item: {$lostItem->item_name}",
+                        'is_read' => 0
+                    ]);
+                }
+
+                return response()->json([
+                    'message' => 'Return request submitted successfully',
+                    'return_id' => $return->id,
+                    'status' => 'pending',
+                    'item' => [
+                        'id' => $lostItem->id,
+                        'name' => $lostItem->item_name,
+                        'category' => $lostItem->category
+                    ]
+                ], 201);
+            });
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Error submitting return request',
@@ -806,82 +854,94 @@ class ItemApiController extends Controller
     public function claimFoundItem(Request $request, $item)
     {
         try {
-            // Find the item
-            $foundItem = Item::findOrFail($item);
+            return DB::transaction(function () use ($request, $item) {
+                $foundItem = Item::where('id', $item)->lockForUpdate()->firstOrFail();
 
-            // Check if the item is found type and approved
-            if ($foundItem->type !== 'ditemukan') {
-                return response()->json([
-                    'message' => 'This item cannot be claimed. Only found items can be claimed.',
-                    'error' => 'INVALID_ITEM_TYPE'
-                ], 422);
-            }
+                // Check if the item is found type and approved
+                if ($foundItem->type !== 'ditemukan') {
+                    return response()->json([
+                        'message' => 'This item cannot be claimed. Only found items can be claimed.',
+                        'error' => 'INVALID_ITEM_TYPE'
+                    ], 422);
+                }
 
-            if ($foundItem->status !== 'approved') {
-                return response()->json([
-                    'message' => 'This item cannot be claimed. Only approved items can be claimed.',
-                    'error' => 'INVALID_ITEM_STATUS'
-                ], 422);
-            }
+                if ($foundItem->status !== 'approved') {
+                    return response()->json([
+                        'message' => 'This item cannot be claimed. Only approved items can be claimed.',
+                        'error' => 'INVALID_ITEM_STATUS'
+                    ], 422);
+                }
 
-            // Validate request
-            $validated = $request->validate([
-                'ownership_proof' => 'required|string',
-                'claimer_phone' => 'required|string|max:20',
-                'notes' => 'nullable|string',
-                'proof_document' => 'nullable|image|max:5120', // 5MB max
-            ]);
-
-            // Get authenticated user
-            $user = Auth::user();
-
-            // Create claim
-            $claim = new \App\Models\Claim();
-            $claim->type = 'claim';
-            $claim->item_id = $foundItem->id;
-            $claim->claimer_id = $user->id;
-
-            // Set claimer name
-            if (!empty($user->first_name) || !empty($user->last_name)) {
-                $claim->claimer_name = trim($user->first_name . ' ' . $user->last_name);
-            } else {
-                $claim->claimer_name = $user->name;
-            }
-
-            $claim->claimer_email = $user->email;
-            $claim->claimer_phone = $validated['claimer_phone'];
-            $claim->ownership_proof = $validated['ownership_proof'];
-            $claim->notes = $validated['notes'] ?? null;
-            $claim->claim_date = now();
-            $claim->status = 'pending';
-
-            // Upload proof document if provided
-            if ($request->hasFile('proof_document')) {
-                $filePath = $request->file('proof_document')->store('claim_proofs', 'public');
-                $claim->proof_document = $filePath;
-            }
-
-            $claim->save();
-
-            // Create notification for the finder
-            if ($foundItem->user_id) {
-                \App\Models\Notification::create([
-                    'user_id' => $foundItem->user_id,
-                    'message' => "Someone claimed your found item: {$foundItem->item_name}",
-                    'is_read' => 0
+                // Validate request
+                $validated = $request->validate([
+                    'ownership_proof' => 'required|string',
+                    'claimer_phone' => 'required|string|max:20',
+                    'notes' => 'nullable|string',
+                    'proof_document' => 'nullable|image|max:5120', // 5MB max
                 ]);
-            }
 
-            return response()->json([
-                'message' => 'Claim submitted successfully',
-                'claim_id' => $claim->id,
-                'status' => 'pending',
-                'item' => [
-                    'id' => $foundItem->id,
-                    'name' => $foundItem->item_name,
-                    'category' => $foundItem->category
-                ]
-            ], 201);
+                // Prevent double claim on the same item (race-safe)
+                $hasActiveClaim = Claim::where('item_id', $foundItem->id)
+                    ->whereIn('status', ['pending', 'approved', 'Claimed'])
+                    ->lockForUpdate()
+                    ->exists();
+
+                if ($hasActiveClaim) {
+                    return response()->json([
+                        'message' => 'Item already has an active claim',
+                    ], 409);
+                }
+
+                $user = Auth::user();
+
+                // Create claim
+                $claim = new Claim();
+                $claim->type = 'claim';
+                $claim->item_id = $foundItem->id;
+                $claim->claimer_id = $user->id;
+
+                // Set claimer name
+                if (!empty($user->first_name) || !empty($user->last_name)) {
+                    $claim->claimer_name = trim($user->first_name . ' ' . $user->last_name);
+                } else {
+                    $claim->claimer_name = $user->name;
+                }
+
+                $claim->claimer_email = $user->email;
+                $claim->claimer_phone = $validated['claimer_phone'];
+                $claim->ownership_proof = $validated['ownership_proof'];
+                $claim->notes = $validated['notes'] ?? null;
+                $claim->claim_date = now();
+                $claim->status = 'pending';
+
+                // Upload proof document if provided
+                if ($request->hasFile('proof_document')) {
+                    $filePath = $request->file('proof_document')->store('claim_proofs', 'public');
+                    $claim->proof_document = $filePath;
+                }
+
+                $claim->save();
+
+                // Create notification for the finder
+                if ($foundItem->user_id) {
+                    \App\Models\Notification::create([
+                        'user_id' => $foundItem->user_id,
+                        'message' => "Someone claimed your found item: {$foundItem->item_name}",
+                        'is_read' => 0
+                    ]);
+                }
+
+                return response()->json([
+                    'message' => 'Claim submitted successfully',
+                    'claim_id' => $claim->id,
+                    'status' => 'pending',
+                    'item' => [
+                        'id' => $foundItem->id,
+                        'name' => $foundItem->item_name,
+                        'category' => $foundItem->category
+                    ]
+                ], 201);
+            });
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Error submitting claim',
